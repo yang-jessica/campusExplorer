@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Test Query",
+    "description": "A test query and its expected response when passed to InsightFacade.performQuery",
+    "type": "object",
+    "properties": {
+        "title": {
+            "description": "A meaningful test name that describes the query",
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 100
+        },
+        "query": {
+            "description": "The query that will be sent to performQuery"
+        },
+        "response": {
+            "description": "The expected response from performQuery",
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "number"
+                },
+                "body": {
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false,
+            "required": ["code", "body"]
+        }
+    },
+    "additionalProperties": false,
+    "required": ["title", "query", "response"]
+}
