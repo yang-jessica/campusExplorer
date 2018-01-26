@@ -1,0 +1,33 @@
+{
+    "title": "SELECT dept, id WHERE id IS 110 AND avg=90 ORDER BY dept",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "courses_id":"110"
+                    }
+                },
+                {
+                    "EQ": {
+                        "courses_avg":"90"
+                    }
+                }
+            ]           
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_dept"
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+            "error":"EQ value should be a number"
+        }
+    }
+}

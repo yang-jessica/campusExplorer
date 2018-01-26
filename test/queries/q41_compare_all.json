@@ -1,0 +1,78 @@
+{
+    "title": "SELECT dept, id, instructor, title, pass, fail, audit, uuid, avg WHERE 'a lot of things'",
+    "query":{
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "courses_dept": "crwr"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_id": "599"
+                    }
+                },
+                {
+                    "EQ": {
+                        "courses_avg": 98
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_instructor": "maillard, keith"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_title": "thesis"
+                    }
+                },
+                {
+                    "GT": {
+                        "courses_pass": 0
+                    }
+                },
+                {
+                    "LT": {
+                        "courses_fail": 10
+                    }
+                },
+                {
+                    "LT": {
+                        "courses_audit": 10
+                    }
+                },
+                {
+                    "NOT": {
+                        "IS": {
+                            "courses_uuid": "46412"
+                        }
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg",
+                "courses_instructor",
+                "courses_title",
+                "courses_pass",
+                "courses_fail",
+                "courses_audit",
+                "courses_uuid"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {"courses_dept":"crwr","courses_id":"599","courses_avg":98,"courses_instructor":"maillard, keith","courses_title":"thesis","courses_pass":1,"courses_fail":0,"courses_audit":0,"courses_uuid":"46405"}
+            ]
+        }
+    }
+}

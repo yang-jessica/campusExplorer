@@ -1,0 +1,22 @@
+{
+    "title": "SELECT dept, avg WHERE avg > 97",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept":"cpsc"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "class_avg"
+            ]
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+            "error":"missing dataset(s) class"
+        }
+    }
+}

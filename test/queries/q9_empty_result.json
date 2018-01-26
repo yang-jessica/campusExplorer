@@ -1,0 +1,26 @@
+{
+    "title": "SELECT dept, id, fail WHERE NOT fail < 300",
+    "query": {
+        "WHERE": {
+            "NOT": {
+                "LT": {
+                    "courses_fail": 300
+                }
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_fail"
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+            ]
+        }
+    }
+}

@@ -1,0 +1,18 @@
+{
+    "title": "SELECT dept, avg WHERE avg > 97",
+    "query": {
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+           "error":"Missing WHERE"
+        }
+    }
+}

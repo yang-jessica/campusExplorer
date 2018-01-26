@@ -1,0 +1,28 @@
+{
+    "title": "SELECT dept, id WHERE courses_dept IS 'aa*' ORDER BY dept",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept":"aa*"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id"
+            ],
+            "ORDER": "courses_dept"
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {"courses_dept":"aanb","courses_id":"504"},
+                {"courses_dept":"aanb","courses_id":"504"},
+                {"courses_dept":"aanb","courses_id":"551"},
+                {"courses_dept":"aanb","courses_id":"551"}
+            ]
+        }
+    }
+}

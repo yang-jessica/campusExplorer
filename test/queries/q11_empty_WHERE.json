@@ -1,0 +1,20 @@
+{
+    "title": "SELECT dept, avg",
+    "query": {
+        "WHERE": {
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+            "error": "WHERE cannot be empty."
+        }
+    }
+}

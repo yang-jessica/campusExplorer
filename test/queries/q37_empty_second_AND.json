@@ -1,0 +1,37 @@
+{
+    "title": "SELECT * WHERE dept = 'crwr'",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS":
+                    {
+                        "courses_dept":"crwr"
+                    }
+                },
+                {
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg",
+                "courses_instructor",
+                "courses_title",
+                "courses_pass",
+                "courses_fail",
+                "courses_audit",
+                "courses_uuid"
+            ],
+            "ORDER": "courses_dept"
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+            "error":"Token \"undefined\" not supported"
+        }
+    }
+}

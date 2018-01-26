@@ -1,0 +1,23 @@
+{
+    "title": "SELECT dept, id, avg WHERE NOT avg < 99 ORDER BY avg",
+    "query": {
+        "WHERE": {
+            "NOT": {
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+            "error":"NOT cannot be empty"
+        }
+    }
+}

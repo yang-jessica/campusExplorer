@@ -1,0 +1,23 @@
+{
+    "title": "SELECT dept, avg WHERE avg > 97",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_avg":97
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "coursesavg"
+            ],
+            "ORDER": "coursesavg"
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+            "error":"coursesavg is not a valid key"
+        }
+    }
+}

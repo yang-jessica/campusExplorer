@@ -1,0 +1,67 @@
+{
+    "title": "SELECT * WHERE (pass > 200 && title=='career*') || (audit > 20 && uuid == '707' ORDER BY dept",
+    "query": {
+        "WHERE": {
+            "OR": [
+                {
+                    "AND":[
+                        {
+                            "GT": {
+                                "courses_pass":200
+                            }
+                        },
+                        {
+                            "IS": {
+                                "courses_title":"career*"
+                            }
+                        }
+                    ]
+                },
+                {
+
+                    "AND":[
+                        {
+                            "GT": {
+                                "courses_audit":20
+                            }
+                        },
+                        {
+                            "IS": {
+                                "courses_uuid":"707"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg",
+                "courses_instructor",
+                "courses_title",
+                "courses_pass",
+                "courses_fail",
+                "courses_audit",
+                "courses_uuid"
+            ],
+            "ORDER": "courses_dept"
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {"courses_dept":"comm","courses_id":"202","courses_avg":79.78,"courses_instructor":"","courses_title":"career fundmtls","courses_pass":376,"courses_fail":5,"courses_audit":0,"courses_uuid":"707"},
+                {"courses_dept":"comm","courses_id":"202","courses_avg":79.71,"courses_instructor":"","courses_title":"career fundmtls","courses_pass":948,"courses_fail":16,"courses_audit":0,"courses_uuid":"38716"},
+                {"courses_dept":"comm","courses_id":"202","courses_avg":78.43,"courses_instructor":"gully, linda;watson, michelle tanya","courses_title":"career fundmtls","courses_pass":206,"courses_fail":1,"courses_audit":0,"courses_uuid":"43899"},
+                {"courses_dept":"comm","courses_id":"202","courses_avg":73.22,"courses_instructor":"gully, linda;watson, michelle tanya","courses_title":"career fundmtls","courses_pass":217,"courses_fail":9,"courses_audit":0,"courses_uuid":"43901"},
+                {"courses_dept":"comm","courses_id":"202","courses_avg":74.57,"courses_instructor":"gully, linda;watson, michelle tanya","courses_title":"career fundmtls","courses_pass":204,"courses_fail":14,"courses_audit":0,"courses_uuid":"43902"},
+                {"courses_dept":"comm","courses_id":"202","courses_avg":75.44,"courses_instructor":"","courses_title":"career fundmtls","courses_pass":827,"courses_fail":30,"courses_audit":0,"courses_uuid":"43903"},
+                {"courses_dept":"comm","courses_id":"202","courses_avg":75.28,"courses_instructor":"","courses_title":"career fundmtls","courses_pass":893,"courses_fail":31,"courses_audit":0,"courses_uuid":"81427"},
+                {"courses_dept":"comm","courses_id":"202","courses_avg":77.55,"courses_instructor":"","courses_title":"career fundmtls","courses_pass":802,"courses_fail":26,"courses_audit":0,"courses_uuid":"83607"}
+            ]
+        }
+    }
+}

@@ -1,0 +1,37 @@
+{
+    "title": "SELECT * WHERE fail = 200",
+    "query": {
+        "WHERE": {
+            "OR": [
+                {  
+                },
+                {
+                    "EQ":
+                    {
+                        "courses_fail":200
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg",
+                "courses_instructor",
+                "courses_title",
+                "courses_pass",
+                "courses_fail",
+                "courses_audit",
+                "courses_uuid"
+            ],
+            "ORDER": "courses_dept"
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+            "error":"Token \"undefined\" not supported"
+        }
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "title": "SELECT dept, id WHERE avg > 99 ORDER BY avg",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "class_avg":99
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+            "error":"missing dataset(s) class"
+        }
+    }
+}

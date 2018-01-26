@@ -1,0 +1,42 @@
+{
+    "title": "SELECT * WHERE dept = 'crwr' AND dept = 'cpsc'",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS":
+                    {
+                        "courses_uuid":"707"
+                    }
+                },
+                {
+                    "IS":
+                    {
+                        "courses_uuid":"1"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg",
+                "courses_instructor",
+                "courses_title",
+                "courses_pass",
+                "courses_fail",
+                "courses_audit",
+                "courses_uuid"
+            ],
+            "ORDER": "courses_instructor"
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+             "result": [
+            ]
+        }
+    }
+}

@@ -1,0 +1,18 @@
+{
+    "title": "SELECT dept, avg WHERE avg > 97",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_avg":97
+            }
+        },
+        "OPTIONS": {  
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+           "error":"Options format is wrong"
+        }
+    }
+}

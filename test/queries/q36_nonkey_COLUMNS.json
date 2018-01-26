@@ -1,0 +1,42 @@
+{
+    "title": "SELECT dept, id, jessica WHERE avg == 95 || avg > 90 && dept == 'adhe' ORDER BY jessica",
+    "query": {
+        "WHERE": {
+            "OR": [
+                {
+                    "AND":[
+                        {
+                            "GT": {
+                                "courses_avg":90
+                            }
+                        },
+                        {
+                            "IS": {
+                                "courses_dept":"adhe"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "EQ": {
+                        "courses_avg":95
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_jessica"
+            ],
+            "ORDER": "courses_jessica"
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+            "error":"courses_jessica is not a valid key"
+        }
+    }
+}

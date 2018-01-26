@@ -1,0 +1,33 @@
+{
+    "title": "SELECT dept, id, fail WHERE NOT fail < 250",
+    "query": {
+        "WHERE": {
+            "NOT": {
+                "LT": {
+                    "courses_fail": 250
+                }
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_fail"
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {"courses_dept":"chem","courses_id":"121","courses_fail":266},
+                {"courses_dept":"chem","courses_id":"121","courses_fail":264},
+                {"courses_dept":"chem","courses_id":"121","courses_fail":250},
+                {"courses_dept":"chem","courses_id":"121","courses_fail":287},
+                {"courses_dept":"chem","courses_id":"121","courses_fail":260},
+                {"courses_dept":"chem","courses_id":"121","courses_fail":251}
+            ]
+        }
+    }
+}
+

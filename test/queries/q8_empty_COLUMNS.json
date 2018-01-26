@@ -1,0 +1,22 @@
+{
+    "title": "SELECT nothing WHERE fail > 250",
+    "query": {
+        "WHERE": {
+
+                "GT": {
+                    "courses_fail": 250  
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+            ]
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+           "error":"Columns cannot be empty"
+        }
+    }
+}
+

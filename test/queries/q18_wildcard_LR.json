@@ -1,0 +1,56 @@
+{
+    "title": "SELECT dept, id, instructor WHERE instructor IS '*knorr*' ORDER BY instructor",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_instructor":"*knorr*"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_instructor"
+            ],
+            "ORDER": "courses_instructor"
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {"courses_dept":"apsc","courses_id":"160","courses_instructor":"agharebparast, farshid;knorr, edwin max"},
+                {"courses_dept":"apsc","courses_id":"160","courses_instructor":"blazek, zeljko;knorr, edwin max"},
+                {"courses_dept":"apsc","courses_id":"160","courses_instructor":"blazek, zeljko;knorr, edwin max"},
+                {"courses_dept":"apsc","courses_id":"160","courses_instructor":"carter, paul martin;karim, faizal;knorr, edwin max"},
+                {"courses_dept":"apsc","courses_id":"160","courses_instructor":"carter, paul martin;karim, faizal;knorr, edwin max"},
+                {"courses_dept":"scie","courses_id":"113","courses_instructor":"fox, joanne alison;han, andrea;knorr, edwin max"},
+                {"courses_dept":"scie","courses_id":"113","courses_instructor":"fox, joanne alison;han, andrea;knorr, edwin max"},
+                {"courses_dept":"apsc","courses_id":"160","courses_instructor":"grant, david n;knorr, edwin max"},
+                {"courses_dept":"apsc","courses_id":"160","courses_instructor":"grant, david n;knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"404","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"259","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"259","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"259","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"304","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"404","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"404","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"404","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"404","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"404","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"221","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"404","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"404","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"404","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"404","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"449","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"449","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"449","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"cpsc","courses_id":"221","courses_instructor":"knorr, edwin max"},
+                {"courses_dept":"apsc","courses_id":"160","courses_instructor":"knorr, edwin max;miller, gregor"},
+                {"courses_dept":"scie","courses_id":"113","courses_instructor":"knorr, edwin max;steyn, douw gerbrand"},
+                {"courses_dept":"scie","courses_id":"113","courses_instructor":"knorr, edwin max;steyn, douw gerbrand"}
+            ]
+        }
+    }
+}

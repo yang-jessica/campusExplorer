@@ -56,10 +56,8 @@ export interface IInsightFacade {
      * 400: the operation failed. The body should contain {"error": "my text"}
      * to explain what went wrong. This should also be used if the provided dataset
      * is invalid or if it was added more than once with the same id.
-     *
      */
     addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<InsightResponse>;
-
     /**
      * Remove a dataset from UBCInsight.
      *
@@ -109,7 +107,7 @@ export interface IInsightFacade {
      * The body of this InsightResponse will contain an InsightDataset[]
      *
      * Return codes:
-     * 200: The list of added datasets was sucessfully returned.
+     * 200: The list of added datasets was successfully returned.
      */
     listDatasets(): Promise<InsightResponse>;
 }
