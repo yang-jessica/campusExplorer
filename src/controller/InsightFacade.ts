@@ -197,7 +197,7 @@ export default class InsightFacade implements IInsightFacade {
         return Promise.reject({code: -1, body: null});
     }
 
-    // this is currently useless
+    // this is currently really useless
 /*    private parseCourse(text: string): Promise<string> {
         Log.trace("hey allen yup this doesn't work");
         return new Promise(function (resolve, reject) {
