@@ -339,7 +339,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
     });
 
     //  add zip with file  named "courses" but not a folder, expect failure code 400
-    it("Should not courses that isn't a folder", async () => {
+    it("Should not add courses that isn't a folder", async () => {
         const id: string = "badcourses";
         const expectedCode: number = 400;
         let response: InsightResponse;
