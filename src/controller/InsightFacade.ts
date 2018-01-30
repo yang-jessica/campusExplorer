@@ -40,13 +40,27 @@ export default class InsightFacade implements IInsightFacade {
      * is invalid or if it was added more than once with the same id.
      */
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<InsightResponse> {
-        // const zip = new JSZip();
         // return the Promise<InsightResponse>
         return new Promise(function (resolve, reject) {
             // declare a promise that will be returned
             const answer: InsightResponse = {code: -1, body: null};
             // fs allows use of File System
             const fs = require("fs");
+            // check if the id already exists
+            fs.readdir("./datasets/", function (err: Error, files: string[]) {
+                if (!err) {
+                    for (let i = 0; i < files.length; i++) {
+                        const test = "file[" + i + "] " + files[i];
+                        Log.trace(test);
+                        if (files[i] === id) {
+                            answer.code = 400;
+                            answer.body = {error: "a dataset with this id already exists"};
+                            Log.error("400: a dataset with this id already exists");
+                            reject(answer);
+                        }
+                    }
+                }
+            });
             // JSZip converts base64 string to JSZipObject using loadAsync
             const JSZip = require("jszip");
             JSZip.loadAsync(content, {base64: true})
@@ -104,32 +118,31 @@ export default class InsightFacade implements IInsightFacade {
                                 }
                             }));
                             Log.trace("loop of sections finished");
-                            // }));
                         } catch {
                             const msg: string = "forEach failed on " + file.name;
                             Log.trace(msg);
                         }
                     });
                     Promise.all(promiseArray).then(function (result: any) {
-                        const funner = JSON.stringify(course);
-                        const funnest = "HELLO new course to string: " + funner;
-                        Log.trace(funnest);
-                        if (course.length === 0) {
+                        const courseString = JSON.stringify(course);
+                        const logCourse = "new course to string: " + courseString;
+                        Log.trace(logCourse);
+                        if (course.length === 0) { // TODO change this from === to !
                             answer.code = 400;
                             answer.body = {error: "no valid sections"};
-                            Log.trace("no valid sections");
+                            Log.error("400: no valid sections");
                             reject(answer);
                         } else {
                             fs.mkdir("./datasets", function () {
                                 fs.mkdir("./datasets/" + id, function () {
                                     Log.trace("directory 'datasets' created");
+                                    // write the course to a file using a stream
                                     const logger = fs.createWriteStream("./datasets/" +
-                                        id + "/" + "comm101");
-                                    // Log.trace(funner);
-                                    logger.write(funner);
+                                        id + "/" + "courses");
+                                    logger.write(courseString);
                                     logger.end();
                                     Log.trace("./datasets/" + id + "/" +
-                                        "comm101" + " FILE CREATED");
+                                        "courses" + " FILE CREATED");
                                     answer.code = 204;
                                     resolve(answer);
                                 });
@@ -141,14 +154,16 @@ export default class InsightFacade implements IInsightFacade {
                     Log.trace("loadAsync CATCH: can't read base64 content");
                     // loadAsync cannot read content the content, so error code 400
                     answer.code = 400;
-                    answer.body = {error: "Cannot read the base64 content"};
+                    answer.body = {error: "Cannot read base64 content"};
+                    Log.error("400: Cannot read base64 content");
                     reject(answer);
                 })
-                .catch(/*file.async rejects!! */ function () {
+                .catch(/*file.async rejects*/ function () {
                     Log.trace("file.async CATCH: can't read json content");
                     // loadAsync cannot read content the content, so error code 400
                     answer.code = 400;
                     answer.body = {error: "Cannot read the json content"};
+                    Log.error("400: Cannot read the json content");
                     reject(answer);
                 });
         });

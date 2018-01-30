@@ -157,7 +157,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
     });
 
     // add a pre-existing dataset, expect failure with code 400
-    it("Should add a valid pre-existing dataset", async () => {
+    it("Should not add a valid pre-existing dataset", async () => {
         const id: string = "commerce";
         const expectedCode: number = 400;
         let response: InsightResponse;
@@ -404,6 +404,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
 
     // add JSON with wrong types, expect failure code 400
     // ie. expect type string but got number
+    // TODO not sure if this test is any good
     it("Should not add JSON with wrong types", async () => {
         const id: string = "jsontype";
         const expectedCode: number = 400;
