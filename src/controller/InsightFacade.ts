@@ -94,7 +94,7 @@ export default class InsightFacade implements IInsightFacade {
                                                 courses_pass: original.result[i].Pass,
                                                 courses_fail: original.result[i].Fail,
                                                 courses_audit: original.result[i].Audit,
-                                                courses_uuid: original.result[i].id,
+                                                courses_uuid: original.result[i].id.toString(),
                                             };
                                             course.push(section);
                                             const sec: string = "new section[" + i + "]: " +
