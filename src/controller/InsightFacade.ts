@@ -1,3 +1,4 @@
+import {JSZipObject} from "jszip";
 import Log from "../Util";
 import { IInsightFacade, InsightDataset, InsightDatasetKind, InsightResponse} from "./IInsightFacade";
 
@@ -39,6 +40,7 @@ export default class InsightFacade implements IInsightFacade {
      * is invalid or if it was added more than once with the same id.
      */
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<InsightResponse> {
+        // const zip = new JSZip();
         // return the Promise<InsightResponse>
         return new Promise(function (resolve, reject) {
             // declare a promise that will be returned
@@ -51,20 +53,21 @@ export default class InsightFacade implements IInsightFacade {
                 .then(/*loadAsync fulfills here*/function (zip: any) {
                     Log.trace("loadAsync THEN");
                     // for each file in the folder named 'courses', do stuff
+                    const promiseArray: any[] = [];
+                    const course: { [sections: string]: any } = [];
                     zip.folder("courses").forEach(function (relativePath: string, file: any) {
                         try {
                             const suc: string = "for each'd " + file.name;
                             Log.trace(suc);
                             // convert compressed file in 'courses' to text
-                            file.async("text").then(function (text: string) {
+                            promiseArray.push(file.async("text").then(function (text: any) {
                                 try {
                                     // JSON.parse the text returned from file.async
                                     const original = JSON.parse(text);
-                                    const size: string = "RESULT SIZE OF " + file.name + ": " + original.result.length;
+                                    const size: string = "Size of: " + file.name + ": " + original.result.length;
                                     Log.trace(size);
                                     const msg: string = "json.stringify: " + JSON.stringify(original.result);
                                     Log.trace(msg);
-                                    const course: { [sections: string]: any } = [];
                                     // for each section in the result array, parse into our own JSON
                                     for (let i = 0; i < original.result.length; i++) {
                                         try {
@@ -89,50 +92,63 @@ export default class InsightFacade implements IInsightFacade {
                                             Log.trace(sec);
                                             const fun = "new section to string: " + JSON.stringify(section);
                                             Log.trace(fun);
+
                                         } catch {
                                             const cat: string = "error parsing result[" + i + "]";
                                             Log.trace(cat);
                                         }
                                     }
-                                    Log.trace("loop of sections finished");
-                                    if (course.length === 0) {
-                                        answer.code = 400;
-                                        answer.body = {error: "no valid sections"};
-                                        Log.trace("no valid sections");
-                                        reject(answer);
-                                    }
-                                    const funner = JSON.stringify(course);
-                                    const funnest = "new course to string: " + funner;
-                                    Log.trace(funnest);
-                                    fs.mkdir("./datasets", function () {
-                                        fs.mkdir("./datasets/" + id, function () {
-                                            Log.trace("directory 'datasets' created");
-                                            const logger = fs.createWriteStream("./datasets/" +
-                                                id + "/" + file.name.substring(8));
-                                            logger.write(funner);
-                                            logger.end();
-                                            Log.trace("./datasets/" + id + "/" +
-                                                file.name.substring(8) + " FILE CREATED");
-                                        });
-                                    });
                                 } catch {
                                     const msg: string = "error parsing " + file.name;
                                     Log.trace(msg);
                                 }
-                            });
+                            }));
+                            Log.trace("loop of sections finished");
+                            // }));
                         } catch {
                             const msg: string = "forEach failed on " + file.name;
                             Log.trace(msg);
                         }
                     });
-                    answer.code = 204;
-                    resolve(answer);
+                    Promise.all(promiseArray).then(function (result: any) {
+                        const funner = JSON.stringify(course);
+                        const funnest = "HELLO new course to string: " + funner;
+                        Log.trace(funnest);
+                        if (course.length === 0) {
+                            answer.code = 400;
+                            answer.body = {error: "no valid sections"};
+                            Log.trace("no valid sections");
+                            reject(answer);
+                        } else {
+                            fs.mkdir("./datasets", function () {
+                                fs.mkdir("./datasets/" + id, function () {
+                                    Log.trace("directory 'datasets' created");
+                                    const logger = fs.createWriteStream("./datasets/" +
+                                        id + "/" + "comm101");
+                                    // Log.trace(funner);
+                                    logger.write(funner);
+                                    logger.end();
+                                    Log.trace("./datasets/" + id + "/" +
+                                        "comm101" + " FILE CREATED");
+                                    answer.code = 204;
+                                    resolve(answer);
+                                });
+                            });
+                        }
+                    });
                 })
                 .catch(/*loadAsync rejects here*/function () {
                     Log.trace("loadAsync CATCH: can't read base64 content");
                     // loadAsync cannot read content the content, so error code 400
                     answer.code = 400;
                     answer.body = {error: "Cannot read the base64 content"};
+                    reject(answer);
+                })
+                .catch(/*file.async rejects!! */ function () {
+                    Log.trace("file.async CATCH: can't read json content");
+                    // loadAsync cannot read content the content, so error code 400
+                    answer.code = 400;
+                    answer.body = {error: "Cannot read the json content"};
                     reject(answer);
                 });
         });
@@ -196,35 +212,4 @@ export default class InsightFacade implements IInsightFacade {
     public listDatasets(): Promise<InsightResponse> {
         return Promise.reject({code: -1, body: null});
     }
-
-    // this is currently useless
-/*    private parseCourse(text: string): Promise<string> {
-        Log.trace("hey allen yup this doesn't work");
-        return new Promise(function (resolve, reject) {
-            const original = JSON.parse(text);
-            const pArray = [];
-            for (let i = 0; i < original.result.length; i++) {
-                pArray.push(new Promise(function (fulfill) {
-                    Log.trace(original.result[i].Subject);
-                    try {
-                        const sec: string = "result[" + i + "]: " + original.result[i].Subject;
-                        fulfill(sec);
-                    } catch {
-                        const cat: string = "error parsing result [" + i + "]";
-                        Log.trace(cat);
-                    }
-                }));
-            }
-            Log.trace("done loop");
-            // wait for each promise; result param is an array of each fulfilled value
-            Promise.all(pArray)
-                .then(function (result) {
-                    Log.trace("Promise.all fulfilled");
-                    resolve();
-                });
-            if (pArray.length === 0) {
-                reject();
-            }
-        });
-    }*/
 }
