@@ -1,5 +1,5 @@
-import {JSZipObject} from "jszip";
 import Log from "../Util";
+import {IDataset} from "./IDatasetFacade";
 import { IInsightFacade, InsightDataset, InsightDatasetKind, InsightResponse} from "./IInsightFacade";
 
 /**
@@ -46,7 +46,7 @@ export default class InsightFacade implements IInsightFacade {
             const answer: InsightResponse = {code: -1, body: null};
             // fs allows use of File System
             const fs = require("fs");
-            // check if the id already exists
+            // check if the id already exists -> throw 400, else continue
             fs.readdir("./datasets/", function (err: Error, files: string[]) {
                 if (!err) {
                     for (let i = 0; i < files.length; i++) {
@@ -60,7 +60,7 @@ export default class InsightFacade implements IInsightFacade {
                         }
                     }
                 }
-            });
+            }); // fs.readdir is async so loadAsync starts before it's done 🤔
             // JSZip converts base64 string to JSZipObject using loadAsync
             const JSZip = require("jszip");
             JSZip.loadAsync(content, {base64: true})
@@ -68,7 +68,7 @@ export default class InsightFacade implements IInsightFacade {
                     Log.trace("loadAsync THEN");
                     // for each file in the folder named 'courses', do stuff
                     const promiseArray: any[] = [];
-                    const course: { [sections: string]: any } = [];
+                    const course: { [section: string]: any } = [];
                     zip.folder("courses").forEach(function (relativePath: string, file: any) {
                         try {
                             const suc: string = "for each'd " + file.name;
@@ -80,8 +80,8 @@ export default class InsightFacade implements IInsightFacade {
                                     const original = JSON.parse(text);
                                     const size: string = "Size of: " + file.name + ": " + original.result.length;
                                     Log.trace(size);
-                                    const msg: string = "json.stringify: " + JSON.stringify(original.result);
-                                    Log.trace(msg);
+                                    const originalResult: string = "json.stringify: " + JSON.stringify(original.result);
+                                    Log.trace(originalResult);
                                     // for each section in the result array, parse into our own JSON
                                     for (let i = 0; i < original.result.length; i++) {
                                         try {
@@ -113,57 +113,58 @@ export default class InsightFacade implements IInsightFacade {
                                         }
                                     }
                                 } catch {
-                                    const msg: string = "error parsing " + file.name;
-                                    Log.trace(msg);
+                                    const errorParse: string = "error parsing " + file.name;
+                                    Log.trace(errorParse);
                                 }
+                            }).catch(/*file.async rejects*/ function () {
+                                // file.async cannot read content the content, so error code 400
+                                answer.code = 400;
+                                answer.body = {error: "Cannot read the json content"};
+                                Log.error("file.async CATCH - 400: Cannot read the json content");
+                                reject(answer);
                             }));
-                            Log.trace("loop of sections finished");
+                            const msg: string = "loop of " + file.name + " finished";
+                            Log.trace(msg);
                         } catch {
                             const msg: string = "forEach failed on " + file.name;
                             Log.trace(msg);
                         }
                     });
                     Promise.all(promiseArray).then(function (result: any) {
-                        const courseString = JSON.stringify(course);
+                        const final: IDataset = {
+                            iid: id,
+                            sections: course,
+                            numRows: course.length,
+                            iKind: kind,
+                        };
+                        const courseString = JSON.stringify(final);
                         const logCourse = "new course to string: " + courseString;
                         Log.trace(logCourse);
-                        if (course.length === 0) { // TODO change this from === to !
+                        if (course.length === 0) {
                             answer.code = 400;
                             answer.body = {error: "no valid sections"};
                             Log.error("400: no valid sections");
                             reject(answer);
                         } else {
                             fs.mkdir("./datasets", function () {
-                                fs.mkdir("./datasets/" + id, function () {
                                     Log.trace("directory 'datasets' created");
                                     // write the course to a file using a stream
-                                    const logger = fs.createWriteStream("./datasets/" +
-                                        id + "/" + "courses");
+                                    const logger = fs.createWriteStream("./datasets/" + id);
                                     logger.write(courseString);
                                     logger.end();
-                                    Log.trace("./datasets/" + id + "/" +
-                                        "courses" + " FILE CREATED");
+                                    Log.trace("./datasets/" + id + " FILE CREATED");
                                     answer.code = 204;
+                                    answer.body = {result: "dataset successfully added"};
                                     resolve(answer);
-                                });
                             });
                         }
                     });
                 })
                 .catch(/*loadAsync rejects here*/function () {
-                    Log.trace("loadAsync CATCH: can't read base64 content");
                     // loadAsync cannot read content the content, so error code 400
                     answer.code = 400;
                     answer.body = {error: "Cannot read base64 content"};
-                    Log.error("400: Cannot read base64 content");
-                    reject(answer);
-                })
-                .catch(/*file.async rejects*/ function () {
-                    Log.trace("file.async CATCH: can't read json content");
-                    // loadAsync cannot read content the content, so error code 400
-                    answer.code = 400;
-                    answer.body = {error: "Cannot read the json content"};
-                    Log.error("400: Cannot read the json content");
+                    Log.error("loadAsync CATCH: 400: Cannot read base64 content");
                     reject(answer);
                 });
         });
@@ -191,7 +192,26 @@ export default class InsightFacade implements IInsightFacade {
      *
      */
     public removeDataset(id: string): Promise<InsightResponse> {
-        return Promise.reject({code: -1, body: null});
+        // return the Promise<InsightResponse>
+        return new Promise(function (resolve, reject) {
+            // declare a promise that will be returned
+            const answer: InsightResponse = {code: -1, body: null};
+            const fs = require("fs");
+            // try to remove the given id
+            fs.unlink("./datasets/" + id, function (err: Error) {
+                if (err) {
+                    answer.code = 404;
+                    answer.body = {error: "dataset not removed"};
+                    Log.error("404: dataset not removed");
+                    reject(answer);
+                } else {
+                    answer.code = 204;
+                    answer.body = {result: "dataset removed"};
+                    Log.error("204: dataset removed");
+                    resolve(answer);
+                }
+            });
+        });
     }
 
     /**
@@ -225,6 +245,9 @@ export default class InsightFacade implements IInsightFacade {
      * 200: The list of added datasets was successfully returned.
      */
     public listDatasets(): Promise<InsightResponse> {
-        return Promise.reject({code: -1, body: null});
+        return new Promise(function (resolve, reject) {
+            const answer: InsightResponse = {code: -1, body: null};
+            const list: InsightDataset[] = [];
+        });
     }
 }

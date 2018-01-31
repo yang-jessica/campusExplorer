@@ -405,7 +405,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
     // add JSON with wrong types, expect failure code 400
     // ie. expect type string but got number
     // TODO not sure if this test is any good
-    it("Should not add JSON with wrong types", async () => {
+/*    it("Should not add JSON with wrong types", async () => {
         const id: string = "jsontype";
         const expectedCode: number = 400;
         let response: InsightResponse;
@@ -418,7 +418,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
             expect(response.code).to.equal(expectedCode);
             expect(response.body).to.have.property("error");
         }
-    });
+    });*/
 
     // add JSON with poor spelling, expect failure code 400
     it("Should not add misspelled JSON", async () => {
