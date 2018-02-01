@@ -250,11 +250,12 @@ export default class InsightFacade implements IInsightFacade {
             const list: InsightDataset[] = [];
             const fs = require("fs");
             const promiseArray: any[] = [];
-            // const promiseArray2: any[] = [];
-            fs.readdir("./datasets/", function (err: Error, files: string)  {
+            fs.readdir("./datasets/", function (err: Error, files: string) {
                 if (err) {
                     Log.trace("error reading directory");
-                    reject(answer);
+                    answer.code = 200;
+                    answer.body = {result: list};
+                    resolve(answer);
                 } else {
                     for (const file of files) {
                         Log.trace("added dataset: " + file);
@@ -266,47 +267,53 @@ export default class InsightFacade implements IInsightFacade {
                                     reject(answer);
                                 } else {
                                     const yay = JSON.parse(data);
-                                    const yayy: InsightDataset = {id: yay.iid , kind: yay.iKind, numRows: yay.numRows};
-                                    Log.trace(yayy.id);
-                                    Log.trace(yayy.kind);
-                                    Log.trace(yayy.numRows.toString());
+                                    const yayy: InsightDataset = {
+                                        id: yay.iid,
+                                        kind: yay.iKind,
+                                        numRows: yay.numRows,
+                                    };
+                                    Log.trace("id: " + yayy.id);
+                                    Log.trace("kind: " + yayy.kind);
+                                    Log.trace("numRoms: " + yayy.numRows.toString());
                                     list.push(yayy);
-                                   // const length: string = "b length of result: " + list.length;
+                                    // const length: string = "b length of result: " + list.length;
                                     Log.trace("datasets returned: " + data);
-                                   // Log.trace(length);
+                                    // Log.trace(length);
                                     resolved(true);
-                        }
+                                }
                             });
                         }));
                     }
                 }
-                Promise.all(promiseArray).then(function (res) {
-                    const yayyy: string = "a length of result: " + list.length;
+                Promise.all(promiseArray).then(function () {
+                    const yayyy: string = "length of result: " + list.length;
+                    // Log.trace(yayyy);
                     answer.code = 200;
                     answer.body = {result: list};
-                    Log.trace(yayyy);
+                    const variable = "answer length: " + answer.body.result.length;
+                    Log.trace(variable);
                     resolve(answer);
                 });
             });
         });
     }
 }
-        //     fs.readdir("./datasets/").forEach(function (err: Error, files: string) {
-        //         if (err) {
-        //             resolve(answer);
-        //             Log.trace("error reading directory");
-        //         } else {
-        //             Log.trace("files returned: " + files[0]);
-        //             fs.readFile("./datasets/", function (error: Error, data: string) {
-        //                 if (error) {
-        //                     Log.trace("datasets were not returned");
-        //                     reject(answer);
-        //                 } else {
-        //                     answer.code = 200;
-        //                     Log.trace("datasets returned: " + data);
-        //                     resolve(answer);
-        //                 }
-        //             });
-        //         }
-        //         });
-        // });
+//     fs.readdir("./datasets/").forEach(function (err: Error, files: string) {
+//         if (err) {
+//             resolve(answer);
+//             Log.trace("error reading directory");
+//         } else {
+//             Log.trace("files returned: " + files[0]);
+//             fs.readFile("./datasets/", function (error: Error, data: string) {
+//                 if (error) {
+//                     Log.trace("datasets were not returned");
+//                     reject(answer);
+//                 } else {
+//                     answer.code = 200;
+//                     Log.trace("datasets returned: " + data);
+//                     resolve(answer);
+//                 }
+//             });
+//         }
+//         });
+// });

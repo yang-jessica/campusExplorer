@@ -485,6 +485,18 @@ describe("InsightFacade Add/Remove Dataset", function () {
             expect(response2.code).to.equal(expectedCode2);
         }
     });
+    // hi
+    it("Should print no datasets", async () => {
+        const expectedCode: number = 200;
+        let response: InsightResponse;
+        try {
+            response = await insightFacade.listDatasets();
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+        }
+    });
     // remove a file added in an earlier test, expect success code 204
     it("Should remove the onecourse dataset", async () => {
         const id: string = "onecourse";
