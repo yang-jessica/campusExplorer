@@ -70,67 +70,56 @@ export default class InsightFacade implements IInsightFacade {
                     const promiseArray: any[] = [];
                     const course: { [section: string]: any } = [];
                     zip.folder("courses").forEach(function (relativePath: string, file: any) {
-                        try {
-                            const suc: string = "for each'd " + file.name;
-                            Log.trace(suc);
-                            // convert compressed file in 'courses' to text
-                            promiseArray.push(file.async("text").then(function (text: any) {
-                                try {
-                                    // JSON.parse the text returned from file.async
-                                    const original = JSON.parse(text);
-                                    const size: string = "Size of: " + file.name + ": " + original.result.length;
-                                    Log.trace(size);
-                                    const originalResult: string = "json.stringify: " + JSON.stringify(original.result);
-                                    Log.trace(originalResult);
-                                    // for each section in the result array, parse into our own JSON
-                                    for (let i = 0; i < original.result.length; i++) {
-                                        try {
-                                            const section: { [key: string]: any } = {
-                                                courses_dept: original.result[i].Subject,
-                                                courses_id: original.result[i].Course,
-                                                courses_avg: original.result[i].Avg,
-                                                courses_instructor: original.result[i].Professor,
-                                                courses_title: original.result[i].Title,
-                                                courses_pass: original.result[i].Pass,
-                                                courses_fail: original.result[i].Fail,
-                                                courses_audit: original.result[i].Audit,
-                                                courses_uuid: original.result[i].id.toString(),
-                                            };
-                                            course.push(section);
-                                            const sec: string = "new section[" + i + "]: " +
-                                                section.courses_dept + ", " + section.courses_id + ", " +
-                                                section.courses_avg + ", " + section.courses_instructor + ", " +
-                                                section.courses_title + ", " + section.courses_pass + ", " +
-                                                section.courses_fail + ", " + section.courses_audit + ", " +
-                                                section.courses_uuid;
-                                            Log.trace(sec);
-                                            const fun = "new section to string: " + JSON.stringify(section);
-                                            Log.trace(fun);
+                        const suc: string = "for each'd " + file.name;
+                        Log.trace(suc);
+                        // convert compressed file in 'courses' to text
+                        promiseArray.push(file.async("text").then(function (text: any) {
+                            try {
+                                // JSON.parse the text returned from file.async
+                                const original = JSON.parse(text);
+                                const size: string = "Size of: " + file.name + ": " + original.result.length;
+                                Log.trace(size);
+                                const originalResult: string = "json.stringify: " + JSON.stringify(original.result);
+                                Log.trace(originalResult);
+                                // for each section in the result array, parse into our own JSON
+                                for (let i = 0; i < original.result.length; i++) {
+                                    try {
+                                        const section: { [key: string]: any } = {
+                                            courses_dept: original.result[i].Subject,
+                                            courses_id: original.result[i].Course,
+                                            courses_avg: original.result[i].Avg,
+                                            courses_instructor: original.result[i].Professor,
+                                            courses_title: original.result[i].Title,
+                                            courses_pass: original.result[i].Pass,
+                                            courses_fail: original.result[i].Fail,
+                                            courses_audit: original.result[i].Audit,
+                                            courses_uuid: original.result[i].id.toString(),
+                                        };
+                                        course.push(section);
+                                        const sec: string = "new section[" + i + "]: " +
+                                            section.courses_dept + ", " + section.courses_id + ", " +
+                                            section.courses_avg + ", " + section.courses_instructor + ", " +
+                                            section.courses_title + ", " + section.courses_pass + ", " +
+                                            section.courses_fail + ", " + section.courses_audit + ", " +
+                                            section.courses_uuid;
+                                        Log.trace(sec);
+                                        const fun = "new section to string: " + JSON.stringify(section);
+                                        Log.trace(fun);
 
-                                        } catch {
-                                            const cat: string = "error parsing result[" + i + "]";
-                                            Log.trace(cat);
-                                        }
+                                    } catch {
+                                        const cat: string = "error parsing result[" + i + "]";
+                                        Log.trace(cat);
                                     }
-                                } catch {
-                                    const errorParse: string = "error parsing " + file.name;
-                                    Log.trace(errorParse);
                                 }
-                            }).catch(/*file.async rejects*/ function () {
-                                // file.async cannot read content the content, so error code 400
-                                answer.code = 400;
-                                answer.body = {error: "Cannot read the json content"};
-                                Log.error("file.async CATCH - 400: Cannot read the json content");
-                                reject(answer);
-                            }));
-                            const msg: string = "loop of " + file.name + " finished";
-                            Log.trace(msg);
-                        } catch {
-                            const msg: string = "forEach failed on " + file.name;
-                            Log.trace(msg);
-                        }
+                            } catch {
+                                const errorParse: string = "error parsing " + file.name;
+                                Log.trace(errorParse);
+                            }
+                        }));
+                        const msg: string = "loop of " + file.name + " finished";
+                        Log.trace(msg);
                     });
-                    Promise.all(promiseArray).then(function (result: any) {
+                    Promise.all(promiseArray).then(function () {
                         const final: IDataset = {
                             iid: id,
                             sections: course,
@@ -246,26 +235,18 @@ export default class InsightFacade implements IInsightFacade {
      */
     public listDatasets(): Promise<InsightResponse> {
         return new Promise(function (resolve) {
-            const answer: InsightResponse = {code: -1, body: undefined };
+            const answer: InsightResponse = {code: -1, body: undefined};
             const answerList: InsightDataset[] = [];
             const fs = require("fs");
             const promiseArray: any[] = [];
             // read the dataset directory
-            fs.readdir("./datasets/", function (err: Error, files: string[] ) {
-                if (err) {
-                    Log.error("error reading directory");
-                    answer.code = 200;
-                    answer.body = {result: answerList};
-                    resolve(answer);
-                } else {
+            fs.readdir("./datasets/", function (err: Error, files: string[]) {
+                if (!err) {
                     for (const file of files) {
                         Log.trace("added dataset: " + file);
                         promiseArray.push(new Promise(function (resolved) {
                             fs.readFile("./datasets/" + file, function (er: Error, data: string) {
-                                if (er) {
-                                    Log.error("datasets were not returned");
-                                    resolve(answer);
-                                } else {
+                                if (!er) {
                                     const dataset = JSON.parse(data);
                                     const info: InsightDataset = {
                                         id: dataset.iid,
