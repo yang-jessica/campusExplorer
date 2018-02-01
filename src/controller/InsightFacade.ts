@@ -245,40 +245,44 @@ export default class InsightFacade implements IInsightFacade {
      * 200: The list of added datasets was successfully returned.
      */
     public listDatasets(): Promise<InsightResponse> {
-        return new Promise(function (resolve, reject) {
-            const answer: InsightResponse = {code: -1, body: null};
-            const list: InsightDataset[] = [];
+        return new Promise(function (resolve) {
+            const answer: InsightResponse = {code: -1, body: undefined };
+            const answerList: InsightDataset[] = [];
             const fs = require("fs");
             const promiseArray: any[] = [];
-            fs.readdir("./datasets/", function (err: Error, files: string) {
+            // read the dataset directory
+            fs.readdir("./datasets/", function (err: Error, files: string[] ) {
                 if (err) {
-                    Log.trace("error reading directory");
+                    Log.error("error reading directory");
                     answer.code = 200;
-                    answer.body = {result: list};
+                    answer.body = {result: answerList};
                     resolve(answer);
                 } else {
                     for (const file of files) {
                         Log.trace("added dataset: " + file);
-                        // promiseArray.push(file.async("text").then(function (text: any) {
                         promiseArray.push(new Promise(function (resolved) {
-                            fs.readFile("./datasets/" + file, function (error: Error, data: string) {
-                                if (error) {
-                                    Log.trace("datasets were not returned");
-                                    reject(answer);
+                            fs.readFile("./datasets/" + file, function (er: Error, data: string) {
+                                if (er) {
+                                    Log.error("datasets were not returned");
+                                    resolve(answer);
                                 } else {
-                                    const yay = JSON.parse(data);
-                                    const yayy: InsightDataset = {
-                                        id: yay.iid,
-                                        kind: yay.iKind,
-                                        numRows: yay.numRows,
+                                    const dataset = JSON.parse(data);
+                                    const info: InsightDataset = {
+                                        id: dataset.iid,
+                                        kind: dataset.iKind,
+                                        numRows: dataset.numRows,
                                     };
-                                    Log.trace("id: " + yayy.id);
-                                    Log.trace("kind: " + yayy.kind);
-                                    Log.trace("numRoms: " + yayy.numRows.toString());
-                                    list.push(yayy);
-                                    // const length: string = "b length of result: " + list.length;
-                                    Log.trace("datasets returned: " + data);
-                                    // Log.trace(length);
+                                    const jsonInfo = file.toUpperCase() + " FROM JSON: " +
+                                        "\niid: " + dataset.iid +
+                                        "\nnumRows: " + dataset.numRows +
+                                        "\niKind: " + dataset.iKind;
+                                    Log.trace(jsonInfo);
+                                    const parsedInfo = info.id.toUpperCase() + " IN RESULT: " +
+                                        "\nid: " + info.id +
+                                        "\nkind: " + info.kind +
+                                        "\nnumRows: " + info.numRows;
+                                    Log.trace(parsedInfo);
+                                    answerList.push(info);
                                     resolved(true);
                                 }
                             });
@@ -286,34 +290,13 @@ export default class InsightFacade implements IInsightFacade {
                     }
                 }
                 Promise.all(promiseArray).then(function () {
-                    const yayyy: string = "length of result: " + list.length;
-                    // Log.trace(yayyy);
                     answer.code = 200;
-                    answer.body = {result: list};
-                    const variable = "answer length: " + answer.body.result.length;
-                    Log.trace(variable);
+                    answer.body = {result: answerList};
+                    const resLength: string = "length of result: " + answer.body.result.length;
+                    Log.trace(resLength);
                     resolve(answer);
                 });
             });
         });
     }
 }
-//     fs.readdir("./datasets/").forEach(function (err: Error, files: string) {
-//         if (err) {
-//             resolve(answer);
-//             Log.trace("error reading directory");
-//         } else {
-//             Log.trace("files returned: " + files[0]);
-//             fs.readFile("./datasets/", function (error: Error, data: string) {
-//                 if (error) {
-//                     Log.trace("datasets were not returned");
-//                     reject(answer);
-//                 } else {
-//                     answer.code = 200;
-//                     Log.trace("datasets returned: " + data);
-//                     resolve(answer);
-//                 }
-//             });
-//         }
-//         });
-// });

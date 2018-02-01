@@ -467,36 +467,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
             expect(response.body).to.have.property("error");
         }
     });
-    // TODO: listdataset tests
-    it("Should print the added datasets", async () => {
-        const id: string = "onecourse";
-        const expectedCode: number = 204;
-        const expectedCode2: number = 200;
-        let response: InsightResponse;
-        let response2: InsightResponse;
-        try {
-            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
-            response2 = await insightFacade.listDatasets();
-        } catch (err) {
-            response = err;
-            response2 = err;
-        } finally {
-            expect(response.code).to.equal(expectedCode);
-            expect(response2.code).to.equal(expectedCode2);
-        }
-    });
-    // hi
-    it("Should print no datasets", async () => {
-        const expectedCode: number = 200;
-        let response: InsightResponse;
-        try {
-            response = await insightFacade.listDatasets();
-        } catch (err) {
-            response = err;
-        } finally {
-            expect(response.code).to.equal(expectedCode);
-        }
-    });
+
     // remove a file added in an earlier test, expect success code 204
     it("Should remove the onecourse dataset", async () => {
         const id: string = "onecourse";
@@ -626,15 +597,47 @@ describe("InsightFacade List Dataset", function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
+    // list no datasets
+    it("Should list no datasets", async () => {
+        const expectedCode: number = 200;
+        let response: InsightResponse;
+        try {
+            response = await insightFacade.listDatasets();
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.property("result");
+        }
+    });
+
+    // list one dataset
+    it("Should list the dataset", async () => {
+        const id: string = "onecourse";
+        const expectedCode: number = 204;
+        const expectedCode2: number = 200;
+        let response: InsightResponse;
+        let response2: InsightResponse;
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+            response2 = await insightFacade.listDatasets();
+        } catch (err) {
+            response = err;
+            response2 = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response2.code).to.equal(expectedCode2);
+        }
+    });
+
     // list the added datasets, there are 3
-    it("Should list datasets", async () => {
+    it("Should list multiple datasets", async () => {
         const id1: string = "onecourse";
         const id2: string = "onesection";
         const id3: string = "twosection";
         const expectedCode: number = 200;
         let response: InsightResponse;
         // let responseBody: InsightResponseSuccessBody;
-
         try {
             await insightFacade.removeDataset(id1);
             await insightFacade.removeDataset(id2);
@@ -648,7 +651,7 @@ describe("InsightFacade List Dataset", function () {
         } finally {
             expect(response.code).to.equal(expectedCode);
             expect(response.body).to.have.property("result");
-            expect(response.body);
+            // expect(response.body);
             // expect(response.body.result).to.have.length(3);
         }
     });
