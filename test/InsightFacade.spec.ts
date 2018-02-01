@@ -467,7 +467,24 @@ describe("InsightFacade Add/Remove Dataset", function () {
             expect(response.body).to.have.property("error");
         }
     });
-
+    // TODO: listdataset tests
+    it("Should print the added datasets", async () => {
+        const id: string = "onecourse";
+        const expectedCode: number = 204;
+        const expectedCode2: number = 200;
+        let response: InsightResponse;
+        let response2: InsightResponse;
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+            response2 = await insightFacade.listDatasets();
+        } catch (err) {
+            response = err;
+            response2 = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response2.code).to.equal(expectedCode2);
+        }
+    });
     // remove a file added in an earlier test, expect success code 204
     it("Should remove the onecourse dataset", async () => {
         const id: string = "onecourse";
@@ -546,6 +563,84 @@ describe("InsightFacade Add/Remove Dataset", function () {
     });
 });
 
+describe("InsightFacade List Dataset", function () {
+    // Reference any datasets you've added to test/data here and they will
+    // automatically be loaded in the Before All hook.
+    const datasetsToLoad: { [id: string]: string } = {
+        onecourse: "./test/data/onecourse.zip",
+        onesection: "./test/data/onesection.zip",
+        twocourse: "./test/data/twocourse.zip",
+        twosection: "./test/data/twosection.zip",
+    };
+
+    let insightFacade: InsightFacade;
+    let datasets: { [id: string]: string };
+
+    before(async function () {
+        Log.test(`Before: ${this.test.parent.title}`);
+
+        try {
+            const loadDatasetPromises: Array<Promise<Buffer>> = [];
+            for (const [id, path] of Object.entries(datasetsToLoad)) {
+                loadDatasetPromises.push(TestUtil.readFileAsync(path));
+            }
+            const loadedDatasets = (await Promise.all(loadDatasetPromises)).map((buf, i) => {
+                return {[Object.keys(datasetsToLoad)[i]]: buf.toString("base64")};
+            });
+            datasets = Object.assign({}, ...loadedDatasets);
+            expect(Object.keys(datasets)).to.have.length.greaterThan(0);
+        } catch (err) {
+            expect.fail("", "", `Failed to read one or more datasets. ${JSON.stringify(err)}`);
+        }
+
+        try {
+            insightFacade = new InsightFacade();
+        } catch (err) {
+            Log.error(err);
+        } finally {
+            expect(insightFacade).to.be.instanceOf(InsightFacade);
+        }
+    });
+
+    beforeEach(function () {
+        Log.test(`BeforeTest: ${this.currentTest.title}`);
+    });
+
+    after(function () {
+        Log.test(`After: ${this.test.parent.title}`);
+    });
+
+    afterEach(function () {
+        Log.test(`AfterTest: ${this.currentTest.title}`);
+    });
+
+    // list the added datasets, there are 3
+    it("Should list datasets", async () => {
+        const id1: string = "onecourse";
+        const id2: string = "onesection";
+        const id3: string = "twosection";
+        const expectedCode: number = 200;
+        let response: InsightResponse;
+        // let responseBody: InsightResponseSuccessBody;
+
+        try {
+            await insightFacade.removeDataset(id1);
+            await insightFacade.removeDataset(id2);
+            await insightFacade.removeDataset(id3);
+            await insightFacade.addDataset(id1, datasets[id1], InsightDatasetKind.Courses);
+            await insightFacade.addDataset(id2, datasets[id2], InsightDatasetKind.Courses);
+            await insightFacade.addDataset(id3, datasets[id3], InsightDatasetKind.Courses);
+            response = await insightFacade.listDatasets();
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.property("result");
+            expect(response.body);
+            // expect(response.body.result).to.have.length(3);
+        }
+    });
+});
 // This test suite dynamically generates tests from the JSON files in test/queries.
 // You should not need to modify it; instead, add additional files to the queries directory.
 describe("InsightFacade PerformQuery", () => {
