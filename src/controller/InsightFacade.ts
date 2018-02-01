@@ -256,11 +256,11 @@ export default class InsightFacade implements IInsightFacade {
                     Log.trace("error reading directory");
                     reject(answer);
                 } else {
-                    for (let i = 0; i < files.length; i++) {
-                        Log.trace("added dataset: " + files[i]);
+                    for (const file of files) {
+                        Log.trace("added dataset: " + file);
                         // promiseArray.push(file.async("text").then(function (text: any) {
                         promiseArray.push(new Promise(function (resolved) {
-                            fs.readFile("./datasets/" + files[i], function (error: Error, data: string) {
+                            fs.readFile("./datasets/" + file, function (error: Error, data: string) {
                                 if (error) {
                                     Log.trace("datasets were not returned");
                                     reject(answer);
@@ -271,9 +271,9 @@ export default class InsightFacade implements IInsightFacade {
                                     Log.trace(yayy.kind);
                                     Log.trace(yayy.numRows.toString());
                                     list.push(yayy);
-                                    const length: string = "b length of result: " + list.length;
+                                   // const length: string = "b length of result: " + list.length;
                                     Log.trace("datasets returned: " + data);
-                                    Log.trace(length);
+                                   // Log.trace(length);
                                     resolved(true);
                         }
                             });
