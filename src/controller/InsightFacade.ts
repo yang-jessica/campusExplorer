@@ -51,11 +51,11 @@ export default class InsightFacade implements IInsightFacade {
                 if (!err) {
                     for (let i = 0; i < files.length; i++) {
                         const test = "file[" + i + "] " + files[i];
-                        Log.trace(test);
+                        // Log.trace(test);
                         if (files[i] === id) {
                             answer.code = 400;
                             answer.body = {error: "a dataset with this id already exists"};
-                            Log.error("400: a dataset with this id already exists");
+                            // Log.error("400: a dataset with this id already exists");
                             reject(answer);
                         }
                     }
@@ -65,22 +65,22 @@ export default class InsightFacade implements IInsightFacade {
             const JSZip = require("jszip");
             JSZip.loadAsync(content, {base64: true})
                 .then(/*loadAsync fulfills here*/function (zip: any) {
-                    Log.trace("loadAsync THEN");
+                    // Log.trace("loadAsync THEN");
                     // for each file in the folder named 'courses', do stuff
                     const promiseArray: any[] = [];
                     const course: { [section: string]: any } = [];
                     zip.folder("courses").forEach(function (relativePath: string, file: any) {
                         const suc: string = "for each'd " + file.name;
-                        Log.trace(suc);
+                        // Log.trace(suc);
                         // convert compressed file in 'courses' to text
                         promiseArray.push(file.async("text").then(function (text: any) {
                             try {
                                 // JSON.parse the text returned from file.async
                                 const original = JSON.parse(text);
                                 const size: string = "Size of: " + file.name + ": " + original.result.length;
-                                Log.trace(size);
+                                // Log.trace(size);
                                 const originalResult: string = "json.stringify: " + JSON.stringify(original.result);
-                                Log.trace(originalResult);
+                                // Log.trace(originalResult);
                                 // for each section in the result array, parse into our own JSON
                                 for (let i = 0; i < original.result.length; i++) {
                                     try {
@@ -102,22 +102,22 @@ export default class InsightFacade implements IInsightFacade {
                                             section.courses_title + ", " + section.courses_pass + ", " +
                                             section.courses_fail + ", " + section.courses_audit + ", " +
                                             section.courses_uuid;
-                                        Log.trace(sec);
+                                        // Log.trace(sec);
                                         const fun = "new section to string: " + JSON.stringify(section);
-                                        Log.trace(fun);
+                                        // Log.trace(fun);
 
                                     } catch {
                                         const cat: string = "error parsing result[" + i + "]";
-                                        Log.trace(cat);
+                                        // Log.trace(cat);
                                     }
                                 }
                             } catch {
                                 const errorParse: string = "error parsing " + file.name;
-                                Log.trace(errorParse);
+                                // Log.trace(errorParse);
                             }
                         }));
                         const msg: string = "loop of " + file.name + " finished";
-                        Log.trace(msg);
+                        // Log.trace(msg);
                     });
                     Promise.all(promiseArray).then(function () {
                         const final: IDataset = {
@@ -128,20 +128,20 @@ export default class InsightFacade implements IInsightFacade {
                         };
                         const courseString = JSON.stringify(final);
                         const logCourse = "new course to string: " + courseString;
-                        Log.trace(logCourse);
+                        // Log.trace(logCourse);
                         if (course.length === 0) {
                             answer.code = 400;
                             answer.body = {error: "no valid sections"};
-                            Log.error("400: no valid sections");
+                            // Log.error("400: no valid sections");
                             reject(answer);
                         } else {
                             fs.mkdir("./datasets", function () {
-                                Log.trace("directory 'datasets' created");
+                                // Log.trace("directory 'datasets' created");
                                 // write the course to a file using a stream
                                 const logger = fs.createWriteStream("./datasets/" + id);
                                 logger.write(courseString);
                                 logger.end();
-                                Log.trace("./datasets/" + id + " FILE CREATED");
+                                // Log.trace("./datasets/" + id + " FILE CREATED");
                                 answer.code = 204;
                                 answer.body = {result: "dataset successfully added"};
                                 resolve(answer);
@@ -153,7 +153,7 @@ export default class InsightFacade implements IInsightFacade {
                     // loadAsync cannot read content the content, so error code 400
                     answer.code = 400;
                     answer.body = {error: "Cannot read base64 content"};
-                    Log.error("loadAsync CATCH: 400: Cannot read base64 content");
+                    // Log.error("loadAsync CATCH: 400: Cannot read base64 content");
                     reject(answer);
                 });
         });
@@ -220,7 +220,45 @@ export default class InsightFacade implements IInsightFacade {
      * 400: the query failed; body should contain {"error": "my text"} providing extra detail.
      */
     public performQuery(query: any): Promise<InsightResponse> {
-        return Promise.reject({code: -1, body: null});
+        return new Promise (function (resolve, reject) {
+            const answer: InsightResponse = {code: -1, body: undefined };
+            const that = this; // that is this :^)
+            // check if 2 keys
+            if (!query["WHERE"] || !query["OPTIONS"]) {
+                Log.trace("400: missing 'WHERE' or 'OPTIONS'");
+                answer.code = 400;
+                answer.body = {error: "missing 'WHERE' or 'OPTIONS'"};
+                return reject(answer);
+            }
+            // check if keys are only WHERE and OPTIONS
+            let objectKeys = "[ ";
+            for (const key of Object.keys(query)) {
+                objectKeys = objectKeys + key + ", ";
+                if (key !== "WHERE" && key !== "OPTIONS") {
+                    answer.code = 400;
+                    answer.body = {error: "key other than 'WHERE' and 'OPTIONS'"};
+                    Log.trace("400: key other than 'WHERE' and 'OPTIONS'");
+                    return reject(answer);
+                }
+            }
+            objectKeys = objectKeys + "]";
+            Log.trace(objectKeys);
+            // check if WHERE is empty
+            const where = query["WHERE"];
+            const options = query["OPTIONS"];
+            const whereKeys = "size of where keys: " + Object.keys(where).length;
+            const optionsKeys = "size of options keys: " + Object.keys(options).length;
+            Log.trace(whereKeys);
+            Log.trace(optionsKeys);
+            if (Object.keys(where).length || Object.keys(options).length) {
+                answer.code = 400;
+                answer.body = {error: "empty 'WHERE' or 'OPTIONS'"};
+                Log.trace("400: empty 'WHERE' or 'OPTIONS'");
+                return reject(answer);
+            }
+            reject(answer);
+            // resolve(answer);
+        });
     }
 
     /**
