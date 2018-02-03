@@ -532,22 +532,19 @@ export default class InsightFacade implements IInsightFacade {
         const datasetString = fs.readFileSync("./datasets/twosection");
         Log.trace(datasetString);
         const data = JSON.parse(datasetString);
+        // create answer arrays
         const answer: any[] = [];
         const invert: any[] = [];
-        // const dataID = data.iid;
+        // const dataID = data.iid; // the id of the dataset
         const allSections = data.sections;
-        // const left = logic[keyToCompare].substring(0, 1);
-        // const right = logic[keyToCompare].substring(logic[keyToCompare].length - 1, logic[keyToCompare].length);
-        // let regexify = logic[keyToCompare];
-        // const reg = /[\w]*/ + logic[keyToCompare];
-        // if (left === "*") {
-        //     regexify = /[\w]*/ + regexify.substring(1, regexify.length);
-        // }
-        // if (right === "*") {
-        //     regexify = regexify.substring(regexify.length - 1, regexify.length) + /[\w]*/;
-        // }
-        // const regexp: RegExp = RegExp(logic[keyToCompare].replace("*", /[\w]*/g));
-        // Log.trace("hi");
+        // handle wildcards
+        const split = logic[keyToCompare].split("*");
+        for (let i = 0; i < split.length; i++) {
+            if (split[i] === "") {
+                split[i] = ".*";
+            }
+        }
+        const wildcard = split.join("");
         for (let i = 0; i < allSections.length; i++) {
             // begin logging
             const set = "set[" + i + "] " + keyToCompare + ": " + allSections[i][keyToCompare];
@@ -555,8 +552,7 @@ export default class InsightFacade implements IInsightFacade {
             const msg = "\t\t" + set + "\t\t vs \t\t" + qry;
             Log.trace(msg);
             // end logging
-            // if (regexp.test(allSections[i][keyToCompare])) {
-            if (allSections[i][keyToCompare] === logic[keyToCompare]) {
+            if (RegExp(wildcard).test(allSections[i][keyToCompare])) {
                 answer.push(allSections[i]);
             } else {
                 invert.push(allSections[i]);
