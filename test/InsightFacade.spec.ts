@@ -678,8 +678,8 @@ describe("InsightFacade PerformQuery", () => {
         // Load the query JSON files under test/queries.
         // Fail if there is a problem reading ANY query.
         try {
-            // testQueries = await TestUtil.readTestQueries(); // ALL QUERIES
-            testQueries = await TestUtil.readTestQueries("test/query"); // ONE QUERY
+            testQueries = await TestUtil.readTestQueries(); // ALL QUERIES
+            // testQueries = await TestUtil.readTestQueries("test/query"); // ONE QUERY
             expect(testQueries).to.have.length.greaterThan(0);
         } catch (err) {
             expect.fail("", "", `Failed to read one or more test queries. ${JSON.stringify(err)}`);

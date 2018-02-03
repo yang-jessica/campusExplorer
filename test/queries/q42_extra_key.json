@@ -1,24 +1,23 @@
 {
-    "title": "SELECT dept, id, avg WHERE jessica > 90 ORDER BY avg",
+    "title": "SELECT dept, avg",
     "query": {
         "WHERE": {
-            "GT": {
-                "courses_jessica":90
-            }
         },
         "OPTIONS": {
             "COLUMNS": [
                 "courses_dept",
-                "courses_id",
                 "courses_avg"
             ],
             "ORDER": "courses_avg"
+        },
+        "ALLEN": {
+
         }
     },
     "response": {
         "code": 400,
         "body": {
-          "error":"GT requires a key"
+            "error": "WHERE cannot be empty."
         }
     }
 }

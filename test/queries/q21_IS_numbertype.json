@@ -2,18 +2,9 @@
     "title": "SELECT dept, id WHERE id IS 110 AND avg=90 ORDER BY dept",
     "query": {
         "WHERE": {
-            "AND": [
-                {
-                    "IS": {
-                        "courses_id":"110"
-                    }
-                },
-                {
-                    "IS": {
-                        "courses_avg":90
-                    }
-                }
-            ]            
+            "IS": {
+                "courses_avg": 90
+            }
         },
         "OPTIONS": {
             "COLUMNS": [

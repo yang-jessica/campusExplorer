@@ -220,10 +220,24 @@ export default class InsightFacade implements IInsightFacade {
      * 400: the query failed; body should contain {"error": "my text"} providing extra detail.
      */
     public performQuery(query: any): Promise<InsightResponse> {
+        const that = this; // that is this :^)
         return new Promise (function (resolve, reject) {
             const answer: InsightResponse = {code: -1, body: undefined };
-            const that = this; // that is this :^)
-            // check if 2 keys
+            const queryString = JSON.stringify(query);
+            const typeQ = typeof queryString;
+            Log.trace(typeQ);
+            Log.trace(queryString);
+            const allKeys: string[] = queryString.match(/[a-z]+(?=_)/g);
+            const element = allKeys[0];
+            for (const key of allKeys) {
+                if (key !== element) {
+                    Log.trace("400: missing dataset " + "'" + key + "'");
+                    answer.code = 400;
+                    answer.body = {error: "missing dataset " + "'" + key + "'"};
+                    return reject(answer);
+                }
+            }
+            // check if WHERE or OPTIONS are missing
             if (!query["WHERE"] || !query["OPTIONS"]) {
                 Log.trace("400: missing 'WHERE' or 'OPTIONS'");
                 answer.code = 400;
@@ -246,18 +260,27 @@ export default class InsightFacade implements IInsightFacade {
             // check if WHERE is empty
             const where = query["WHERE"];
             const options = query["OPTIONS"];
-            const whereKeys = "size of where keys: " + Object.keys(where).length;
-            const optionsKeys = "size of options keys: " + Object.keys(options).length;
-            Log.trace(whereKeys);
-            Log.trace(optionsKeys);
-            if (Object.keys(where).length || Object.keys(options).length) {
+            if (Object.keys(where).length === 0 || Object.keys(options).length === 0) {
                 answer.code = 400;
                 answer.body = {error: "empty 'WHERE' or 'OPTIONS'"};
                 Log.trace("400: empty 'WHERE' or 'OPTIONS'");
                 return reject(answer);
+            } else {
+                // that.performOptions(options);
+                try {
+                    const results = that.performWhere(where);
+                    answer.code = 200;
+                    answer.body = {result: results};
+                    Log.trace("Query finished!");
+                } catch {
+                    answer.code = 400;
+                    answer.body = {error: "lol what"};
+                    Log.trace("error errorerrorerrorerrorerrorerrorerrorerror");
+                    return reject(answer);
+                }
             }
-            reject(answer);
-            // resolve(answer);
+            // reject(answer);
+            resolve(answer);
         });
     }
 
@@ -317,5 +340,268 @@ export default class InsightFacade implements IInsightFacade {
                 });
             });
         });
+    }
+
+    // WHERE helper
+    private performWhere(where: any): any[] {
+        let result: any[] = [];
+        Log.trace("IN PERFORM WHERE");
+        const filter = Object.keys(where)[0];
+        switch (filter) {
+            case "AND":
+                Log.trace("\t\tfilter is: AND");
+                result = this.performLComp(where["AND"]);
+                break;
+            case "OR":
+                Log.trace("\t\tfilter is: OR");
+                result = this.performLComp(where["OR"]);
+                break;
+            case "LT":
+                Log.trace("\t\tfilter is: LT");
+                result = this.performMComp(where);
+                break;
+            case "GT":
+                Log.trace("\t\tfilter is: GT");
+                try {
+                    result = this.performMComp(where);
+                } catch {
+                    throw new Error("hey u messed up");
+                }
+                break;
+            case "EQ":
+                Log.trace("\t\tfilter is: EQ");
+                result = this.performMComp(where);
+                break;
+            case "IS":
+                Log.trace("\t\tfilter is: IS");
+                try {
+                    result = this.performSComp(where);
+                } catch {
+                    throw new Error("hey IS got messed up");
+                }
+                break;
+            case "NOT":
+                Log.trace("\t\tfilter is: NOT");
+                result = this.performNeg(where["NOT"]);
+                break;
+            default:
+                throw new Error("damn man there ain't no filter like that in here");
+        }
+        return result;
+    }
+
+    // LOGIC COMPARISON HELPER
+    private performLComp(logic: any): any[] {
+        for (const friend of Object.keys(logic)) {
+            Log.trace(friend);
+        }
+        const answer: InsightResponse = {code: -1, body: null};
+        return null;
+    }
+
+    // MATH COMPARISON (GT || LT || EQ) HELPER
+    private performMComp(filter: any): any[] {
+        Log.trace("PERFORM M COMP");
+        // get the comparator
+        const logic = filter[Object.keys(filter)[0]];
+        const comparator = Object.keys(filter)[0];
+        const compInfo = "\t\tCOMPARATOR: " + comparator;
+        Log.trace(compInfo);
+        // is it empty? also can check if it's > 1
+        const sizeOfLogic = "\t\tsize of logic: " + Object.keys(logic).length;
+        Log.trace(sizeOfLogic);
+        if (Object.keys(logic).length === 0) {
+            Log.trace("\t\tcomparator empty\n");
+            throw new Error("comparator empty");
+        }
+        // the thing to compare
+        const keyToCompare = Object.keys(logic)[0];
+        Log.trace("\t\t\t\t\t" + keyToCompare);
+        // is it valid?
+        const valid = "\t\tis it valid? " + this.isValidKey(Object.keys(logic)[0]);
+        Log.trace(valid);
+        if (!this.isValidKey(Object.keys(logic)[0])) {
+            Log.trace("\t\tinvalid key");
+            throw new Error("invalid key");
+        }
+        // is the key to compare on numeric?
+        const numeric = "\t\tis key numeric? " + this.isNumericKey(Object.keys(logic)[0]);
+        Log.trace(numeric);
+        if (!this.isNumericKey(Object.keys(logic)[0])) {
+            Log.trace("\t\tcan't compare string keys mathematically");
+            throw new Error("can't compare string keys mathematically");
+        }
+        // is the actual value numeric?
+        const value = "\t\ttype of value? " + typeof logic[keyToCompare];
+        Log.trace(value);
+        if (typeof logic[keyToCompare] === "string") {
+            Log.trace("\t\tcan't math compare string values");
+            throw new Error("can't math compare string values");
+        }
+        // what else
+        const comp = "\t\tis " + Object.keys(logic)[0] + " " +
+                     Object.keys(filter)[0] + " " + logic[Object.keys(logic)[0]];
+        Log.trace(comp);
+        // parse shit for real this time
+        const fs = require("fs");
+        const datasetString = fs.readFileSync("./datasets/twosection");
+        Log.trace(datasetString);
+        const data = JSON.parse(datasetString);
+        const answer: any[] = [];
+        const invert: any[] = [];
+        // const dataID = data.iid;
+        const allSections = data.sections;
+        for (let i = 0; i < allSections.length; i++) {
+            // begin logging
+            const set = "set[" + i + "] " + keyToCompare + ": " + allSections[i][keyToCompare];
+            const qry = "query[" + i + "] " + keyToCompare + ": " + logic[keyToCompare];
+            const msg = "\t\t" + set + "\t\t vs \t\t" + qry;
+            Log.trace(msg);
+            // end logging
+            switch (comparator) {
+                case "GT":
+                    if (allSections[i][keyToCompare] > logic[keyToCompare]) {
+                        answer.push(allSections[i]);
+                    } else {
+                        invert.push(allSections[i]);
+                    }
+                    break;
+                case "LT":
+                    if (allSections[i][keyToCompare] < logic[keyToCompare]) {
+                        answer.push(allSections[i]);
+                    } else {
+                        invert.push(allSections[i]);
+                    }
+                    break;
+                case "EQ":
+                    if (allSections[i][keyToCompare] === logic[keyToCompare]) {
+                        answer.push(allSections[i]);
+                    } else {
+                        invert.push(allSections[i]);
+                    }
+                    break;
+            }
+        }
+        Log.trace("mComp done");
+        return answer;
+    }
+
+    // STRING COMPARISON (IS) HELPER
+    private performSComp(filter: any): any[] {
+        Log.trace("PERFORM S COMP");
+        // get the comparator
+        const logic = filter[Object.keys(filter)[0]];
+        const comparatorInfo = "\t\tCOMPARATOR: " + Object.keys(filter)[0];
+        Log.trace(comparatorInfo);
+        // is it empty? also can check if it's > 1
+        const sizeOfLogic = "\t\tsize of logic: " + Object.keys(logic).length;
+        Log.trace(sizeOfLogic);
+        if (Object.keys(logic).length === 0) {
+            Log.trace("\t\tcomparator empty\n");
+            throw new Error("comparator empty");
+        }
+        // the thing to compare
+        const keyToCompare = Object.keys(logic)[0];
+        Log.trace("\t\t\t\t\t" + keyToCompare);
+        // is it valid?
+        const valid = "\t\tis it valid? " + this.isValidKey(keyToCompare);
+        Log.trace(valid);
+        if (!this.isValidKey(keyToCompare)) {
+            Log.trace("\t\tinvalid key");
+            throw new Error("invalid key");
+        }
+        // is the key to compare on a string?
+        const numeric = "\t\tis key string? " + !this.isNumericKey(keyToCompare);
+        Log.trace(numeric);
+        if (this.isNumericKey(keyToCompare)) {
+            Log.trace("\t\tcan't compare numerical keys as strings");
+            throw new Error("can't compare numerical keys as strings");
+        }
+        // is the actual value a string?
+        const value = "\t\ttype of value? " + typeof logic[keyToCompare];
+        Log.trace(value);
+        if (typeof logic[keyToCompare] === "number") {
+            Log.trace("\t\tcan't string compare numerical values");
+            throw new Error("can't string compare numerical values");
+        }
+        // what else
+        const comp = "\t\t" + keyToCompare + " " + Object.keys(filter)[0] + " " + logic[keyToCompare];
+        Log.trace(comp);
+        // parse shit for real this time
+        const fs = require("fs");
+        const datasetString = fs.readFileSync("./datasets/twosection");
+        Log.trace(datasetString);
+        const data = JSON.parse(datasetString);
+        const answer: any[] = [];
+        const invert: any[] = [];
+        // const dataID = data.iid;
+        const allSections = data.sections;
+        // const left = logic[keyToCompare].substring(0, 1);
+        // const right = logic[keyToCompare].substring(logic[keyToCompare].length - 1, logic[keyToCompare].length);
+        // let regexify = logic[keyToCompare];
+        // const reg = /[\w]*/ + logic[keyToCompare];
+        // if (left === "*") {
+        //     regexify = /[\w]*/ + regexify.substring(1, regexify.length);
+        // }
+        // if (right === "*") {
+        //     regexify = regexify.substring(regexify.length - 1, regexify.length) + /[\w]*/;
+        // }
+        // const regexp: RegExp = RegExp(logic[keyToCompare].replace("*", /[\w]*/g));
+        // Log.trace("hi");
+        for (let i = 0; i < allSections.length; i++) {
+            // begin logging
+            const set = "set[" + i + "] " + keyToCompare + ": " + allSections[i][keyToCompare];
+            const qry = "query[" + i + "] " + keyToCompare + ": " + logic[keyToCompare];
+            const msg = "\t\t" + set + "\t\t vs \t\t" + qry;
+            Log.trace(msg);
+            // end logging
+            // if (regexp.test(allSections[i][keyToCompare])) {
+            if (allSections[i][keyToCompare] === logic[keyToCompare]) {
+                answer.push(allSections[i]);
+            } else {
+                invert.push(allSections[i]);
+            }
+        }
+        return answer;
+    }
+
+    // NEGATION HELPER
+    private performNeg(logic: any): any[] {
+        for (const friend of Object.keys(logic)) {
+            Log.trace(friend);
+        }
+        const answer: InsightResponse = {code: -1, body: null};
+        return null;
+    }
+
+    // OPTIONS helper
+    private performOptions(options: any): any[] {
+        return null;
+    }
+
+    // valid key
+    private isValidKey(key: string): boolean {
+        let answer = false;
+        const validKeys: string[] = ["courses_dept", "courses_id", "courses_avg",
+                                     "courses_instructor", "courses_title", "courses_pass",
+                                     "courses_fail", "courses_audit", "courses_uuid"];
+        for (const validKey of validKeys) {
+            if (key === validKey) {
+                answer = true;
+            }
+        }
+        return answer;
+    }
+
+    // numeric key
+    private isNumericKey(key: string): boolean {
+        let answer = false;
+        const numericKeys: string[] = ["courses_avg", "courses_pass", "courses_fail", "courses_audit"];
+        for (const numericKey of numericKeys) {
+            if (key === numericKey) {
+                answer = true;
+            }
+        }
+        return answer;
     }
 }
