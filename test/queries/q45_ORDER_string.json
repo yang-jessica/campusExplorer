@@ -1,0 +1,31 @@
+{
+    "title": "SELECT dept, id, uuid WHERE fail = 73, ORDER by uuid",
+    "query": {
+        "WHERE": {
+            "EQ": {
+                "courses_fail": 73
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_uuid"
+            ],
+            "ORDER": "courses_uuid"
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {"courses_dept":"math","courses_id":"110","courses_uuid":"34002"},
+                {"courses_dept":"math","courses_id":"180","courses_uuid":"3811"},
+                {"courses_dept":"biol","courses_id":"121","courses_uuid":"42121"},
+                {"courses_dept":"eosc","courses_id":"118","courses_uuid":"68892"},
+                {"courses_dept":"biol","courses_id":"121","courses_uuid":"72057"}
+            ]
+        }
+    }
+}
+

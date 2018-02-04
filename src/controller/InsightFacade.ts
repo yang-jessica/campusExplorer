@@ -465,7 +465,6 @@ export default class InsightFacade implements IInsightFacade {
         const invert: any[] = [];
         // const dataID = data.iid;
         const allSections = data.sections;
-        Log.trace("allen");
         for (let i = 0; i < allSections.length; i++) {
             // begin logging
             const set = "set[" + i + "] " + keyToCompare + ": " + allSections[i][keyToCompare];
@@ -612,8 +611,9 @@ export default class InsightFacade implements IInsightFacade {
 
     // OPTIONS helper
     private performOptions(options: any, results: any[], id: string): any[] {
-        // HANDLE COLUMNS
         Log.trace("PERFORM OPTIONS");
+        // HANDLE COLUMNS
+        Log.trace("\t HANDLING COLUMNS");
         const columns = options[Object.keys(options)[0]];
         // is it empty?
         const columnsLength = "\t\tsize of columns: " + Object.keys(columns).length;
@@ -644,6 +644,33 @@ export default class InsightFacade implements IInsightFacade {
               for (const key of keysToRemove) {
                   delete result[key];
               }
+        }
+        // HANDLING ORDER
+        Log.trace("\t HANDLING ORDER");
+        const orderBy = options["ORDER"];
+        // check if orderBY is included in COLUMNS
+        if (orderBy && !columns.includes(orderBy)) {
+            Log.trace("\t\tORDER key is not included in COLUMNS");
+            throw new Error("ORDER key is not included in COLUMNS");
+        }
+        // check if ORDER exists in query and orderBy is a number
+        if (orderBy && this.isNumericKey(orderBy)) {
+            results.sort(function (a, b) {
+                return a[orderBy] - b[orderBy];
+            });
+        // check if ORDER exists in query orderBy is a string
+        } else if (orderBy && !this.isNumericKey(orderBy)) {
+            results.sort(function (a, b) {
+                const stringA = a[orderBy].toLowerCase();
+                const stringB = b[orderBy].toLowerCase();
+                if (stringA < stringB) {
+                    return -1;
+                }
+                if (stringA > stringB) {
+                    return 1;
+                }
+                return 0;
+            });
         }
         return results;
     }
