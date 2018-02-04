@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, id, avg WHERE NOT avg < 99 ORDER BY avg",
+    "title": "SELECT * WHERE NOT avg < 99",
     "query": {
         "WHERE": {
             "NOT": {
@@ -13,18 +13,23 @@
             "COLUMNS": [
                 "courses_dept",
                 "courses_id",
-                "courses_avg"
-            ],
-            "ORDER": "courses_avg"
+                "courses_avg",
+                "courses_instructor",
+                "courses_title",
+                "courses_pass",
+                "courses_fail",
+                "courses_audit",
+                "courses_uuid"
+            ]
         }
     },
     "response": {
         "code": 200,
         "body": {
             "result": [
-                { "courses_dept": "cnps", "courses_id": "574", "courses_avg": 99.19 },
-                { "courses_dept": "math", "courses_id": "527", "courses_avg": 99.78 },
-                { "courses_dept": "math", "courses_id": "527", "courses_avg": 99.78 }
+                {"courses_dept":"cnps","courses_id":"574","courses_avg":99.19,"courses_instructor":"cox, daniel","courses_title":"career planning","courses_pass":16,"courses_fail":0,"courses_audit":0,"courses_uuid":"26777"},
+                {"courses_dept":"math","courses_id":"527","courses_avg":99.78,"courses_instructor":"gomez, jose","courses_title":"algb topology i","courses_pass":9,"courses_fail":0,"courses_audit":0,"courses_uuid":"5373"},
+                {"courses_dept":"math","courses_id":"527","courses_avg":99.78,"courses_instructor":"","courses_title":"algb topology i","courses_pass":9,"courses_fail":0,"courses_audit":0,"courses_uuid":"5374"}
             ]
         }
     }

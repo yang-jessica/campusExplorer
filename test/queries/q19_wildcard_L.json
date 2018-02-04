@@ -1,35 +1,31 @@
 {
-    "title": "SELECT dept, id WHERE id IS '*10' AND avg=90 ORDER BY dept",
+    "title": "SELECT * WHERE instructor IS '*martin;karim, faizal;knorr, edwin max",
     "query": {
         "WHERE": {
-            "AND": [
-                {
-                "IS": {
-                     "courses_id":"*10"
-                 }
-             },
-             {
-                "EQ": {
-                    "courses_avg":90
-                    }
-                }
-            ]
+            "IS": {
+                "courses_instructor":"*martin;karim, faizal;knorr, edwin max"
+            }
         },
         "OPTIONS": {
             "COLUMNS": [
                 "courses_dept",
                 "courses_id",
-                "courses_avg"
-            ],
-            "ORDER": "courses_dept"
+                "courses_avg",
+                "courses_instructor",
+                "courses_title",
+                "courses_pass",
+                "courses_fail",
+                "courses_audit",
+                "courses_uuid"
+            ]
         }
     },
     "response": {
         "code": 200,
         "body": {
             "result": [
-               {"courses_dept":"port","courses_id":"110","courses_avg":90},
-               {"courses_dept":"port","courses_id":"110","courses_avg":90}
+                {"courses_dept":"apsc","courses_id":"160","courses_avg":73.59,"courses_instructor":"carter, paul martin;karim, faizal;knorr, edwin max","courses_title":"comp eng design","courses_pass":160,"courses_fail":27,"courses_audit":0,"courses_uuid":"8244"},
+                {"courses_dept":"apsc","courses_id":"160","courses_avg":70.56,"courses_instructor":"carter, paul martin;karim, faizal;knorr, edwin max","courses_title":"comp eng design","courses_pass":125,"courses_fail":30,"courses_audit":0,"courses_uuid":"8245"}
             ]
         }
     }

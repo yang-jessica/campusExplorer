@@ -1,8 +1,8 @@
 {
-    "title": "SELECT dept, id WHERE id IS '*10' AND avg=90 ORDER BY dept",
+    "title": "SELECT dept, id WHERE LT = ''",
     "query": {
         "WHERE": {
-            "EQ": {
+            "LT": {
             }
         },
         "OPTIONS": {
@@ -10,14 +10,13 @@
                 "courses_dept",
                 "courses_id",
                 "courses_avg"
-            ],
-            "ORDER": "courses_dept"
+            ]
         }
     },
     "response": {
         "code": 400,
         "body": {
-            "error":"EQ is empty"
+            "error": "LT is empty"
         }
     }
 }

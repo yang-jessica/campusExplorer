@@ -1,0 +1,22 @@
+{
+    "title": "SELECT dept, id WHERE ER = 99",
+    "query": {
+        "WHERE": {
+            "ER": {
+                "courses_avg":99
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id"
+            ]
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+            "error":"bad filter"
+        }
+    }
+}

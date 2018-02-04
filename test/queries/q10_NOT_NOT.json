@@ -1,11 +1,11 @@
 {
-    "title": "SELECT dept, id, fail WHERE NOT fail < 250",
+    "title": "SELECT dept, id, fail WHERE NOT fail < 265",
     "query": {
         "WHERE": {
             "NOT": {
                 "NOT": {
                     "GT": {
-                        "courses_fail": 250
+                        "courses_fail": 265
                     }
                 }
             }
@@ -14,7 +14,13 @@
             "COLUMNS": [
                 "courses_dept",
                 "courses_id",
-                "courses_fail"
+                "courses_avg",
+                "courses_instructor",
+                "courses_title",
+                "courses_pass",
+                "courses_fail",
+                "courses_audit",
+                "courses_uuid"
             ]
         }
     },
@@ -22,11 +28,28 @@
         "code": 200,
         "body": {
             "result": [
-               {"courses_dept":"chem","courses_id":"121","courses_fail":266},
-               {"courses_dept":"chem","courses_id":"121","courses_fail":264},
-               {"courses_dept":"chem","courses_id":"121","courses_fail":287},
-               {"courses_dept":"chem","courses_id":"121","courses_fail":260},
-               {"courses_dept":"chem","courses_id":"121","courses_fail":251}
+                {
+                    "courses_dept": "chem",
+                    "courses_id": "121",
+                    "courses_avg": 67.42,
+                    "courses_instructor": "",
+                    "courses_title": "structural chem",
+                    "courses_pass": 1526,
+                    "courses_fail": 266,
+                    "courses_audit": 0,
+                    "courses_uuid": "31192"
+                },
+                {
+                    "courses_dept": "chem",
+                    "courses_id": "121",
+                    "courses_avg": 68.2,
+                    "courses_instructor": "",
+                    "courses_title": "structural chem",
+                    "courses_pass": 1674,
+                    "courses_fail": 287,
+                    "courses_audit": 0,
+                    "courses_uuid": "70069"
+                }
             ]
         }
     }

@@ -85,15 +85,15 @@ export default class InsightFacade implements IInsightFacade {
                                 for (let i = 0; i < original.result.length; i++) {
                                     try {
                                         const section: { [key: string]: any } = {
-                                            courses_dept: original.result[i].Subject,
-                                            courses_id: original.result[i].Course,
-                                            courses_avg: original.result[i].Avg,
-                                            courses_instructor: original.result[i].Professor,
-                                            courses_title: original.result[i].Title,
-                                            courses_pass: original.result[i].Pass,
-                                            courses_fail: original.result[i].Fail,
-                                            courses_audit: original.result[i].Audit,
-                                            courses_uuid: original.result[i].id.toString(),
+                                            [id + "_dept"]:       original.result[i].Subject,
+                                            [id + "_id"]:         original.result[i].Course,
+                                            [id + "_avg"]:        original.result[i].Avg,
+                                            [id + "_instructor"]: original.result[i].Professor,
+                                            [id + "_title"]:      original.result[i].Title,
+                                            [id + "_pass"]:       original.result[i].Pass,
+                                            [id + "_fail"]:       original.result[i].Fail,
+                                            [id + "_audit"]:      original.result[i].Audit,
+                                            [id + "_uuid"]:       original.result[i].id.toString(),
                                         };
                                         course.push(section);
                                         const sec: string = "new section[" + i + "]: " +
@@ -220,29 +220,31 @@ export default class InsightFacade implements IInsightFacade {
      * 400: the query failed; body should contain {"error": "my text"} providing extra detail.
      */
     public performQuery(query: any): Promise<InsightResponse> {
-        const that = this; // that is this :^)
+        const that = this;
         return new Promise (function (resolve, reject) {
             const answer: InsightResponse = {code: -1, body: undefined };
-            const queryString = JSON.stringify(query);
-            const typeQ = typeof queryString;
-            Log.trace(typeQ);
-            Log.trace(queryString);
-            const allKeys: string[] = queryString.match(/[a-z]+(?=_)/g);
-            const element = allKeys[0];
-            for (const key of allKeys) {
-                if (key !== element) {
-                    Log.trace("400: missing dataset " + "'" + key + "'");
-                    answer.code = 400;
-                    answer.body = {error: "missing dataset " + "'" + key + "'"};
-                    return reject(answer);
-                }
-            }
             // check if WHERE or OPTIONS are missing
             if (!query["WHERE"] || !query["OPTIONS"]) {
                 Log.trace("400: missing 'WHERE' or 'OPTIONS'");
                 answer.code = 400;
                 answer.body = {error: "missing 'WHERE' or 'OPTIONS'"};
                 return reject(answer);
+            }
+            // check if all keys are from the same dataset
+            const queryString = JSON.stringify(query);
+            const typeQ = typeof queryString;
+            Log.trace(typeQ);
+            Log.trace(queryString);
+            const allKeys: string[] = queryString.match(/[a-z]+(?=_)/g);
+            const id: string = allKeys[0];
+            Log.trace(id);
+            for (const key of allKeys) {
+                if (key !== id) {
+                    Log.trace("400: missing dataset " + "'" + key + "'");
+                    answer.code = 400;
+                    answer.body = {error: "missing dataset " + "'" + key + "'"};
+                    return reject(answer);
+                }
             }
             // check if keys are only WHERE and OPTIONS
             let objectKeys = "[ ";
@@ -266,16 +268,17 @@ export default class InsightFacade implements IInsightFacade {
                 Log.trace("400: empty 'WHERE' or 'OPTIONS'");
                 return reject(answer);
             } else {
-                // that.performOptions(options);
                 try {
-                    const results = that.performWhere(where);
+                    let results = that.performWhere(where, false, id);
+                    results = that.performOptions(options, results, id);
                     answer.code = 200;
                     answer.body = {result: results};
-                    Log.trace("Query finished!");
+                    const ans = "Query finished!\nresult: " + JSON.stringify(results);
+                    Log.trace(ans);
                 } catch {
                     answer.code = 400;
                     answer.body = {error: "lol what"};
-                    Log.trace("error errorerrorerrorerrorerrorerrorerrorerror");
+                    Log.trace("ERROR OCCURRED");
                     return reject(answer);
                 }
             }
@@ -343,9 +346,9 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     // WHERE helper
-    private performWhere(where: any): any[] {
+    private performWhere(where: any, negate: boolean, id: string): any[] {
         let result: any[] = [];
-        Log.trace("IN PERFORM WHERE");
+        Log.trace("PERFORM WHERE");
         const filter = Object.keys(where)[0];
         switch (filter) {
             case "AND":
@@ -358,31 +361,43 @@ export default class InsightFacade implements IInsightFacade {
                 break;
             case "LT":
                 Log.trace("\t\tfilter is: LT");
-                result = this.performMComp(where);
+                try {
+                    result = this.performMComp(where, negate, id);
+                } catch {
+                    throw new Error("LT messed up");
+                }
                 break;
             case "GT":
                 Log.trace("\t\tfilter is: GT");
                 try {
-                    result = this.performMComp(where);
+                    result = this.performMComp(where, negate, id);
                 } catch {
-                    throw new Error("hey u messed up");
+                    throw new Error("GT messed up");
                 }
                 break;
             case "EQ":
                 Log.trace("\t\tfilter is: EQ");
-                result = this.performMComp(where);
+                try {
+                    result = this.performMComp(where, negate, id);
+                } catch {
+                    throw new Error("EQ messed up");
+                }
                 break;
             case "IS":
                 Log.trace("\t\tfilter is: IS");
                 try {
-                    result = this.performSComp(where);
+                    result = this.performSComp(where, negate, id);
                 } catch {
-                    throw new Error("hey IS got messed up");
+                    throw new Error("IS messed up");
                 }
                 break;
             case "NOT":
                 Log.trace("\t\tfilter is: NOT");
-                result = this.performNeg(where["NOT"]);
+                try {
+                    result = this.performNeg(where, id);
+                } catch {
+                    throw new Error("NOT messed up");
+                }
                 break;
             default:
                 throw new Error("damn man there ain't no filter like that in here");
@@ -400,7 +415,7 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     // MATH COMPARISON (GT || LT || EQ) HELPER
-    private performMComp(filter: any): any[] {
+    private performMComp(filter: any, negate: boolean, id: string): any[] {
         Log.trace("PERFORM M COMP");
         // get the comparator
         const logic = filter[Object.keys(filter)[0]];
@@ -416,18 +431,18 @@ export default class InsightFacade implements IInsightFacade {
         }
         // the thing to compare
         const keyToCompare = Object.keys(logic)[0];
-        Log.trace("\t\t\t\t\t" + keyToCompare);
+        Log.trace("\t\tkey to compare: " + keyToCompare);
         // is it valid?
-        const valid = "\t\tis it valid? " + this.isValidKey(Object.keys(logic)[0]);
+        const valid = "\t\tis it valid? " + this.isValidKey(keyToCompare);
         Log.trace(valid);
-        if (!this.isValidKey(Object.keys(logic)[0])) {
+        if (!this.isValidKey(keyToCompare)) {
             Log.trace("\t\tinvalid key");
             throw new Error("invalid key");
         }
         // is the key to compare on numeric?
-        const numeric = "\t\tis key numeric? " + this.isNumericKey(Object.keys(logic)[0]);
+        const numeric = "\t\tis numeric? " + this.isNumericKey(keyToCompare);
         Log.trace(numeric);
-        if (!this.isNumericKey(Object.keys(logic)[0])) {
+        if (!this.isNumericKey(keyToCompare)) {
             Log.trace("\t\tcan't compare string keys mathematically");
             throw new Error("can't compare string keys mathematically");
         }
@@ -439,24 +454,24 @@ export default class InsightFacade implements IInsightFacade {
             throw new Error("can't math compare string values");
         }
         // what else
-        const comp = "\t\tis " + Object.keys(logic)[0] + " " +
+        const comp = "\t\tCOMPARISON: " + Object.keys(logic)[0] + " " +
                      Object.keys(filter)[0] + " " + logic[Object.keys(logic)[0]];
         Log.trace(comp);
         // parse shit for real this time
         const fs = require("fs");
-        const datasetString = fs.readFileSync("./datasets/twosection");
-        Log.trace(datasetString);
+        const datasetString = fs.readFileSync("./datasets/" + id);
         const data = JSON.parse(datasetString);
         const answer: any[] = [];
         const invert: any[] = [];
         // const dataID = data.iid;
         const allSections = data.sections;
+        Log.trace("allen");
         for (let i = 0; i < allSections.length; i++) {
             // begin logging
             const set = "set[" + i + "] " + keyToCompare + ": " + allSections[i][keyToCompare];
             const qry = "query[" + i + "] " + keyToCompare + ": " + logic[keyToCompare];
             const msg = "\t\t" + set + "\t\t vs \t\t" + qry;
-            Log.trace(msg);
+            // Log.trace(msg);
             // end logging
             switch (comparator) {
                 case "GT":
@@ -482,12 +497,16 @@ export default class InsightFacade implements IInsightFacade {
                     break;
             }
         }
-        Log.trace("mComp done");
-        return answer;
+        Log.trace("M COMP DONE");
+        if (negate) {
+            return invert;
+        } else {
+            return answer;
+        }
     }
 
     // STRING COMPARISON (IS) HELPER
-    private performSComp(filter: any): any[] {
+    private performSComp(filter: any, negate: boolean, id: string): any[] {
         Log.trace("PERFORM S COMP");
         // get the comparator
         const logic = filter[Object.keys(filter)[0]];
@@ -497,21 +516,21 @@ export default class InsightFacade implements IInsightFacade {
         const sizeOfLogic = "\t\tsize of logic: " + Object.keys(logic).length;
         Log.trace(sizeOfLogic);
         if (Object.keys(logic).length === 0) {
-            Log.trace("\t\tcomparator empty\n");
-            throw new Error("comparator empty");
+            Log.trace("\t\tIS is empty\n");
+            throw new Error("IS is empty");
         }
         // the thing to compare
         const keyToCompare = Object.keys(logic)[0];
-        Log.trace("\t\t\t\t\t" + keyToCompare);
+        Log.trace("\t\tkey to compare: " + keyToCompare);
         // is it valid?
-        const valid = "\t\tis it valid? " + this.isValidKey(keyToCompare);
+        const valid = "\t\tis valid? " + this.isValidKey(keyToCompare);
         Log.trace(valid);
         if (!this.isValidKey(keyToCompare)) {
             Log.trace("\t\tinvalid key");
             throw new Error("invalid key");
         }
         // is the key to compare on a string?
-        const numeric = "\t\tis key string? " + !this.isNumericKey(keyToCompare);
+        const numeric = "\t\tis string? " + !this.isNumericKey(keyToCompare);
         Log.trace(numeric);
         if (this.isNumericKey(keyToCompare)) {
             Log.trace("\t\tcan't compare numerical keys as strings");
@@ -525,11 +544,10 @@ export default class InsightFacade implements IInsightFacade {
             throw new Error("can't string compare numerical values");
         }
         // what else
-        const comp = "\t\t" + keyToCompare + " " + Object.keys(filter)[0] + " " + logic[keyToCompare];
-        Log.trace(comp);
+        const comp = "\t\tCOMPARISON: " + keyToCompare + " " + Object.keys(filter)[0] + " " + logic[keyToCompare];
         // parse shit for real this time
         const fs = require("fs");
-        const datasetString = fs.readFileSync("./datasets/twosection");
+        const datasetString = fs.readFileSync("./datasets/" + id);
         Log.trace(datasetString);
         const data = JSON.parse(datasetString);
         // create answer arrays
@@ -550,7 +568,7 @@ export default class InsightFacade implements IInsightFacade {
             const set = "set[" + i + "] " + keyToCompare + ": " + allSections[i][keyToCompare];
             const qry = "query[" + i + "] " + keyToCompare + ": " + logic[keyToCompare];
             const msg = "\t\t" + set + "\t\t vs \t\t" + qry;
-            Log.trace(msg);
+            // Log.trace(msg);
             // end logging
             if (RegExp(wildcard).test(allSections[i][keyToCompare])) {
                 answer.push(allSections[i]);
@@ -558,31 +576,85 @@ export default class InsightFacade implements IInsightFacade {
                 invert.push(allSections[i]);
             }
         }
-        return answer;
+        if (negate) {
+            return invert;
+        } else {
+            return answer;
+        }
     }
 
     // NEGATION HELPER
-    private performNeg(logic: any): any[] {
-        for (const friend of Object.keys(logic)) {
-            Log.trace(friend);
+    private performNeg(logic: any, id: string): any[] {
+        let negate: boolean = true;
+        let current = logic[Object.keys(logic)[0]];
+        Log.trace("PERFORM NEGATION");
+        // is it empty? also can check if it's > 1
+        const sizeOfNot = "\t\tsize of NOT: " + Object.keys(current).length;
+        Log.trace(sizeOfNot);
+        if (Object.keys(current).length === 0) {
+            Log.trace("\t\tNOT is empty\n");
+            throw new Error("NOT is empty");
         }
-        const answer: InsightResponse = {code: -1, body: null};
-        return null;
+        // count the # of NOTs
+        Log.trace("\t\tcount NOTs");
+        let notCounter = 1;
+        while (Object.keys(current)[0] === "NOT") {
+            notCounter++;
+            const negationText = "\t\tNumber of NOTs: " + notCounter;
+            Log.trace(negationText);
+            current = current[Object.keys(logic)[0]];
+        }
+        if (!(notCounter % 2)) {
+            negate = false;
+        }
+        return this.performWhere(current, negate, id);
     }
 
     // OPTIONS helper
-    private performOptions(options: any): any[] {
-        return null;
+    private performOptions(options: any, results: any[], id: string): any[] {
+        // HANDLE COLUMNS
+        Log.trace("PERFORM OPTIONS");
+        const columns = options[Object.keys(options)[0]];
+        // is it empty?
+        const columnsLength = "\t\tsize of columns: " + Object.keys(columns).length;
+        Log.trace(columnsLength);
+        if (Object.keys(columns).length === 0) {
+            Log.trace("\t\tCOLUMNS empty\n");
+            throw new Error("COLUMNS empty");
+        }
+        // are all the keys in COLUMNS valid?
+        for (const column of columns) {
+            if (!this.isValidKey(column)) {
+                Log.trace("\t\tinvalid key in COLUMNS");
+                throw new Error("invalid key in COLUMNS");
+            }
+        }
+        // filter out the unnecessary keys
+        const allKeys: string[] = [id + "_dept", id + "_id", id + "_avg",
+                         id + "_instructor", id + "_title", id + "_pass",
+                         id + "_fail", id + "_audit", id + "_uuid"];
+        const keysToRemove: string[] = [];
+        for (const key of allKeys) {
+            if (!columns.includes(key)) {
+                keysToRemove.push(key);
+            }
+        }
+        Log.trace("\t\tRemoving non-queried columns");
+        for (const result of results) {
+              for (const key of keysToRemove) {
+                  delete result[key];
+              }
+        }
+        return results;
     }
 
     // valid key
     private isValidKey(key: string): boolean {
+        const keyToValidate = key.substring(key.indexOf("_") + 1);
         let answer = false;
-        const validKeys: string[] = ["courses_dept", "courses_id", "courses_avg",
-                                     "courses_instructor", "courses_title", "courses_pass",
-                                     "courses_fail", "courses_audit", "courses_uuid"];
+        const validKeys: string[] = ["dept", "id", "avg", "instructor", "title", "pass", "fail", "audit", "uuid"];
         for (const validKey of validKeys) {
-            if (key === validKey) {
+            if (keyToValidate === validKey) {
                 answer = true;
             }
         }
@@ -591,10 +663,11 @@ export default class InsightFacade implements IInsightFacade {
 
     // numeric key
     private isNumericKey(key: string): boolean {
+        const keyToValidate = key.substring(key.indexOf("_") + 1);
         let answer = false;
-        const numericKeys: string[] = ["courses_avg", "courses_pass", "courses_fail", "courses_audit"];
+        const numericKeys: string[] = ["avg", "pass", "fail", "audit"];
         for (const numericKey of numericKeys) {
-            if (key === numericKey) {
+            if (keyToValidate === numericKey) {
                 answer = true;
             }
         }
