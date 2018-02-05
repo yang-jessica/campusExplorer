@@ -70,16 +70,16 @@ export default class InsightFacade implements IInsightFacade {
                     const promiseArray: any[] = [];
                     const course: { [section: string]: any } = [];
                     zip.folder("courses").forEach(function (relativePath: string, file: any) {
-                        const suc: string = "for each'd " + file.name;
+                        // const suc: string = "for each'd " + file.name;
                         // Log.trace(suc);
                         // convert compressed file in 'courses' to text
                         promiseArray.push(file.async("text").then(function (text: any) {
                             try {
                                 // JSON.parse the text returned from file.async
                                 const original = JSON.parse(text);
-                                const size: string = "Size of: " + file.name + ": " + original.result.length;
+                                // const size: string = "Size of: " + file.name + ": " + original.result.length;
                                 // Log.trace(size);
-                                const originalResult: string = "json.stringify: " + JSON.stringify(original.result);
+                                // const originalResult: string = "json.stringify: " + JSON.stringify(original.result);
                                 // Log.trace(originalResult);
                                 // for each section in the result array, parse into our own JSON
                                 for (let i = 0; i < original.result.length; i++) {
@@ -103,20 +103,20 @@ export default class InsightFacade implements IInsightFacade {
                                             section.courses_fail + ", " + section.courses_audit + ", " +
                                             section.courses_uuid;
                                         // Log.trace(sec);
-                                        const fun = "new section to string: " + JSON.stringify(section);
+                                        // const fun = "new section to string: " + JSON.stringify(section);
                                         // Log.trace(fun);
 
                                     } catch {
-                                        const cat: string = "error parsing result[" + i + "]";
+                                        // const cat: string = "error parsing result[" + i + "]";
                                         // Log.trace(cat);
                                     }
                                 }
                             } catch {
-                                const errorParse: string = "error parsing " + file.name;
+                                // const errorParse: string = "error parsing " + file.name;
                                 // Log.trace(errorParse);
                             }
                         }));
-                        const msg: string = "loop of " + file.name + " finished";
+                        // const msg: string = "loop of " + file.name + " finished";
                         // Log.trace(msg);
                     });
                     Promise.all(promiseArray).then(function () {
@@ -127,7 +127,7 @@ export default class InsightFacade implements IInsightFacade {
                             iKind: kind,
                         };
                         const courseString = JSON.stringify(final);
-                        const logCourse = "new course to string: " + courseString;
+                        // const logCourse = "new course to string: " + courseString;
                         // Log.trace(logCourse);
                         if (course.length === 0) {
                             answer.code = 400;
@@ -204,6 +204,90 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     /**
+     * Perform a query on UBCInsight.
+     *
+     * @param query  The query to be performed. This is the same as the body of the POST message.
+     *
+     * @return Promise <InsightResponse>
+     *
+     * The promise should return an InsightResponse for both fulfill and reject.
+     *
+     * Fulfill should be for 2XX codes and reject for everything else.
+     *
+     * Return codes:
+     *
+     * 200: the query was successfully answered. The result should be sent in JSON according in the response body.
+     * 400: the query failed; body should contain {"error": "my text"} providing extra detail.
+     */
+    public performQuery(query: any): Promise<InsightResponse> {
+        const that = this;
+        return new Promise(function (resolve, reject) {
+            const answer: InsightResponse = {code: -1, body: undefined};
+            // check if WHERE or OPTIONS are missing
+            if (!query["WHERE"] || !query["OPTIONS"]) {
+                // Log.trace("400: missing 'WHERE' or 'OPTIONS'");
+                answer.code = 400;
+                answer.body = {error: "missing 'WHERE' or 'OPTIONS'"};
+                return reject(answer);
+            }
+            // check if all keys are from the same dataset
+            const queryString = JSON.stringify(query);
+            // const typeQ = typeof queryString;
+            // Log.trace(typeQ);
+            // Log.trace(queryString);
+            const allKeys: string[] = queryString.match(/[a-z]+(?=_)/g);
+            const id: string = allKeys[0];
+            // Log.trace(id);
+            for (const key of allKeys) {
+                if (key !== id) {
+                    // Log.trace("400: missing dataset " + "'" + key + "'");
+                    answer.code = 400;
+                    answer.body = {error: "missing dataset " + "'" + key + "'"};
+                    return reject(answer);
+                }
+            }
+            // check if keys are only WHERE and OPTIONS
+            let objectKeys = "[ ";
+            for (const key of Object.keys(query)) {
+                objectKeys = objectKeys + key + ", ";
+                if (key !== "WHERE" && key !== "OPTIONS") {
+                    answer.code = 400;
+                    answer.body = {error: "key other than 'WHERE' and 'OPTIONS'"};
+                    // Log.trace("400: key other than 'WHERE' and 'OPTIONS'");
+                    return reject(answer);
+                }
+            }
+            // objectKeys = objectKeys + "]";
+            // Log.trace(objectKeys);
+            // check if WHERE is empty
+            const where = query["WHERE"];
+            const options = query["OPTIONS"];
+            if (Object.keys(where).length === 0 || Object.keys(options).length === 0) {
+                answer.code = 400;
+                answer.body = {error: "empty 'WHERE' or 'OPTIONS'"};
+                // Log.trace("400: empty 'WHERE' or 'OPTIONS'");
+                return reject(answer);
+            } else {
+                try {
+                    let results = that.performWhere(where, false, id);
+                    results = that.performOptions(options, results, id);
+                    answer.code = 200;
+                    answer.body = {result: results};
+                    // const ans = "Query finished!\nresult: " + JSON.stringify(results);
+                    // Log.trace(ans);
+                } catch {
+                    answer.code = 400;
+                    answer.body = {error: "lol what"};
+                    // Log.trace("ERROR OCCURRED");
+                    return reject(answer);
+                }
+            }
+            // reject(answer);
+            resolve(answer);
+        });
+    }
+
+    /**
      * List a list of datasets and their types.
      *
      * @return Promise <InsightResponse>
@@ -233,15 +317,15 @@ export default class InsightFacade implements IInsightFacade {
                                         kind: dataset.iKind,
                                         numRows: dataset.numRows,
                                     };
-                                    const jsonInfo = file.toUpperCase() + " FROM JSON: " +
-                                        "\niid: " + dataset.iid +
-                                        "\nnumRows: " + dataset.numRows +
-                                        "\niKind: " + dataset.iKind;
+                                    // const jsonInfo = file.toUpperCase() + " FROM JSON: " +
+                                    //     "\niid: " + dataset.iid +
+                                    //     "\nnumRows: " + dataset.numRows +
+                                    //     "\niKind: " + dataset.iKind;
                                     // Log.trace(jsonInfo);
-                                    const parsedInfo = info.id.toUpperCase() + " IN RESULT: " +
-                                        "\nid: " + info.id +
-                                        "\nkind: " + info.kind +
-                                        "\nnumRows: " + info.numRows;
+                                    // const parsedInfo = info.id.toUpperCase() + " IN RESULT: " +
+                                    //     "\nid: " + info.id +
+                                    //     "\nkind: " + info.kind +
+                                    //     "\nnumRows: " + info.numRows;
                                     // Log.trace(parsedInfo);
                                     answerList.push(info);
                                     resolved(true);
@@ -253,95 +337,11 @@ export default class InsightFacade implements IInsightFacade {
                 Promise.all(promiseArray).then(function () {
                     answer.code = 200;
                     answer.body = {result: answerList};
-                    const resLength: string = "length of result: " + answer.body.result.length;
+                    // const resLength: string = "length of result: " + answer.body.result.length;
                     // Log.trace(resLength);
                     resolve(answer);
                 });
             });
-        });
-    }
-
-    /**
-     * Perform a query on UBCInsight.
-     *
-     * @param query  The query to be performed. This is the same as the body of the POST message.
-     *
-     * @return Promise <InsightResponse>
-     *
-     * The promise should return an InsightResponse for both fulfill and reject.
-     *
-     * Fulfill should be for 2XX codes and reject for everything else.
-     *
-     * Return codes:
-     *
-     * 200: the query was successfully answered. The result should be sent in JSON according in the response body.
-     * 400: the query failed; body should contain {"error": "my text"} providing extra detail.
-     */
-    public performQuery(query: any): Promise<InsightResponse> {
-        const that = this;
-        return new Promise(function (resolve, reject) {
-            const answer: InsightResponse = {code: -1, body: undefined};
-            // check if WHERE or OPTIONS are missing
-            if (!query["WHERE"] || !query["OPTIONS"]) {
-                // Log.trace("400: missing 'WHERE' or 'OPTIONS'");
-                answer.code = 400;
-                answer.body = {error: "missing 'WHERE' or 'OPTIONS'"};
-                return reject(answer);
-            }
-            // check if all keys are from the same dataset
-            const queryString = JSON.stringify(query);
-            const typeQ = typeof queryString;
-            // Log.trace(typeQ);
-            // Log.trace(queryString);
-            const allKeys: string[] = queryString.match(/[a-z]+(?=_)/g);
-            const id: string = allKeys[0];
-            // Log.trace(id);
-            for (const key of allKeys) {
-                if (key !== id) {
-                    // Log.trace("400: missing dataset " + "'" + key + "'");
-                    answer.code = 400;
-                    answer.body = {error: "missing dataset " + "'" + key + "'"};
-                    return reject(answer);
-                }
-            }
-            // check if keys are only WHERE and OPTIONS
-            let objectKeys = "[ ";
-            for (const key of Object.keys(query)) {
-                objectKeys = objectKeys + key + ", ";
-                if (key !== "WHERE" && key !== "OPTIONS") {
-                    answer.code = 400;
-                    answer.body = {error: "key other than 'WHERE' and 'OPTIONS'"};
-                    // Log.trace("400: key other than 'WHERE' and 'OPTIONS'");
-                    return reject(answer);
-                }
-            }
-            objectKeys = objectKeys + "]";
-            // Log.trace(objectKeys);
-            // check if WHERE is empty
-            const where = query["WHERE"];
-            const options = query["OPTIONS"];
-            if (Object.keys(where).length === 0 || Object.keys(options).length === 0) {
-                answer.code = 400;
-                answer.body = {error: "empty 'WHERE' or 'OPTIONS'"};
-                // Log.trace("400: empty 'WHERE' or 'OPTIONS'");
-                return reject(answer);
-            } else {
-                try {
-                    let results = that.performWhere(where, false, id);
-                    results = that.performOptions(options, results, id);
-                    answer.code = 200;
-                    answer.body = {result: results};
-                    const ans = "Query finished!\nresult: " + JSON.stringify(results);
-                    // Log.trace(ans);
-                } catch {
-                    answer.code = 400;
-                    answer.body = {error: "lol what"};
-                    // Log.trace("ERROR OCCURRED");
-                    return reject(answer);
-                }
-            }
-            // reject(answer);
-            resolve(answer);
         });
     }
 
@@ -417,7 +417,7 @@ export default class InsightFacade implements IInsightFacade {
     private andFunction(andQuery: any, negate: boolean, id: string): any[] {
         // Log.trace("AND FUNCTION");
         // is it empty?
-        const sizeOfAnd = "\t\tsize of AND: " + andQuery["AND"].length;
+        // const sizeOfAnd = "\t\tsize of AND: " + andQuery["AND"].length;
         // Log.trace(sizeOfAnd);
         if (andQuery["AND"].length === 0) {
             // Log.trace("\t\tAND empty\n");
@@ -502,7 +502,7 @@ export default class InsightFacade implements IInsightFacade {
     private orFunction(orQuery: any, negate: boolean, id: string): any[] {
         // Log.trace("OR FUNCTION");
         // is it empty?
-        const sizeOfOr = "\t\tsize of OR: " + orQuery["OR"].length;
+        // const sizeOfOr = "\t\tsize of OR: " + orQuery["OR"].length;
         // Log.trace(sizeOfOr);
         if (orQuery["OR"].length === 0) {
             // Log.trace("\t\tOR empty\n");
@@ -575,10 +575,10 @@ export default class InsightFacade implements IInsightFacade {
         // get the comparator
         const logic = filter[Object.keys(filter)[0]];
         const comparator = Object.keys(filter)[0];
-        const compInfo = "\t\tCOMPARATOR: " + comparator;
+        // const compInfo = "\t\tCOMPARATOR: " + comparator;
         // Log.trace(compInfo);
         // is it empty? also can check if it's > 1
-        const sizeOfLogic = "\t\tsize of logic: " + Object.keys(logic).length;
+        // const sizeOfLogic = "\t\tsize of logic: " + Object.keys(logic).length;
         // Log.trace(sizeOfLogic);
         if (Object.keys(logic).length === 0) {
             // Log.trace("\t\tcomparator empty\n");
@@ -588,29 +588,29 @@ export default class InsightFacade implements IInsightFacade {
         const keyToCompare = Object.keys(logic)[0];
         // Log.trace("\t\tkey to compare: " + keyToCompare);
         // is it valid?
-        const valid = "\t\tis it valid? " + this.isValidKey(keyToCompare);
+        // const valid = "\t\tis it valid? " + this.isValidKey(keyToCompare);
         // Log.trace(valid);
         if (!this.isValidKey(keyToCompare)) {
             // Log.trace("\t\tinvalid key");
             throw new Error("invalid key");
         }
         // is the key to compare on numeric?
-        const numeric = "\t\tis numeric? " + this.isNumericKey(keyToCompare);
+        // const numeric = "\t\tis numeric? " + this.isNumericKey(keyToCompare);
         // Log.trace(numeric);
         if (!this.isNumericKey(keyToCompare)) {
             // Log.trace("\t\tcan't compare string keys mathematically");
             throw new Error("can't compare string keys mathematically");
         }
         // is the actual value numeric?
-        const value = "\t\ttype of value? " + typeof logic[keyToCompare];
+        // const value = "\t\ttype of value? " + typeof logic[keyToCompare];
         // Log.trace(value);
         if (typeof logic[keyToCompare] === "string") {
             // Log.trace("\t\tcan't math compare string values");
             throw new Error("can't math compare string values");
         }
         // what else
-        const comp = "\t\tCOMPARISON: " + Object.keys(logic)[0] + " " +
-            Object.keys(filter)[0] + " " + logic[Object.keys(logic)[0]];
+        // const comp = "\t\tCOMPARISON: " + Object.keys(logic)[0] + " " +
+        //     Object.keys(filter)[0] + " " + logic[Object.keys(logic)[0]];
         // Log.trace(comp);
         // parse shit for real this time
         const fs = require("fs");
@@ -620,33 +620,33 @@ export default class InsightFacade implements IInsightFacade {
         const invert: any[] = [];
         // const dataID = data.iid;
         const allSections = data.sections;
-        for (let i = 0; i < allSections.length; i++) {
+        for (const section of allSections) {
             // begin logging
-            const set = "set[" + i + "] " + keyToCompare + ": " + allSections[i][keyToCompare];
-            const qry = "query[" + i + "] " + keyToCompare + ": " + logic[keyToCompare];
-            const msg = "\t\t" + set + "\t\t vs \t\t" + qry;
+            // const set = "set[" + i + "] " + keyToCompare + ": " + allSections[i][keyToCompare];
+            // const qry = "query[" + i + "] " + keyToCompare + ": " + logic[keyToCompare];
+            // const msg = "\t\t" + set + "\t\t vs \t\t" + qry;
             // Log.trace(msg);
             // end logging
             switch (comparator) {
                 case "GT":
-                    if (allSections[i][keyToCompare] > logic[keyToCompare]) {
-                        answer.push(allSections[i]);
+                    if (section[keyToCompare] > logic[keyToCompare]) {
+                        answer.push(section);
                     } else {
-                        invert.push(allSections[i]);
+                        invert.push(section);
                     }
                     break;
                 case "LT":
-                    if (allSections[i][keyToCompare] < logic[keyToCompare]) {
-                        answer.push(allSections[i]);
+                    if (section[keyToCompare] < logic[keyToCompare]) {
+                        answer.push(section);
                     } else {
-                        invert.push(allSections[i]);
+                        invert.push(section);
                     }
                     break;
                 case "EQ":
-                    if (allSections[i][keyToCompare] === logic[keyToCompare]) {
-                        answer.push(allSections[i]);
+                    if (section[keyToCompare] === logic[keyToCompare]) {
+                        answer.push(section);
                     } else {
-                        invert.push(allSections[i]);
+                        invert.push(section);
                     }
                     break;
             }
@@ -664,10 +664,10 @@ export default class InsightFacade implements IInsightFacade {
         // Log.trace("PERFORM S COMP");
         // get the comparator
         const logic = filter[Object.keys(filter)[0]];
-        const comparatorInfo = "\t\tCOMPARATOR: " + Object.keys(filter)[0];
+        // const comparatorInfo = "\t\tCOMPARATOR: " + Object.keys(filter)[0];
         // Log.trace(comparatorInfo);
         // is it empty? also can check if it's > 1
-        const sizeOfLogic = "\t\tsize of logic: " + Object.keys(logic).length;
+        // const sizeOfLogic = "\t\tsize of logic: " + Object.keys(logic).length;
         // Log.trace(sizeOfLogic);
         if (Object.keys(logic).length === 0) {
             // Log.trace("\t\tIS is empty\n");
@@ -677,28 +677,28 @@ export default class InsightFacade implements IInsightFacade {
         const keyToCompare = Object.keys(logic)[0];
         // Log.trace("\t\tkey to compare: " + keyToCompare);
         // is it valid?
-        const valid = "\t\tis valid? " + this.isValidKey(keyToCompare);
+        // const valid = "\t\tis valid? " + this.isValidKey(keyToCompare);
         // Log.trace(valid);
         if (!this.isValidKey(keyToCompare)) {
             // Log.trace("\t\tinvalid key");
             throw new Error("invalid key");
         }
         // is the key to compare on a string?
-        const numeric = "\t\tis string? " + !this.isNumericKey(keyToCompare);
+        // const numeric = "\t\tis string? " + !this.isNumericKey(keyToCompare);
         // Log.trace(numeric);
         if (this.isNumericKey(keyToCompare)) {
             // Log.trace("\t\tcan't compare numerical keys as strings");
             throw new Error("can't compare numerical keys as strings");
         }
         // is the actual value a string?
-        const value = "\t\ttype of value? " + typeof logic[keyToCompare];
+        // const value = "\t\ttype of value? " + typeof logic[keyToCompare];
         // Log.trace(value);
         if (typeof logic[keyToCompare] === "number") {
             // Log.trace("\t\tcan't string compare numerical values");
             throw new Error("can't string compare numerical values");
         }
         // what else
-        const comp = "\t\tCOMPARISON: " + keyToCompare + " " + Object.keys(filter)[0] + " " + logic[keyToCompare];
+        // const comp = "\t\tCOMPARISON: " + keyToCompare + " " + Object.keys(filter)[0] + " " + logic[keyToCompare];
         // parse shit for real this time
         const fs = require("fs");
         const datasetString = fs.readFileSync("./datasets/" + id);
@@ -709,35 +709,41 @@ export default class InsightFacade implements IInsightFacade {
         // const dataID = data.iid; // the id of the dataset
         const allSections = data.sections;
         // handle wildcards
-        const split = logic[keyToCompare].split("*");
-        let wildcard: string;
-        if (split[0] === "" && split[1] && split[2] === "") {
-            wildcard = ".*" + split[1] + ".*";
-        } else if (split[0] === "" && split[1] && !split[2]) {
-            wildcard = ".*" + split[1] + "\\b";
-        } else if (split[0] && split[1] === "") {
-            wildcard = "\\b" + split[0] + ".*";
+        let compare = logic[keyToCompare];
+        let wildcard: boolean = false;
+        const subCompare = compare.substring(1, compare.length - 1);
+        if (subCompare.includes("*")) {
+            throw new Error("invalid key: * not at beginning or end");
         }
-        // const wildcard = split.join("");
-        // if there was a wildcard, use RegExp.test
-        if (split.length > 1) {
+        if (compare.startsWith("*") && compare.endsWith("*")) {
+            compare = subCompare;
+            wildcard = true;
+        } else if (compare.startsWith("*")) {
+            compare = ".*" + compare.substring(1) + "\\b";
+            wildcard = true;
+        } else if (compare.endsWith("*")) {
+            compare = "\\b" + compare.substring(0, compare.length - 1) + ".*";
+            wildcard = true;
+        }
+        // if there was a wildcard
+        if (wildcard) {
             for (const section of allSections) {
-                if (RegExp(wildcard).test(section[keyToCompare])) {
+                if (RegExp(compare).test(section[keyToCompare])) {
                     answer.push(section);
                 } else {
                     invert.push(section);
                 }
             }
-        // if there wasn't a wildcard, use ===
         } else {
             for (const section of allSections) {
-                if (logic[keyToCompare] === section[keyToCompare]) {
+                if (compare === section[keyToCompare]) {
                     answer.push(section);
                 } else {
                     invert.push(section);
                 }
             }
         }
+
         if (negate) {
             return invert;
         } else {
@@ -751,7 +757,7 @@ export default class InsightFacade implements IInsightFacade {
         let negate: boolean = true;
         let current = logic[Object.keys(logic)[0]];
         // is it empty? also can check if it's > 1
-        const sizeOfNot = "\t\tsize of NOT: " + Object.keys(current).length;
+        // const sizeOfNot = "\t\tsize of NOT: " + Object.keys(current).length;
         // Log.trace(sizeOfNot);
         if (Object.keys(current).length === 0) {
             // Log.trace("\t\tNOT is empty\n");
@@ -762,7 +768,7 @@ export default class InsightFacade implements IInsightFacade {
         let notCounter = 1;
         while (Object.keys(current)[0] === "NOT") {
             notCounter++;
-            const negationText = "\t\tNumber of NOTs: " + notCounter;
+            // const negationText = "\t\tNumber of NOTs: " + notCounter;
             // Log.trace(negationText);
             current = current[Object.keys(logic)[0]];
         }
@@ -779,7 +785,7 @@ export default class InsightFacade implements IInsightFacade {
         // Log.trace("\t HANDLING COLUMNS");
         const columns = options[Object.keys(options)[0]];
         // is it empty?
-        const columnsLength = "\t\tsize of columns: " + Object.keys(columns).length;
+        // const columnsLength = "\t\tsize of columns: " + Object.keys(columns).length;
         // Log.trace(columnsLength);
         if (Object.keys(columns).length === 0) {
             // Log.trace("\t\tCOLUMNS empty\n");
