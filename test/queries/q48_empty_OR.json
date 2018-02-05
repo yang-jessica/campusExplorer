@@ -1,0 +1,22 @@
+{
+    "title": "SELECT dept, avg WHERE OR",
+    "query": {
+        "WHERE": {
+        	"OR":[
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+ "response": {
+        "code": 400,
+        "body": {
+            "error":"OR should contain at least one condition"
+        }
+    }
+}

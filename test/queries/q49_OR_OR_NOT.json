@@ -1,0 +1,64 @@
+{
+    "title": "SELECT dept, avg WHERE avg > 99",
+    "query": {
+        "WHERE": {
+            "OR":[
+                {
+                    "LT": {
+                        "courses_avg": 1
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_uuid": "38695"
+                    }
+                },
+                {
+                    "OR": [
+                        {
+                            "NOT": {
+                                "GT": {
+                                    "courses_avg": 1
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_dept": "frst",
+                    "courses_avg": 0
+                },
+                {
+                    "courses_dept": "lfs",
+                    "courses_avg": 0
+                },
+                {
+                    "courses_dept": "lfs",
+                    "courses_avg": 0
+                },
+                {
+                    "courses_dept": "wood",
+                    "courses_avg": 1
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_avg": 71.11
+                }
+            ]
+        }
+    }
+}

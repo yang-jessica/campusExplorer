@@ -6,7 +6,7 @@
     <pass-parent-env>true</pass-parent-env>
     <envs />
     <ui>bdd</ui>
-    <extra-mocha-options>--require ts-node/register --timeout 10000</extra-mocha-options>
+    <extra-mocha-options>--require ts-node/register --timeout 100000</extra-mocha-options>
     <test-kind>DIRECTORY</test-kind>
     <test-directory>$PROJECT_DIR$/test</test-directory>
     <recursive>false</recursive>

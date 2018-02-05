@@ -191,12 +191,12 @@ export default class InsightFacade implements IInsightFacade {
                 if (err) {
                     answer.code = 404;
                     answer.body = {error: "dataset not removed"};
-                    Log.error("404: dataset not removed");
+                    // Log.error("404: dataset not removed");
                     reject(answer);
                 } else {
                     answer.code = 204;
                     answer.body = {result: "dataset removed"};
-                    Log.error("204: dataset removed");
+                    // Log.error("204: dataset removed");
                     resolve(answer);
                 }
             });
@@ -223,7 +223,7 @@ export default class InsightFacade implements IInsightFacade {
             fs.readdir("./datasets/", function (err: Error, files: string[]) {
                 if (!err) {
                     for (const file of files) {
-                        Log.trace("added dataset: " + file);
+                        // Log.trace("added dataset: " + file);
                         promiseArray.push(new Promise(function (resolved) {
                             fs.readFile("./datasets/" + file, function (er: Error, data: string) {
                                 if (!er) {
@@ -237,12 +237,12 @@ export default class InsightFacade implements IInsightFacade {
                                         "\niid: " + dataset.iid +
                                         "\nnumRows: " + dataset.numRows +
                                         "\niKind: " + dataset.iKind;
-                                    Log.trace(jsonInfo);
+                                    // Log.trace(jsonInfo);
                                     const parsedInfo = info.id.toUpperCase() + " IN RESULT: " +
                                         "\nid: " + info.id +
                                         "\nkind: " + info.kind +
                                         "\nnumRows: " + info.numRows;
-                                    Log.trace(parsedInfo);
+                                    // Log.trace(parsedInfo);
                                     answerList.push(info);
                                     resolved(true);
                                 }
@@ -254,7 +254,7 @@ export default class InsightFacade implements IInsightFacade {
                     answer.code = 200;
                     answer.body = {result: answerList};
                     const resLength: string = "length of result: " + answer.body.result.length;
-                    Log.trace(resLength);
+                    // Log.trace(resLength);
                     resolve(answer);
                 });
             });
@@ -283,7 +283,7 @@ export default class InsightFacade implements IInsightFacade {
             const answer: InsightResponse = {code: -1, body: undefined};
             // check if WHERE or OPTIONS are missing
             if (!query["WHERE"] || !query["OPTIONS"]) {
-                Log.trace("400: missing 'WHERE' or 'OPTIONS'");
+                // Log.trace("400: missing 'WHERE' or 'OPTIONS'");
                 answer.code = 400;
                 answer.body = {error: "missing 'WHERE' or 'OPTIONS'"};
                 return reject(answer);
@@ -291,14 +291,14 @@ export default class InsightFacade implements IInsightFacade {
             // check if all keys are from the same dataset
             const queryString = JSON.stringify(query);
             const typeQ = typeof queryString;
-            Log.trace(typeQ);
-            Log.trace(queryString);
+            // Log.trace(typeQ);
+            // Log.trace(queryString);
             const allKeys: string[] = queryString.match(/[a-z]+(?=_)/g);
             const id: string = allKeys[0];
-            Log.trace(id);
+            // Log.trace(id);
             for (const key of allKeys) {
                 if (key !== id) {
-                    Log.trace("400: missing dataset " + "'" + key + "'");
+                    // Log.trace("400: missing dataset " + "'" + key + "'");
                     answer.code = 400;
                     answer.body = {error: "missing dataset " + "'" + key + "'"};
                     return reject(answer);
@@ -311,19 +311,19 @@ export default class InsightFacade implements IInsightFacade {
                 if (key !== "WHERE" && key !== "OPTIONS") {
                     answer.code = 400;
                     answer.body = {error: "key other than 'WHERE' and 'OPTIONS'"};
-                    Log.trace("400: key other than 'WHERE' and 'OPTIONS'");
+                    // Log.trace("400: key other than 'WHERE' and 'OPTIONS'");
                     return reject(answer);
                 }
             }
             objectKeys = objectKeys + "]";
-            Log.trace(objectKeys);
+            // Log.trace(objectKeys);
             // check if WHERE is empty
             const where = query["WHERE"];
             const options = query["OPTIONS"];
             if (Object.keys(where).length === 0 || Object.keys(options).length === 0) {
                 answer.code = 400;
                 answer.body = {error: "empty 'WHERE' or 'OPTIONS'"};
-                Log.trace("400: empty 'WHERE' or 'OPTIONS'");
+                // Log.trace("400: empty 'WHERE' or 'OPTIONS'");
                 return reject(answer);
             } else {
                 try {
@@ -332,11 +332,11 @@ export default class InsightFacade implements IInsightFacade {
                     answer.code = 200;
                     answer.body = {result: results};
                     const ans = "Query finished!\nresult: " + JSON.stringify(results);
-                    Log.trace(ans);
+                    // Log.trace(ans);
                 } catch {
                     answer.code = 400;
                     answer.body = {error: "lol what"};
-                    Log.trace("ERROR OCCURRED");
+                    // Log.trace("ERROR OCCURRED");
                     return reject(answer);
                 }
             }
@@ -347,12 +347,12 @@ export default class InsightFacade implements IInsightFacade {
 
     // WHERE helper
     private performWhere(where: any, negate: boolean, id: string): any[] {
-        Log.trace("PERFORM WHERE");
+        // Log.trace("PERFORM WHERE");
         let result: any[] = [];
         const filter = Object.keys(where)[0];
         switch (filter) {
             case "AND":
-                Log.trace("\t\tfilter is: AND");
+                // Log.trace("\t\tfilter is: AND");
                 try {
                     result = this.andFunction(where, negate, id);
                 } catch {
@@ -360,11 +360,15 @@ export default class InsightFacade implements IInsightFacade {
                 }
                 break;
             case "OR":
-                Log.trace("\t\tfilter is: OR");
-                // result = this.performLComp(where, id);
+                // Log.trace("\t\tfilter is: OR");
+                try {
+                    result = this.orFunction(where, negate, id);
+                } catch {
+                    throw new Error("OR messed up");
+                }
                 break;
             case "LT":
-                Log.trace("\t\tfilter is: LT");
+                // Log.trace("\t\tfilter is: LT");
                 try {
                     result = this.performMComp(where, negate, id);
                 } catch {
@@ -372,7 +376,7 @@ export default class InsightFacade implements IInsightFacade {
                 }
                 break;
             case "GT":
-                Log.trace("\t\tfilter is: GT");
+                // Log.trace("\t\tfilter is: GT");
                 try {
                     result = this.performMComp(where, negate, id);
                 } catch {
@@ -380,7 +384,7 @@ export default class InsightFacade implements IInsightFacade {
                 }
                 break;
             case "EQ":
-                Log.trace("\t\tfilter is: EQ");
+                // Log.trace("\t\tfilter is: EQ");
                 try {
                     result = this.performMComp(where, negate, id);
                 } catch {
@@ -388,7 +392,7 @@ export default class InsightFacade implements IInsightFacade {
                 }
                 break;
             case "IS":
-                Log.trace("\t\tfilter is: IS");
+                // Log.trace("\t\tfilter is: IS");
                 try {
                     result = this.performSComp(where, negate, id);
                 } catch {
@@ -396,7 +400,7 @@ export default class InsightFacade implements IInsightFacade {
                 }
                 break;
             case "NOT":
-                Log.trace("\t\tfilter is: NOT");
+                // Log.trace("\t\tfilter is: NOT");
                 try {
                     result = this.performNeg(where, id);
                 } catch {
@@ -411,51 +415,52 @@ export default class InsightFacade implements IInsightFacade {
 
     // AND function
     private andFunction(andQuery: any, negate: boolean, id: string): any[] {
-        Log.trace("AND FUNCTION");
+        // Log.trace("AND FUNCTION");
         // is it empty?
         const sizeOfAnd = "\t\tsize of AND: " + andQuery["AND"].length;
-        Log.trace(sizeOfAnd);
+        // Log.trace(sizeOfAnd);
         if (andQuery["AND"].length === 0) {
-            Log.trace("\t\tAND empty\n");
+            // Log.trace("\t\tAND empty\n");
             throw new Error("AND empty");
         }
+        // get the full dataset
         const fs = require("fs");
         const datasetString = fs.readFileSync("./datasets/" + id);
-        // Log.trace(datasetString);
         const data = JSON.parse(datasetString);
         let andResult: any[] = data.sections;
-        // const andKeys = Object.keys(andQuery)[0]; // GT
+        // handle queries within AND
         for (const logicClause of andQuery["AND"]) {
             switch (Object.keys(logicClause)[0]) {
                 case "AND":
-                    Log.trace("\t\tinside AND");
+                    // Log.trace("\t\tinside AND");
                     andResult = this.andHelper(andResult, this.andFunction(logicClause, negate, id));
                     break;
                 case "OR":
-                    // andResult = this.andHelper(andResult, this.notFunction(logicClause, id));
+                    // Log.trace("\t\tinside OR");
+                    andResult = this.andHelper(andResult, this.orFunction(logicClause, negate, id));
                     break;
                 case "LT":
-                    Log.trace("\t\tinside LT");
+                    // Log.trace("\t\tinside LT");
                     andResult = this.andHelper(andResult, this.performMComp(logicClause, negate, id));
                     break;
                 case "GT":
-                    Log.trace("\t\tinside GT");
+                    // Log.trace("\t\tinside GT");
                     andResult = this.andHelper(andResult, this.performMComp(logicClause, negate, id));
                     break;
                 case "EQ":
-                    Log.trace("\t\tinside EQ");
+                    // Log.trace("\t\tinside EQ");
                     andResult = this.andHelper(andResult, this.performMComp(logicClause, negate, id));
                     break;
                 case "IS":
-                    Log.trace("\t\tinside IS");
+                    // Log.trace("\t\tinside IS");
                     andResult = this.andHelper(andResult, this.performSComp(logicClause, negate, id));
                     break;
                 case "NOT":
-                    Log.trace("\t\tinside NOT");
+                    // Log.trace("\t\tinside NOT");
                     andResult = this.andHelper(andResult, this.performNeg(logicClause, id));
                     break;
                 default:
-                    Log.trace("\t\tunknown filter encountered");
+                    // Log.trace("\t\tunknown filter encountered");
                     throw new Error("damn man there ain't no filter like that in here");
             }
         }
@@ -464,7 +469,7 @@ export default class InsightFacade implements IInsightFacade {
 
     // AND helper
     private andHelper(array1: any[], array2: any[]): any[] {
-        Log.trace("AND HELPER");
+        // Log.trace("AND HELPER");
         const stringifyArray1: any[] = [];
         for (const x of array1) {
             const y = JSON.stringify(x);
@@ -477,8 +482,8 @@ export default class InsightFacade implements IInsightFacade {
             // Log.trace(y2);
             stringifyArray2.push(y2);
         }
-        Log.trace("\t\tfirst array: " + stringifyArray1);
-        Log.trace("\t\tsecond array: " + stringifyArray2);
+        // Log.trace("\t\tfirst array: " + stringifyArray1);
+        // Log.trace("\t\tsecond array: " + stringifyArray2);
         let filteredStringArray: any[];
         const filteredArray: any[] = [];
         filteredStringArray = stringifyArray2.filter(function (x: any) {
@@ -493,49 +498,120 @@ export default class InsightFacade implements IInsightFacade {
         return filteredArray;
     }
 
+    // OR function
+    private orFunction(orQuery: any, negate: boolean, id: string): any[] {
+        // Log.trace("OR FUNCTION");
+        // is it empty?
+        const sizeOfOr = "\t\tsize of OR: " + orQuery["OR"].length;
+        // Log.trace(sizeOfOr);
+        if (orQuery["OR"].length === 0) {
+            // Log.trace("\t\tOR empty\n");
+            throw new Error("OR empty");
+        }
+        let orResult: any[] = [];
+        // handle queries within OR
+        for (const logicClause of orQuery["OR"]) {
+            switch (Object.keys(logicClause)[0]) {
+                case "AND":
+                    orResult = orResult.concat(this.orHelper(orResult, this.andFunction(logicClause, negate, id)));
+                    break;
+                case "OR":
+                    orResult = orResult.concat(this.orHelper(orResult, this.orFunction(logicClause, negate, id)));
+                    break;
+                case "LT":
+                    orResult = orResult.concat(this.orHelper(orResult, this.performMComp(logicClause, negate, id)));
+                    break;
+                case "GT":
+                    orResult = orResult.concat(this.orHelper(orResult, this.performMComp(logicClause, negate, id)));
+                    break;
+                case "EQ":
+                    orResult = orResult.concat(this.orHelper(orResult, this.performMComp(logicClause, negate, id)));
+                    break;
+                case "IS":
+                    orResult = orResult.concat(this.orHelper(orResult, this.performSComp(logicClause, negate, id)));
+                    break;
+                case "NOT":
+                    orResult = orResult.concat(this.orHelper(orResult, this.performNeg(logicClause, id)));
+                    break;
+                default:
+                    throw new Error("damn man there ain't no filter like that in here");
+            }
+        }
+        return orResult;
+    }
+
+    // OR helper
+    private orHelper(array1: any[], array2: any[]): any[] {
+        // Log.trace("OR HELPER");
+        const stringifyArray1: any[] = [];
+        for (const x of array1) {
+            const y = JSON.stringify(x);
+            // Log.trace(y);
+            stringifyArray1.push(y);
+        }
+        const stringifyArray2: any[] = [];
+        for (const x2 of array2) {
+            const y2 = JSON.stringify(x2);
+            // Log.trace(y2);
+            stringifyArray2.push(y2);
+        }
+        // Log.trace("first array: " + stringifyArray1);
+        // Log.trace("second array: " + stringifyArray2);
+        let filteredStringArray: any[];
+        const filteredArray: any[] = [];
+        filteredStringArray = stringifyArray2.filter(function (x: any) {
+            return !(stringifyArray1.includes(x));
+        });
+        for (const x of filteredStringArray) {
+            const parsed = JSON.parse(x);
+            filteredArray.push(parsed);
+        }
+        return filteredArray;
+    }
+
     // MATH COMPARISON (GT || LT || EQ) HELPER
     private performMComp(filter: any, negate: boolean, id: string): any[] {
-        Log.trace("PERFORM M COMP");
+        // Log.trace("PERFORM M COMP");
         // get the comparator
         const logic = filter[Object.keys(filter)[0]];
         const comparator = Object.keys(filter)[0];
         const compInfo = "\t\tCOMPARATOR: " + comparator;
-        Log.trace(compInfo);
+        // Log.trace(compInfo);
         // is it empty? also can check if it's > 1
         const sizeOfLogic = "\t\tsize of logic: " + Object.keys(logic).length;
-        Log.trace(sizeOfLogic);
+        // Log.trace(sizeOfLogic);
         if (Object.keys(logic).length === 0) {
-            Log.trace("\t\tcomparator empty\n");
+            // Log.trace("\t\tcomparator empty\n");
             throw new Error("comparator empty");
         }
         // the thing to compare
         const keyToCompare = Object.keys(logic)[0];
-        Log.trace("\t\tkey to compare: " + keyToCompare);
+        // Log.trace("\t\tkey to compare: " + keyToCompare);
         // is it valid?
         const valid = "\t\tis it valid? " + this.isValidKey(keyToCompare);
-        Log.trace(valid);
+        // Log.trace(valid);
         if (!this.isValidKey(keyToCompare)) {
-            Log.trace("\t\tinvalid key");
+            // Log.trace("\t\tinvalid key");
             throw new Error("invalid key");
         }
         // is the key to compare on numeric?
         const numeric = "\t\tis numeric? " + this.isNumericKey(keyToCompare);
-        Log.trace(numeric);
+        // Log.trace(numeric);
         if (!this.isNumericKey(keyToCompare)) {
-            Log.trace("\t\tcan't compare string keys mathematically");
+            // Log.trace("\t\tcan't compare string keys mathematically");
             throw new Error("can't compare string keys mathematically");
         }
         // is the actual value numeric?
         const value = "\t\ttype of value? " + typeof logic[keyToCompare];
-        Log.trace(value);
+        // Log.trace(value);
         if (typeof logic[keyToCompare] === "string") {
-            Log.trace("\t\tcan't math compare string values");
+            // Log.trace("\t\tcan't math compare string values");
             throw new Error("can't math compare string values");
         }
         // what else
         const comp = "\t\tCOMPARISON: " + Object.keys(logic)[0] + " " +
             Object.keys(filter)[0] + " " + logic[Object.keys(logic)[0]];
-        Log.trace(comp);
+        // Log.trace(comp);
         // parse shit for real this time
         const fs = require("fs");
         const datasetString = fs.readFileSync("./datasets/" + id);
@@ -575,7 +651,7 @@ export default class InsightFacade implements IInsightFacade {
                     break;
             }
         }
-        Log.trace("M COMP DONE");
+        // Log.trace("M COMP DONE");
         if (negate) {
             return invert;
         } else {
@@ -585,40 +661,40 @@ export default class InsightFacade implements IInsightFacade {
 
     // STRING COMPARISON (IS) HELPER
     private performSComp(filter: any, negate: boolean, id: string): any[] {
-        Log.trace("PERFORM S COMP");
+        // Log.trace("PERFORM S COMP");
         // get the comparator
         const logic = filter[Object.keys(filter)[0]];
         const comparatorInfo = "\t\tCOMPARATOR: " + Object.keys(filter)[0];
-        Log.trace(comparatorInfo);
+        // Log.trace(comparatorInfo);
         // is it empty? also can check if it's > 1
         const sizeOfLogic = "\t\tsize of logic: " + Object.keys(logic).length;
-        Log.trace(sizeOfLogic);
+        // Log.trace(sizeOfLogic);
         if (Object.keys(logic).length === 0) {
-            Log.trace("\t\tIS is empty\n");
+            // Log.trace("\t\tIS is empty\n");
             throw new Error("IS is empty");
         }
         // the thing to compare
         const keyToCompare = Object.keys(logic)[0];
-        Log.trace("\t\tkey to compare: " + keyToCompare);
+        // Log.trace("\t\tkey to compare: " + keyToCompare);
         // is it valid?
         const valid = "\t\tis valid? " + this.isValidKey(keyToCompare);
-        Log.trace(valid);
+        // Log.trace(valid);
         if (!this.isValidKey(keyToCompare)) {
-            Log.trace("\t\tinvalid key");
+            // Log.trace("\t\tinvalid key");
             throw new Error("invalid key");
         }
         // is the key to compare on a string?
         const numeric = "\t\tis string? " + !this.isNumericKey(keyToCompare);
-        Log.trace(numeric);
+        // Log.trace(numeric);
         if (this.isNumericKey(keyToCompare)) {
-            Log.trace("\t\tcan't compare numerical keys as strings");
+            // Log.trace("\t\tcan't compare numerical keys as strings");
             throw new Error("can't compare numerical keys as strings");
         }
         // is the actual value a string?
         const value = "\t\ttype of value? " + typeof logic[keyToCompare];
-        Log.trace(value);
+        // Log.trace(value);
         if (typeof logic[keyToCompare] === "number") {
-            Log.trace("\t\tcan't string compare numerical values");
+            // Log.trace("\t\tcan't string compare numerical values");
             throw new Error("can't string compare numerical values");
         }
         // what else
@@ -626,7 +702,6 @@ export default class InsightFacade implements IInsightFacade {
         // parse shit for real this time
         const fs = require("fs");
         const datasetString = fs.readFileSync("./datasets/" + id);
-        Log.trace(datasetString);
         const data = JSON.parse(datasetString);
         // create answer arrays
         const answer: any[] = [];
@@ -635,12 +710,15 @@ export default class InsightFacade implements IInsightFacade {
         const allSections = data.sections;
         // handle wildcards
         const split = logic[keyToCompare].split("*");
-        for (let i = 0; i < split.length; i++) {
-            if (split[i] === "") {
-                split[i] = ".*";
-            }
+        let wildcard: string;
+        if (split[0] === "" && split[1] && split[2] === "") {
+            wildcard = ".*" + split[1] + ".*";
+        } else if (split[0] === "" && split[1] && !split[2]) {
+            wildcard = ".*" + split[1] + "\\b";
+        } else if (split[0] && split[1] === "") {
+            wildcard = "\\b" + split[0] + ".*";
         }
-        const wildcard = split.join("");
+        // const wildcard = split.join("");
         // if there was a wildcard, use RegExp.test
         if (split.length > 1) {
             for (const section of allSections) {
@@ -669,23 +747,23 @@ export default class InsightFacade implements IInsightFacade {
 
     // NEGATION HELPER
     private performNeg(logic: any, id: string): any[] {
-        Log.trace("PERFORM NEGATION");
+        // Log.trace("PERFORM NEGATION");
         let negate: boolean = true;
         let current = logic[Object.keys(logic)[0]];
         // is it empty? also can check if it's > 1
         const sizeOfNot = "\t\tsize of NOT: " + Object.keys(current).length;
-        Log.trace(sizeOfNot);
+        // Log.trace(sizeOfNot);
         if (Object.keys(current).length === 0) {
-            Log.trace("\t\tNOT is empty\n");
+            // Log.trace("\t\tNOT is empty\n");
             throw new Error("NOT is empty");
         }
         // count the # of NOTs
-        Log.trace("\t\tcount NOTs");
+        // Log.trace("\t\tcount NOTs");
         let notCounter = 1;
         while (Object.keys(current)[0] === "NOT") {
             notCounter++;
             const negationText = "\t\tNumber of NOTs: " + notCounter;
-            Log.trace(negationText);
+            // Log.trace(negationText);
             current = current[Object.keys(logic)[0]];
         }
         if (!(notCounter % 2)) {
@@ -696,21 +774,21 @@ export default class InsightFacade implements IInsightFacade {
 
     // OPTIONS helper
     private performOptions(options: any, results: any[], id: string): any[] {
-        Log.trace("PERFORM OPTIONS");
+        // Log.trace("PERFORM OPTIONS");
         // HANDLE COLUMNS
-        Log.trace("\t HANDLING COLUMNS");
+        // Log.trace("\t HANDLING COLUMNS");
         const columns = options[Object.keys(options)[0]];
         // is it empty?
         const columnsLength = "\t\tsize of columns: " + Object.keys(columns).length;
-        Log.trace(columnsLength);
+        // Log.trace(columnsLength);
         if (Object.keys(columns).length === 0) {
-            Log.trace("\t\tCOLUMNS empty\n");
+            // Log.trace("\t\tCOLUMNS empty\n");
             throw new Error("COLUMNS empty");
         }
         // are all the keys in COLUMNS valid?
         for (const column of columns) {
             if (!this.isValidKey(column)) {
-                Log.trace("\t\tinvalid key in COLUMNS");
+                // Log.trace("\t\tinvalid key in COLUMNS");
                 throw new Error("invalid key in COLUMNS");
             }
         }
@@ -724,18 +802,18 @@ export default class InsightFacade implements IInsightFacade {
                 keysToRemove.push(key);
             }
         }
-        Log.trace("\t\tRemoving non-queried columns");
+        // Log.trace("\t\tRemoving non-queried columns");
         for (const result of results) {
             for (const key of keysToRemove) {
                 delete result[key];
             }
         }
         // HANDLING ORDER
-        Log.trace("\t HANDLING ORDER");
+        // Log.trace("\t HANDLING ORDER");
         const orderBy = options["ORDER"];
         // check if orderBY is included in COLUMNS
         if (orderBy && !columns.includes(orderBy)) {
-            Log.trace("\t\tORDER key is not included in COLUMNS");
+            // Log.trace("\t\tORDER key is not included in COLUMNS");
             throw new Error("ORDER key is not included in COLUMNS");
         }
         // check if ORDER exists in query and orderBy is a number
