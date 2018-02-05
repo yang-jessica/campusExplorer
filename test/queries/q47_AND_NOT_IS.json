@@ -1,0 +1,44 @@
+{
+    "title": "SELECT dept, id, avg WHERE dept = 'comm' && id = '101' && !(avg < 74.1) ORDER by avg",
+    "query": {
+        "WHERE": {
+            "AND":[
+                {
+                    "IS": {
+                        "courses_dept":"comm"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_id": "101"
+                    }
+                },
+                {
+                    "NOT": {
+                        "LT": {
+                            "courses_avg":74.1
+                        }
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {"courses_dept":"comm","courses_id":"101","courses_avg":74.11},
+                {"courses_dept":"comm","courses_id":"101","courses_avg":74.12},
+                {"courses_dept":"comm","courses_id":"101","courses_avg":74.44}
+            ]
+        }
+    }
+}

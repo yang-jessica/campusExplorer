@@ -85,15 +85,15 @@ export default class InsightFacade implements IInsightFacade {
                                 for (let i = 0; i < original.result.length; i++) {
                                     try {
                                         const section: { [key: string]: any } = {
-                                            [id + "_dept"]:       original.result[i].Subject,
-                                            [id + "_id"]:         original.result[i].Course,
-                                            [id + "_avg"]:        original.result[i].Avg,
+                                            [id + "_dept"]: original.result[i].Subject,
+                                            [id + "_id"]: original.result[i].Course,
+                                            [id + "_avg"]: original.result[i].Avg,
                                             [id + "_instructor"]: original.result[i].Professor,
-                                            [id + "_title"]:      original.result[i].Title,
-                                            [id + "_pass"]:       original.result[i].Pass,
-                                            [id + "_fail"]:       original.result[i].Fail,
-                                            [id + "_audit"]:      original.result[i].Audit,
-                                            [id + "_uuid"]:       original.result[i].id.toString(),
+                                            [id + "_title"]: original.result[i].Title,
+                                            [id + "_pass"]: original.result[i].Pass,
+                                            [id + "_fail"]: original.result[i].Fail,
+                                            [id + "_audit"]: original.result[i].Audit,
+                                            [id + "_uuid"]: original.result[i].id.toString(),
                                         };
                                         course.push(section);
                                         const sec: string = "new section[" + i + "]: " +
@@ -204,6 +204,64 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     /**
+     * List a list of datasets and their types.
+     *
+     * @return Promise <InsightResponse>
+     * The promise should return an InsightResponse and will only fulfill.
+     * The body of this InsightResponse will contain an InsightDataset[]
+     *
+     * Return codes:
+     * 200: The list of added datasets was successfully returned.
+     */
+    public listDatasets(): Promise<InsightResponse> {
+        return new Promise(function (resolve) {
+            const answer: InsightResponse = {code: -1, body: undefined};
+            const answerList: InsightDataset[] = [];
+            const fs = require("fs");
+            const promiseArray: any[] = [];
+            // read the dataset directory
+            fs.readdir("./datasets/", function (err: Error, files: string[]) {
+                if (!err) {
+                    for (const file of files) {
+                        Log.trace("added dataset: " + file);
+                        promiseArray.push(new Promise(function (resolved) {
+                            fs.readFile("./datasets/" + file, function (er: Error, data: string) {
+                                if (!er) {
+                                    const dataset = JSON.parse(data);
+                                    const info: InsightDataset = {
+                                        id: dataset.iid,
+                                        kind: dataset.iKind,
+                                        numRows: dataset.numRows,
+                                    };
+                                    const jsonInfo = file.toUpperCase() + " FROM JSON: " +
+                                        "\niid: " + dataset.iid +
+                                        "\nnumRows: " + dataset.numRows +
+                                        "\niKind: " + dataset.iKind;
+                                    Log.trace(jsonInfo);
+                                    const parsedInfo = info.id.toUpperCase() + " IN RESULT: " +
+                                        "\nid: " + info.id +
+                                        "\nkind: " + info.kind +
+                                        "\nnumRows: " + info.numRows;
+                                    Log.trace(parsedInfo);
+                                    answerList.push(info);
+                                    resolved(true);
+                                }
+                            });
+                        }));
+                    }
+                }
+                Promise.all(promiseArray).then(function () {
+                    answer.code = 200;
+                    answer.body = {result: answerList};
+                    const resLength: string = "length of result: " + answer.body.result.length;
+                    Log.trace(resLength);
+                    resolve(answer);
+                });
+            });
+        });
+    }
+
+    /**
      * Perform a query on UBCInsight.
      *
      * @param query  The query to be performed. This is the same as the body of the POST message.
@@ -221,8 +279,8 @@ export default class InsightFacade implements IInsightFacade {
      */
     public performQuery(query: any): Promise<InsightResponse> {
         const that = this;
-        return new Promise (function (resolve, reject) {
-            const answer: InsightResponse = {code: -1, body: undefined };
+        return new Promise(function (resolve, reject) {
+            const answer: InsightResponse = {code: -1, body: undefined};
             // check if WHERE or OPTIONS are missing
             if (!query["WHERE"] || !query["OPTIONS"]) {
                 Log.trace("400: missing 'WHERE' or 'OPTIONS'");
@@ -287,77 +345,23 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
-    /**
-     * List a list of datasets and their types.
-     *
-     * @return Promise <InsightResponse>
-     * The promise should return an InsightResponse and will only fulfill.
-     * The body of this InsightResponse will contain an InsightDataset[]
-     *
-     * Return codes:
-     * 200: The list of added datasets was successfully returned.
-     */
-    public listDatasets(): Promise<InsightResponse> {
-        return new Promise(function (resolve) {
-            const answer: InsightResponse = {code: -1, body: undefined};
-            const answerList: InsightDataset[] = [];
-            const fs = require("fs");
-            const promiseArray: any[] = [];
-            // read the dataset directory
-            fs.readdir("./datasets/", function (err: Error, files: string[]) {
-                if (!err) {
-                    for (const file of files) {
-                        Log.trace("added dataset: " + file);
-                        promiseArray.push(new Promise(function (resolved) {
-                            fs.readFile("./datasets/" + file, function (er: Error, data: string) {
-                                if (!er) {
-                                    const dataset = JSON.parse(data);
-                                    const info: InsightDataset = {
-                                        id: dataset.iid,
-                                        kind: dataset.iKind,
-                                        numRows: dataset.numRows,
-                                    };
-                                    const jsonInfo = file.toUpperCase() + " FROM JSON: " +
-                                        "\niid: " + dataset.iid +
-                                        "\nnumRows: " + dataset.numRows +
-                                        "\niKind: " + dataset.iKind;
-                                    Log.trace(jsonInfo);
-                                    const parsedInfo = info.id.toUpperCase() + " IN RESULT: " +
-                                        "\nid: " + info.id +
-                                        "\nkind: " + info.kind +
-                                        "\nnumRows: " + info.numRows;
-                                    Log.trace(parsedInfo);
-                                    answerList.push(info);
-                                    resolved(true);
-                                }
-                            });
-                        }));
-                    }
-                }
-                Promise.all(promiseArray).then(function () {
-                    answer.code = 200;
-                    answer.body = {result: answerList};
-                    const resLength: string = "length of result: " + answer.body.result.length;
-                    Log.trace(resLength);
-                    resolve(answer);
-                });
-            });
-        });
-    }
-
     // WHERE helper
     private performWhere(where: any, negate: boolean, id: string): any[] {
-        let result: any[] = [];
         Log.trace("PERFORM WHERE");
+        let result: any[] = [];
         const filter = Object.keys(where)[0];
         switch (filter) {
             case "AND":
                 Log.trace("\t\tfilter is: AND");
-                result = this.performLComp(where["AND"]);
+                try {
+                    result = this.andFunction(where, negate, id);
+                } catch {
+                    throw new Error("AND messed up");
+                }
                 break;
             case "OR":
                 Log.trace("\t\tfilter is: OR");
-                result = this.performLComp(where["OR"]);
+                // result = this.performLComp(where, id);
                 break;
             case "LT":
                 Log.trace("\t\tfilter is: LT");
@@ -405,13 +409,88 @@ export default class InsightFacade implements IInsightFacade {
         return result;
     }
 
-    // LOGIC COMPARISON HELPER
-    private performLComp(logic: any): any[] {
-        for (const friend of Object.keys(logic)) {
-            Log.trace(friend);
+    // AND function
+    private andFunction(andQuery: any, negate: boolean, id: string): any[] {
+        Log.trace("AND FUNCTION");
+        // is it empty?
+        const sizeOfAnd = "\t\tsize of AND: " + andQuery["AND"].length;
+        Log.trace(sizeOfAnd);
+        if (andQuery["AND"].length === 0) {
+            Log.trace("\t\tAND empty\n");
+            throw new Error("AND empty");
         }
-        const answer: InsightResponse = {code: -1, body: null};
-        return null;
+        const fs = require("fs");
+        const datasetString = fs.readFileSync("./datasets/" + id);
+        // Log.trace(datasetString);
+        const data = JSON.parse(datasetString);
+        let andResult: any[] = data.sections;
+        // const andKeys = Object.keys(andQuery)[0]; // GT
+        for (const logicClause of andQuery["AND"]) {
+            switch (Object.keys(logicClause)[0]) {
+                case "AND":
+                    Log.trace("\t\tinside AND");
+                    andResult = this.andHelper(andResult, this.andFunction(logicClause, negate, id));
+                    break;
+                case "OR":
+                    // andResult = this.andHelper(andResult, this.notFunction(logicClause, id));
+                    break;
+                case "LT":
+                    Log.trace("\t\tinside LT");
+                    andResult = this.andHelper(andResult, this.performMComp(logicClause, negate, id));
+                    break;
+                case "GT":
+                    Log.trace("\t\tinside GT");
+                    andResult = this.andHelper(andResult, this.performMComp(logicClause, negate, id));
+                    break;
+                case "EQ":
+                    Log.trace("\t\tinside EQ");
+                    andResult = this.andHelper(andResult, this.performMComp(logicClause, negate, id));
+                    break;
+                case "IS":
+                    Log.trace("\t\tinside IS");
+                    andResult = this.andHelper(andResult, this.performSComp(logicClause, negate, id));
+                    break;
+                case "NOT":
+                    Log.trace("\t\tinside NOT");
+                    andResult = this.andHelper(andResult, this.performNeg(logicClause, id));
+                    break;
+                default:
+                    Log.trace("\t\tunknown filter encountered");
+                    throw new Error("damn man there ain't no filter like that in here");
+            }
+        }
+        return andResult;
+    }
+
+    // AND helper
+    private andHelper(array1: any[], array2: any[]): any[] {
+        Log.trace("AND HELPER");
+        const stringifyArray1: any[] = [];
+        for (const x of array1) {
+            const y = JSON.stringify(x);
+            // Log.trace(y);
+            stringifyArray1.push(y);
+        }
+        const stringifyArray2: any[] = [];
+        for (const x2 of array2) {
+            const y2 = JSON.stringify(x2);
+            // Log.trace(y2);
+            stringifyArray2.push(y2);
+        }
+        Log.trace("\t\tfirst array: " + stringifyArray1);
+        Log.trace("\t\tsecond array: " + stringifyArray2);
+        let filteredStringArray: any[];
+        const filteredArray: any[] = [];
+        filteredStringArray = stringifyArray2.filter(function (x: any) {
+            let include: boolean;
+            include = stringifyArray1.includes(x);
+            return include;
+        });
+        for (const x of filteredStringArray) {
+            const parsed = JSON.parse(x);
+            filteredArray.push(parsed);
+        }
+        return filteredArray;
     }
 
     // MATH COMPARISON (GT || LT || EQ) HELPER
@@ -455,7 +534,7 @@ export default class InsightFacade implements IInsightFacade {
         }
         // what else
         const comp = "\t\tCOMPARISON: " + Object.keys(logic)[0] + " " +
-                     Object.keys(filter)[0] + " " + logic[Object.keys(logic)[0]];
+            Object.keys(filter)[0] + " " + logic[Object.keys(logic)[0]];
         Log.trace(comp);
         // parse shit for real this time
         const fs = require("fs");
@@ -562,17 +641,23 @@ export default class InsightFacade implements IInsightFacade {
             }
         }
         const wildcard = split.join("");
-        for (let i = 0; i < allSections.length; i++) {
-            // begin logging
-            const set = "set[" + i + "] " + keyToCompare + ": " + allSections[i][keyToCompare];
-            const qry = "query[" + i + "] " + keyToCompare + ": " + logic[keyToCompare];
-            const msg = "\t\t" + set + "\t\t vs \t\t" + qry;
-            // Log.trace(msg);
-            // end logging
-            if (RegExp(wildcard).test(allSections[i][keyToCompare])) {
-                answer.push(allSections[i]);
-            } else {
-                invert.push(allSections[i]);
+        // if there was a wildcard, use RegExp.test
+        if (split.length > 1) {
+            for (const section of allSections) {
+                if (RegExp(wildcard).test(section[keyToCompare])) {
+                    answer.push(section);
+                } else {
+                    invert.push(section);
+                }
+            }
+        // if there wasn't a wildcard, use ===
+        } else {
+            for (const section of allSections) {
+                if (logic[keyToCompare] === section[keyToCompare]) {
+                    answer.push(section);
+                } else {
+                    invert.push(section);
+                }
             }
         }
         if (negate) {
@@ -584,9 +669,9 @@ export default class InsightFacade implements IInsightFacade {
 
     // NEGATION HELPER
     private performNeg(logic: any, id: string): any[] {
+        Log.trace("PERFORM NEGATION");
         let negate: boolean = true;
         let current = logic[Object.keys(logic)[0]];
-        Log.trace("PERFORM NEGATION");
         // is it empty? also can check if it's > 1
         const sizeOfNot = "\t\tsize of NOT: " + Object.keys(current).length;
         Log.trace(sizeOfNot);
@@ -631,8 +716,8 @@ export default class InsightFacade implements IInsightFacade {
         }
         // filter out the unnecessary keys
         const allKeys: string[] = [id + "_dept", id + "_id", id + "_avg",
-                         id + "_instructor", id + "_title", id + "_pass",
-                         id + "_fail", id + "_audit", id + "_uuid"];
+            id + "_instructor", id + "_title", id + "_pass",
+            id + "_fail", id + "_audit", id + "_uuid"];
         const keysToRemove: string[] = [];
         for (const key of allKeys) {
             if (!columns.includes(key)) {
@@ -641,9 +726,9 @@ export default class InsightFacade implements IInsightFacade {
         }
         Log.trace("\t\tRemoving non-queried columns");
         for (const result of results) {
-              for (const key of keysToRemove) {
-                  delete result[key];
-              }
+            for (const key of keysToRemove) {
+                delete result[key];
+            }
         }
         // HANDLING ORDER
         Log.trace("\t HANDLING ORDER");
