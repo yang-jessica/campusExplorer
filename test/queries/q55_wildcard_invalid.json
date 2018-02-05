@@ -1,0 +1,50 @@
+{
+    "title": "SELECT * WHERE comm101 && avg > 74 && instructor invalid",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "courses_dept":"comm"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_id":"101"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_instructor":"cubbo*n, paul*"
+                    }
+                },
+                {
+                    "GT": {
+                        "courses_avg":74
+
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg",
+                "courses_instructor",
+                "courses_title",
+                "courses_pass",
+                "courses_fail",
+                "courses_audit",
+                "courses_uuid"
+            ],
+            "ORDER":"courses_avg"
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+            "error":"star in the middle"
+        }
+    }
+}

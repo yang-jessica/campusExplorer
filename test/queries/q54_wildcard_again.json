@@ -1,0 +1,73 @@
+{
+    "title": "SELECT * WHERE instructor IS '*knorr*",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "courses_dept":"comm"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_id":"101"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_instructor":"cubbon, paul*"
+                    }
+                },
+                {
+                    "GT": {
+                        "courses_avg":74
+
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg",
+                "courses_instructor",
+                "courses_title",
+                "courses_pass",
+                "courses_fail",
+                "courses_audit",
+                "courses_uuid"
+            ],
+            "ORDER":"courses_avg"
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 74.09,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_pass": 96,
+                    "courses_fail": 1,
+                    "courses_audit": 0,
+                    "courses_uuid": "43895"
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 74.44,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_pass": 109,
+                    "courses_fail": 1,
+                    "courses_audit": 0,
+                    "courses_uuid": "38697"
+                }
+            ]
+        }
+    }
+}

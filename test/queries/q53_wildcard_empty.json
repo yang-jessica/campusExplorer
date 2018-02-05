@@ -1,0 +1,44 @@
+{
+    "title": "SELECT * WHERE instructor IS '*knorr*",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "courses_dept":"comm"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_id":"101"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_instructor":"*kroeker"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg",
+                "courses_instructor",
+                "courses_title",
+                "courses_pass",
+                "courses_fail",
+                "courses_audit",
+                "courses_uuid"
+            ],
+            "ORDER":"courses_avg"
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": []
+        }
+    }
+}

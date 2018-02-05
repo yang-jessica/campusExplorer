@@ -307,7 +307,7 @@ export default class InsightFacade implements IInsightFacade {
             fs.readdir("./datasets/", function (err: Error, files: string[]) {
                 if (!err) {
                     for (const file of files) {
-                        // Log.trace("added dataset: " + file);
+                        Log.trace("added dataset: " + file);
                         promiseArray.push(new Promise(function (resolved) {
                             fs.readFile("./datasets/" + file, function (er: Error, data: string) {
                                 if (!er) {
@@ -317,16 +317,16 @@ export default class InsightFacade implements IInsightFacade {
                                         kind: dataset.iKind,
                                         numRows: dataset.numRows,
                                     };
-                                    // const jsonInfo = file.toUpperCase() + " FROM JSON: " +
-                                    //     "\niid: " + dataset.iid +
-                                    //     "\nnumRows: " + dataset.numRows +
-                                    //     "\niKind: " + dataset.iKind;
-                                    // Log.trace(jsonInfo);
-                                    // const parsedInfo = info.id.toUpperCase() + " IN RESULT: " +
-                                    //     "\nid: " + info.id +
-                                    //     "\nkind: " + info.kind +
-                                    //     "\nnumRows: " + info.numRows;
-                                    // Log.trace(parsedInfo);
+                                    const jsonInfo = file.toUpperCase() + " FROM JSON: " +
+                                        "\niid: " + dataset.iid +
+                                        "\nnumRows: " + dataset.numRows +
+                                        "\niKind: " + dataset.iKind;
+                                    Log.trace(jsonInfo);
+                                    const parsedInfo = info.id.toUpperCase() + " IN RESULT: " +
+                                        "\nid: " + info.id +
+                                        "\nkind: " + info.kind +
+                                        "\nnumRows: " + info.numRows;
+                                    Log.trace(parsedInfo);
                                     answerList.push(info);
                                     resolved(true);
                                 }
@@ -337,8 +337,8 @@ export default class InsightFacade implements IInsightFacade {
                 Promise.all(promiseArray).then(function () {
                     answer.code = 200;
                     answer.body = {result: answerList};
-                    // const resLength: string = "length of result: " + answer.body.result.length;
-                    // Log.trace(resLength);
+                    const resLength: string = "length of result: " + answer.body.result.length;
+                    Log.trace(resLength);
                     resolve(answer);
                 });
             });
@@ -710,40 +710,48 @@ export default class InsightFacade implements IInsightFacade {
         const allSections = data.sections;
         // handle wildcards
         let compare = logic[keyToCompare];
-        let wildcard: boolean = false;
-        const subCompare = compare.substring(1, compare.length - 1);
-        if (subCompare.includes("*")) {
+        const sub = compare.substring(1, compare.length - 1);
+        if (sub.includes("*")) {
             throw new Error("invalid key: * not at beginning or end");
         }
-        if (compare.startsWith("*") && compare.endsWith("*")) {
-            compare = subCompare;
-            wildcard = true;
+        // case where compare is 'string'
+        if (!compare.includes("*")) {
+            for (const section of allSections) {
+                if (section[keyToCompare] === compare) {
+                    answer.push(section);
+                } else {
+                    invert.push(section);
+                }
+            }
+        } else if (compare.startsWith("*") && compare.endsWith("*")) {
+            for (const section of allSections) {
+                if (section[keyToCompare].includes(sub)) {
+                    answer.push(section);
+                } else {
+                    invert.push(section);
+                }
+            }
         } else if (compare.startsWith("*")) {
-            compare = ".*" + compare.substring(1) + "\\b";
-            wildcard = true;
+            compare = compare.substring(1, compare.length);
+            for (const section of allSections) {
+                const secLength = section[keyToCompare].length;
+                if (section[keyToCompare].substring(secLength - compare.length, secLength) === compare) {
+                    answer.push(section);
+                } else {
+                    invert.push(section);
+                }
+            }
         } else if (compare.endsWith("*")) {
-            compare = "\\b" + compare.substring(0, compare.length - 1) + ".*";
-            wildcard = true;
+            compare = compare.substring(0, compare.length - 1);
+            for (const section of allSections) {
+                if (section[keyToCompare].substring(0, compare.length) === compare) {
+                    answer.push(section);
+                } else {
+                    invert.push(section);
+                }
+            }
         }
         // if there was a wildcard
-        if (wildcard) {
-            for (const section of allSections) {
-                if (RegExp(compare).test(section[keyToCompare])) {
-                    answer.push(section);
-                } else {
-                    invert.push(section);
-                }
-            }
-        } else {
-            for (const section of allSections) {
-                if (compare === section[keyToCompare]) {
-                    answer.push(section);
-                } else {
-                    invert.push(section);
-                }
-            }
-        }
-
         if (negate) {
             return invert;
         } else {

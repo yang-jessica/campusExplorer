@@ -1,0 +1,75 @@
+{
+    "title": "SELECT dept, avg WHERE avg > 97",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept":"aanb"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg",
+                "courses_instructor",
+                "courses_title",
+                "courses_pass",
+                "courses_fail",
+                "courses_audit",
+                "courses_uuid"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_dept": "aanb",
+                    "courses_id": "551",
+                    "courses_avg": 87.83,
+                    "courses_instructor": "",
+                    "courses_title": "anml welf rsrch",
+                    "courses_pass": 6,
+                    "courses_fail": 0,
+                    "courses_audit": 0,
+                    "courses_uuid": "31381"
+                },
+                {
+                    "courses_dept": "aanb",
+                    "courses_id": "551",
+                    "courses_avg": 87.83,
+                    "courses_instructor": "",
+                    "courses_title": "anml welf rsrch",
+                    "courses_pass": 6,
+                    "courses_fail": 0,
+                    "courses_audit": 0,
+                    "courses_uuid": "31382"
+                },
+                {
+                    "courses_dept": "aanb",
+                    "courses_id": "504",
+                    "courses_avg": 94.44,
+                    "courses_instructor": "",
+                    "courses_title": "rsrch methdlgy",
+                    "courses_pass": 9,
+                    "courses_fail": 0,
+                    "courses_audit": 9,
+                    "courses_uuid": "31379"
+                },
+                {
+                    "courses_dept": "aanb",
+                    "courses_id": "504",
+                    "courses_avg": 94.44,
+                    "courses_instructor": "",
+                    "courses_title": "rsrch methdlgy",
+                    "courses_pass": 9,
+                    "courses_fail": 0,
+                    "courses_audit": 9,
+                    "courses_uuid": "31380"
+                }
+            ]
+        }
+    }
+}

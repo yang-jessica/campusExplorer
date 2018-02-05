@@ -1,0 +1,56 @@
+{
+    "title": "SELECT dept, avg WHERE avg > 97",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "courses_dept":"apsc"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_instructor":"*edwin*"
+                    }
+                }
+            ]
+
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_instructor"
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_instructor": "carter, paul martin;karim, faizal;knorr, edwin max"
+                },
+                {
+                    "courses_instructor": "carter, paul martin;karim, faizal;knorr, edwin max"
+                },
+                {
+                    "courses_instructor": "blazek, zeljko;knorr, edwin max"
+                },
+                {
+                    "courses_instructor": "blazek, zeljko;knorr, edwin max"
+                },
+                {
+                    "courses_instructor": "agharebparast, farshid;knorr, edwin max"
+                },
+                {
+                    "courses_instructor": "grant, david n;knorr, edwin max"
+                },
+                {
+                    "courses_instructor": "grant, david n;knorr, edwin max"
+                },
+                {
+                    "courses_instructor": "knorr, edwin max;miller, gregor"
+                }
+            ]
+        }
+    }
+}
