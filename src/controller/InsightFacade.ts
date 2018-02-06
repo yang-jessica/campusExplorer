@@ -44,7 +44,7 @@ export default class InsightFacade implements IInsightFacade {
         return new Promise(function (resolve, reject) {
             // declare a promise that will be returned
             const answer: InsightResponse = {code: -1, body: null};
-            // 🤩
+            // 🤩🌯
             // fs allows use of File System
             const fs = require("fs");
             // check if the id already exists -> throw 400, else continue
@@ -870,26 +870,14 @@ export default class InsightFacade implements IInsightFacade {
     // valid key
     private isValidKey(key: string): boolean {
         const keyToValidate = key.substring(key.indexOf("_") + 1);
-        let answer = false;
         const validKeys: string[] = ["dept", "id", "avg", "instructor", "title", "pass", "fail", "audit", "uuid"];
-        for (const validKey of validKeys) {
-            if (keyToValidate === validKey) {
-                answer = true;
-            }
-        }
-        return answer;
+        return validKeys.includes(keyToValidate);
     }
 
     // numeric key
     private isNumericKey(key: string): boolean {
         const keyToValidate = key.substring(key.indexOf("_") + 1);
-        let answer = false;
         const numericKeys: string[] = ["avg", "pass", "fail", "audit"];
-        for (const numericKey of numericKeys) {
-            if (keyToValidate === numericKey) {
-                answer = true;
-            }
-        }
-        return answer;
+        return numericKeys.includes(keyToValidate);
     }
 }
