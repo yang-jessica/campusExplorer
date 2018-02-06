@@ -44,6 +44,7 @@ export default class InsightFacade implements IInsightFacade {
         return new Promise(function (resolve, reject) {
             // declare a promise that will be returned
             const answer: InsightResponse = {code: -1, body: null};
+            // 🤩
             // fs allows use of File System
             const fs = require("fs");
             // check if the id already exists -> throw 400, else continue
