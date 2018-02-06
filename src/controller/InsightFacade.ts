@@ -44,125 +44,112 @@ export default class InsightFacade implements IInsightFacade {
         return new Promise(function (resolve, reject) {
             // declare a promise that will be returned
             const answer: InsightResponse = {code: -1, body: null};
-            // 🤩🌯
             // fs allows use of File System
             const fs = require("fs");
-            // check if the id already exists -> throw 400, else continue
-            fs.readdir("./datasets/", function (err: Error, files: string[]) {
-                if (!err) {
-                    for (let i = 0; i < files.length; i++) {
-                        const test = "file[" + i + "] " + files[i];
-                        // Log.trace(test);
-                        if (files[i] === id) {
+            new Promise(function (resolved) {
+                fs.readdir("./datasets/", function (err: Error, files: string[]) {
+                    if (!err) {
+                        // check if the id already exists -> throw 400, else continue
+                        if (files.includes(id)) {
                             answer.code = 400;
                             answer.body = {error: "a dataset with this id already exists"};
-                            // Log.error("400: a dataset with this id already exists");
+                            Log.error("400: a dataset with this id already exists");
                             reject(answer);
                         }
                     }
-                }
-            }); // fs.readdir is async so loadAsync starts before it's done
-            // JSZip converts base64 string to JSZipObject using loadAsync
-            const JSZip = require("jszip");
-            JSZip.loadAsync(content, {base64: true})
-                .then(/*loadAsync fulfills here*/function (zip: any) {
-                    // Log.trace("loadAsync THEN");
-                    // for each file in the folder named 'courses', do stuff
-                    const promiseArray: any[] = [];
-                    const course: { [section: string]: any } = [];
-                    zip.folder("courses").forEach(function (relativePath: string, file: any) {
-                        // const suc: string = "for each'd " + file.name;
-                        // Log.trace(suc);
-                        // convert compressed file in 'courses' to text
-                        promiseArray.push(file.async("text").then(function (text: any) {
-                            try {
-                                // JSON.parse the text returned from file.async
-                                const original = JSON.parse(text);
-                                // const size: string = "Size of: " + file.name + ": " + original.result.length;
-                                // Log.trace(size);
-                                // const originalResult: string = "json.stringify: " + JSON.stringify(original.result);
-                                // Log.trace(originalResult);
-                                // for each section in the result array, parse into our own JSON
-                                for (let i = 0; i < original.result.length; i++) {
-                                    try {
-                                        const section: { [key: string]: any } = {
-                                            [id + "_dept"]: original.result[i].Subject,
-                                            [id + "_id"]: original.result[i].Course,
-                                            [id + "_avg"]: original.result[i].Avg,
-                                            [id + "_instructor"]: original.result[i].Professor,
-                                            [id + "_title"]: original.result[i].Title,
-                                            [id + "_pass"]: original.result[i].Pass,
-                                            [id + "_fail"]: original.result[i].Fail,
-                                            [id + "_audit"]: original.result[i].Audit,
-                                            [id + "_uuid"]: original.result[i].id.toString(),
-                                        };
-                                        course.push(section);
-                                        const sec: string = "new section[" + i + "]: " +
-                                            section.courses_dept + ", " + section.courses_id + ", " +
-                                            section.courses_avg + ", " + section.courses_instructor + ", " +
-                                            section.courses_title + ", " + section.courses_pass + ", " +
-                                            section.courses_fail + ", " + section.courses_audit + ", " +
-                                            section.courses_uuid;
-                                        // Log.trace(sec);
-                                        // const fun = "new section to string: " + JSON.stringify(section);
-                                        // Log.trace(fun);
-
-                                    } catch {
-                                        // const cat: string = "error parsing result[" + i + "]";
-                                        // Log.trace(cat);
-                                    }
-                                }
-                            } catch {
-                                // const errorParse: string = "error parsing " + file.name;
-                                // Log.trace(errorParse);
-                            }
-                        }).catch(/*file.async rejects*/ function () {
-                            // file.async cannot read content the content, so error code 400
-                            answer.code = 400;
-                            answer.body = {error: "Cannot read the json content"};
-                            // Log.error("file.async CATCH - 400: Cannot read the json content");
-                            reject(answer);
-                        }));
-                        // const msg: string = "loop of " + file.name + " finished";
-                        // Log.trace(msg);
-                    });
-                    Promise.all(promiseArray).then(function () {
-                        const final: IDataset = {
-                            iid: id,
-                            sections: course,
-                            numRows: course.length,
-                            iKind: kind,
-                        };
-                        const courseString = JSON.stringify(final);
-                        // const logCourse = "new course to string: " + courseString;
-                        // Log.trace(logCourse);
-                        if (course.length === 0) {
-                            answer.code = 400;
-                            answer.body = {error: "no valid sections"};
-                            // Log.error("400: no valid sections");
-                            reject(answer);
-                        } else {
-                            fs.mkdir("./datasets", function () {
-                                // Log.trace("directory 'datasets' created");
-                                // write the course to a file using a stream
-                                const logger = fs.createWriteStream("./datasets/" + id);
-                                logger.write(courseString);
-                                logger.end();
-                                // Log.trace("./datasets/" + id + " FILE CREATED");
-                                answer.code = 204;
-                                answer.body = {result: "dataset successfully added"};
-                                resolve(answer);
-                            }).catch();
-                        }
-                    }).catch();
-                })
-                .catch(/*loadAsync rejects here*/function () {
-                    // loadAsync cannot read content the content, so error code 400
-                    answer.code = 400;
-                    answer.body = {error: "Cannot read base64 content"};
-                    // Log.error("loadAsync CATCH: 400: Cannot read base64 content");
-                    reject(answer);
+                    // if there was an error (no 'dataset' directory) || not cached, then continue
+                    resolved();
                 });
+            }).then(/* new */function () {
+                // JSZip converts base64 string to JSZipObject using loadAsync
+                const JSZip = require("jszip");
+                JSZip.loadAsync(content, {base64: true})
+                    .then(/*loadAsync fulfills here*/function (zip: any) {
+                        // Log.trace("loadAsync THEN");
+                        // for each file in the folder named 'courses', do stuff
+                        const promiseArray: any[] = [];
+                        const course: { [section: string]: any } = [];
+                        zip.folder("courses").forEach(function (relativePath: string, file: any) {
+                            // convert compressed file in 'courses' to text
+                            promiseArray.push(file.async("text").then(function (text: any) {
+                                try {
+                                    // JSON.parse the text returned from file.async
+                                    const original = JSON.parse(text);
+                                    // for each section in the result array, parse into our own JSON
+                                    for (let i = 0; i < original.result.length; i++) {
+                                        try {
+                                            const section: { [key: string]: any } = {
+                                                [id + "_dept"]: original.result[i].Subject,
+                                                [id + "_id"]: original.result[i].Course,
+                                                [id + "_avg"]: original.result[i].Avg,
+                                                [id + "_instructor"]: original.result[i].Professor,
+                                                [id + "_title"]: original.result[i].Title,
+                                                [id + "_pass"]: original.result[i].Pass,
+                                                [id + "_fail"]: original.result[i].Fail,
+                                                [id + "_audit"]: original.result[i].Audit,
+                                                [id + "_uuid"]: original.result[i].id.toString(),
+                                            };
+                                            course.push(section);
+                                            const sec: string = "new section[" + i + "]: " +
+                                                section.courses_dept + ", " + section.courses_id + ", " +
+                                                section.courses_avg + ", " + section.courses_instructor + ", " +
+                                                section.courses_title + ", " + section.courses_pass + ", " +
+                                                section.courses_fail + ", " + section.courses_audit + ", " +
+                                                section.courses_uuid;
+                                            // Log.trace(sec);
+                                            // const fun = "new section to string: " + JSON.stringify(section);
+                                            // Log.trace(fun);
+                                        } catch {
+                                            // const cat: string = "error parsing result[" + i + "]";
+                                            // Log.trace(cat);
+                                        }
+                                    }
+                                } catch {
+                                    // const errorParse: string = "error parsing " + file.name;
+                                    // Log.trace(errorParse);
+                                }
+                            }));
+                            // const msg: string = "loop of " + file.name + " finished";
+                            // Log.trace(msg);
+                        });
+                        Promise.all(promiseArray).then(function () {
+                            const final: IDataset = {
+                                iid: id,
+                                sections: course,
+                                numRows: course.length,
+                                iKind: kind,
+                            };
+                            const courseString = JSON.stringify(final);
+                            // const logCourse = "new course to string: " + courseString;
+                            // Log.trace(logCourse);
+                            if (course.length === 0) {
+                                answer.code = 400;
+                                answer.body = {error: "no valid sections"};
+                                // Log.error("400: no valid sections");
+                                reject(answer);
+                            } else {
+                                fs.mkdir("./datasets", function () {
+                                    // Log.trace("directory 'datasets' created");
+                                    // write the course to a file using a stream
+                                    const logger = fs.createWriteStream("./datasets/" + id);
+                                    logger.write(courseString);
+                                    logger.end();
+                                    // Log.trace("./datasets/" + id + " FILE CREATED");
+                                    answer.code = 204;
+                                    answer.body = {result: "dataset successfully added"};
+                                    resolve(answer);
+                                });
+                            }
+                        }).catch(/* promise.All */);
+                    })
+                    .catch(/*loadAsync rejects here*/function () {
+                        // loadAsync cannot read content the content, so error code 400
+                        answer.code = 400;
+                        answer.body = {error: "Cannot read base64 content"};
+                        // Log.error("loadAsync CATCH: 400: Cannot read base64 content");
+                        reject(answer);
+                    });
+            }).catch(/* new */); // new
         });
     }
 
@@ -284,7 +271,7 @@ export default class InsightFacade implements IInsightFacade {
                     // Log.trace(ans);
                 } catch {
                     answer.code = 400;
-                    answer.body = {error: "lol what"};
+                    answer.body = {error: "ERROR OCCURRED"};
                     // Log.trace("ERROR OCCURRED");
                     return reject(answer);
                 }
