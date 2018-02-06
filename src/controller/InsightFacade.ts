@@ -60,7 +60,7 @@ export default class InsightFacade implements IInsightFacade {
                         }
                     }
                 }
-            }); // fs.readdir is async so loadAsync starts before it's done 🤔
+            }); // fs.readdir is async so loadAsync starts before it's done
             // JSZip converts base64 string to JSZipObject using loadAsync
             const JSZip = require("jszip");
             JSZip.loadAsync(content, {base64: true})
@@ -115,6 +115,12 @@ export default class InsightFacade implements IInsightFacade {
                                 // const errorParse: string = "error parsing " + file.name;
                                 // Log.trace(errorParse);
                             }
+                        }).catch(/*file.async rejects*/ function () {
+                            // file.async cannot read content the content, so error code 400
+                            answer.code = 400;
+                            answer.body = {error: "Cannot read the json content"};
+                            // Log.error("file.async CATCH - 400: Cannot read the json content");
+                            reject(answer);
                         }));
                         // const msg: string = "loop of " + file.name + " finished";
                         // Log.trace(msg);
@@ -145,9 +151,9 @@ export default class InsightFacade implements IInsightFacade {
                                 answer.code = 204;
                                 answer.body = {result: "dataset successfully added"};
                                 resolve(answer);
-                            });
+                            }).catch();
                         }
-                    });
+                    }).catch();
                 })
                 .catch(/*loadAsync rejects here*/function () {
                     // loadAsync cannot read content the content, so error code 400
