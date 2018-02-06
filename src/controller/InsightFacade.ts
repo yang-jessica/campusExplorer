@@ -711,43 +711,51 @@ export default class InsightFacade implements IInsightFacade {
         // handle wildcards
         let compare = logic[keyToCompare];
         const sub = compare.substring(1, compare.length - 1);
-        if (sub.includes("*")) {
-            throw new Error("invalid key: * not at beginning or end");
-        }
-        // case where compare is 'string'
-        if (!compare.includes("*")) {
+        // check if the string is "*" or "**" (valid like wtf man)
+        if (compare === "*" || compare === "**") {
             for (const section of allSections) {
-                if (section[keyToCompare] === compare) {
-                    answer.push(section);
-                } else {
-                    invert.push(section);
-                }
+                answer.push(section);
             }
-        } else if (compare.startsWith("*") && compare.endsWith("*")) {
-            for (const section of allSections) {
-                if (section[keyToCompare].includes(sub)) {
-                    answer.push(section);
-                } else {
-                    invert.push(section);
-                }
+        } else {
+            // if the string has a * somewhere not at the beginning or end it's no good
+            if (sub.includes("*")) {
+                throw new Error("invalid key: * not at beginning or end");
             }
-        } else if (compare.startsWith("*")) {
-            compare = compare.substring(1, compare.length);
-            for (const section of allSections) {
-                const secLength = section[keyToCompare].length;
-                if (section[keyToCompare].substring(secLength - compare.length, secLength) === compare) {
-                    answer.push(section);
-                } else {
-                    invert.push(section);
+            // case where compare is 'string'
+            if (!compare.includes("*")) {
+                for (const section of allSections) {
+                    if (section[keyToCompare] === compare) {
+                        answer.push(section);
+                    } else {
+                        invert.push(section);
+                    }
                 }
-            }
-        } else if (compare.endsWith("*")) {
-            compare = compare.substring(0, compare.length - 1);
-            for (const section of allSections) {
-                if (section[keyToCompare].substring(0, compare.length) === compare) {
-                    answer.push(section);
-                } else {
-                    invert.push(section);
+            } else if (compare.startsWith("*") && compare.endsWith("*")) {
+                for (const section of allSections) {
+                    if (section[keyToCompare].includes(sub)) {
+                        answer.push(section);
+                    } else {
+                        invert.push(section);
+                    }
+                }
+            } else if (compare.startsWith("*")) {
+                compare = compare.substring(1, compare.length);
+                for (const section of allSections) {
+                    const secLength = section[keyToCompare].length;
+                    if (section[keyToCompare].substring(secLength - compare.length, secLength) === compare) {
+                        answer.push(section);
+                    } else {
+                        invert.push(section);
+                    }
+                }
+            } else if (compare.endsWith("*")) {
+                compare = compare.substring(0, compare.length - 1);
+                for (const section of allSections) {
+                    if (section[keyToCompare].substring(0, compare.length) === compare) {
+                        answer.push(section);
+                    } else {
+                        invert.push(section);
+                    }
                 }
             }
         }
