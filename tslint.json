@@ -17,6 +17,8 @@
                 "asyncArrow": "always"
             }
         ],
-        "object-literal-sort-keys": false
+        "object-literal-sort-keys": false,
+        "forin": false,
+        "ordered-imports": false
     }
 }
