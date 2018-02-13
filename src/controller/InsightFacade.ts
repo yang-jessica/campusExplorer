@@ -1,5 +1,5 @@
 import Log from "../Util";
-import {IDataset} from "./IDatasetFacade";
+import {CourseKeys, IDataset, NumericKeys} from "./IDatasetFacade";
 import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightResponse} from "./IInsightFacade";
 
 /**
@@ -809,13 +809,10 @@ export default class InsightFacade implements IInsightFacade {
             }
         }
         // filter out the unnecessary keys
-        const allKeys: string[] = [id + "_dept", id + "_id", id + "_avg",
-            id + "_instructor", id + "_title", id + "_pass",
-            id + "_fail", id + "_audit", id + "_uuid"];
         const keysToRemove: string[] = [];
-        for (const key of allKeys) {
-            if (!columns.includes(key)) {
-                keysToRemove.push(key);
+        for (const key of Object.values(CourseKeys)) {
+            if (!columns.includes(id + "_" + key)) {
+                keysToRemove.push(id + "_" + key);
             }
         }
         // Log.trace("\t\tRemoving non-queried columns");
@@ -857,14 +854,12 @@ export default class InsightFacade implements IInsightFacade {
     // valid key
     private isValidKey(key: string): boolean {
         const keyToValidate = key.substring(key.indexOf("_") + 1);
-        const validKeys: string[] = ["dept", "id", "avg", "instructor", "title", "pass", "fail", "audit", "uuid"];
-        return validKeys.includes(keyToValidate);
+        return Object.values(CourseKeys).includes(keyToValidate);
     }
 
     // numeric key
     private isNumericKey(key: string): boolean {
         const keyToValidate = key.substring(key.indexOf("_") + 1);
-        const numericKeys: string[] = ["avg", "pass", "fail", "audit"];
-        return numericKeys.includes(keyToValidate);
+        return Object.values(NumericKeys).includes(keyToValidate);
     }
 }
