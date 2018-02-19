@@ -17,10 +17,9 @@ export enum CourseKeys {
     Fail = "fail",
     Audit = "audit",
     Uuid = "uuid",
-    // Year = "year",
+    Year = "year",
 }
 
-/*
 export enum RoomKeys {
     FullName = "fullname",
     ShortName = "shortname",
@@ -34,15 +33,14 @@ export enum RoomKeys {
     Furniture = "furniture",
     Href = "href",
 }
-*/
 
 export enum NumericKeys {
     Avg = "avg",
     Pass = "pass",
     Fail = "fail",
     Audit = "audit",
-    // Year = "year",
-    // Lat = "lat",
-    // Lon =  "lon",
-    // Seats = "seats",
+    Year = "year",
+    Lat = "lat",
+    Lon =  "lon",
+    Seats = "seats",
 }
