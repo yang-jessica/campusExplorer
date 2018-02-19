@@ -1,0 +1,34 @@
+{
+    "title": "Should be able to find some specific rooms.",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "rooms_shortname": "ANGU"
+                    }
+                },
+                {
+                    "IS": {
+                        "rooms_number": "098"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_name"
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_name": "ANGU_098"
+                }
+            ]
+        }
+    }
+}

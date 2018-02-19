@@ -1,0 +1,100 @@
+{
+    "title": "Should be able to query with AND and OR.",
+    "query": {
+        "WHERE": {
+            "OR": [
+                {
+                    "AND": [
+                        {
+                            "IS": {
+                                "rooms_shortname": "ANGU"
+                            }
+                        },
+                        {
+                            "IS": {
+                                "rooms_type": "Case Style"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "AND": [
+                        {
+                            "IS": {
+                                "rooms_shortname": "SWNG"
+                            }
+                        },
+                        {
+                            "IS": {
+                                "rooms_type": "Small Group"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_"
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_name": "ANGU_037"
+                },
+                {
+                    "rooms_name": "ANGU_039"
+                },
+                {
+                    "rooms_name": "ANGU_234"
+                },
+                {
+                    "rooms_name": "ANGU_235"
+                },
+                {
+                    "rooms_name": "ANGU_237"
+                },
+                {
+                    "rooms_name": "ANGU_334"
+                },
+                {
+                    "rooms_name": "ANGU_335"
+                },
+                {
+                    "rooms_name": "ANGU_434"
+                },
+                {
+                    "rooms_name": "SWNG_106"
+                },
+                {
+                    "rooms_name": "SWNG_108"
+                },
+                {
+                    "rooms_name": "SWNG_110"
+                },
+                {
+                    "rooms_name": "SWNG_306"
+                },
+                {
+                    "rooms_name": "SWNG_308"
+                },
+                {
+                    "rooms_name": "SWNG_310"
+                },
+                {
+                    "rooms_name": "SWNG_406"
+                },
+                {
+                    "rooms_name": "SWNG_408"
+                },
+                {
+                    "rooms_name": "SWNG_410"
+                }
+            ]
+        }
+    }
+}

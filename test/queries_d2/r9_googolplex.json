@@ -1,0 +1,29 @@
+{
+    "title": "Filter by room fullnames.",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "rooms_fullname": "AERL"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_name",
+                "rooms_seats",
+                "rooms_address"
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_name": "AERL_120",
+                    "rooms_seats": 144,
+                    "rooms_address": "2202 Main Mall"
+                }
+            ]
+        }
+    }
+}

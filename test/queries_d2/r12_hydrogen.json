@@ -1,0 +1,25 @@
+{
+    "title": "Should be able to find hyperlink for rooms.",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "rooms_name": "DMP_110"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_href"
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/DMP-110"
+                }
+            ]
+        }
+    }
+}
