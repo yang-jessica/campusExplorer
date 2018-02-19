@@ -1,29 +1,12 @@
 {
-    "title": "SELECT dept, id, fail WHERE NOT fail < 265",
+    "title": "NOT NOT",
     "query": {
         "WHERE": {
             "AND": [
-                {
-                    "IS": {
-                        "courses_dept": "comm"
-                    }
-                },
-                {
-                    "IS": {
-                        "courses_id": "101"
-                    }
-                },
-                {
-                    "NOT": {
-                        "NOT": {
-                            "GT": {
-                                "courses_avg": 74
-                            }
-                        }
-                    }
-                }
+                {"IS": {"courses_dept": "comm"}},
+                {"IS": {"courses_id": "101" }},
+                {"NOT": {"NOT": {"GT": {"courses_avg": 74}}}}
             ]
-
         },
         "OPTIONS": {
             "COLUMNS": [

@@ -1,9 +1,9 @@
 {
-    "title": "SELECT * WHERE fail = 200",
+    "title": "empty first OR",
     "query": {
         "WHERE": {
             "OR": [
-                {  
+                {
                 },
                 {
                     "EQ":

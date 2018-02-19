@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, id WHERE LT = ''",
+    "title": "empty LT",
     "query": {
         "WHERE": {
             "LT": {

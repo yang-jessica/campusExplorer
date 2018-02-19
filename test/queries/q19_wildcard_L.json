@@ -1,5 +1,5 @@
 {
-    "title": "SELECT * WHERE instructor IS '*martin;karim, faizal;knorr, edwin max",
+    "title": "wildcard L",
     "query": {
         "WHERE": {
             "IS": {

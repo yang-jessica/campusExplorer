@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, id WHERE ER = 99",
+    "title": "invalid filter",
     "query": {
         "WHERE": {
             "ER": {

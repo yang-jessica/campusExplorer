@@ -1,5 +1,5 @@
 {
-    "title": "SELECT * WHERE avg > 74 && instructor = 'cubbon, kroeker'",
+    "title": "AND nested",
     "query": {
         "WHERE": {
                     "AND":[

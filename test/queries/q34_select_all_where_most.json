@@ -1,5 +1,5 @@
 {
-    "title": "SELECT * WHERE (pass > 200 && title=='career*') || (audit > 20 && uuid == '707' ORDER BY dept",
+    "title": "select all where most",
     "query": {
         "WHERE": {
             "OR": [

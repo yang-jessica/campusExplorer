@@ -1,5 +1,5 @@
 {
-    "title": "SELECT * WHERE dept = 'crwr'",
+    "title": "empty second AND",
     "query": {
         "WHERE": {
             "AND": [

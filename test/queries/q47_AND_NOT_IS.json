@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, id, avg WHERE dept = 'comm' && id = '101' && !(avg < 74.1) ORDER by avg",
+    "title": "AND NOT IS",
     "query": {
         "WHERE": {
             "AND":[

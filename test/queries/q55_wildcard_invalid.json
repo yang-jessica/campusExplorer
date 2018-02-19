@@ -1,29 +1,12 @@
 {
-    "title": "SELECT * WHERE comm101 && avg > 74 && instructor invalid",
+    "title": "wildcard invalid",
     "query": {
         "WHERE": {
             "AND": [
-                {
-                    "IS": {
-                        "courses_dept":"comm"
-                    }
-                },
-                {
-                    "IS": {
-                        "courses_id":"101"
-                    }
-                },
-                {
-                    "IS": {
-                        "courses_instructor":"cubbo*n, paul*"
-                    }
-                },
-                {
-                    "GT": {
-                        "courses_avg":74
-
-                    }
-                }
+                {"IS": {"courses_dept":"comm"}},
+                {"IS": {"courses_id":"101"}},
+                {"IS": {"courses_instructor":"cubbo*n, paul*"}},
+                {"GT": {"courses_avg":74}}
             ]
         },
         "OPTIONS": {

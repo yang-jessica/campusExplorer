@@ -1,23 +1,11 @@
 {
-    "title": "SELECT * WHERE instructor IS '*knorr*",
+    "title": "wildcard empty",
     "query": {
         "WHERE": {
             "AND": [
-                {
-                    "IS": {
-                        "courses_dept":"comm"
-                    }
-                },
-                {
-                    "IS": {
-                        "courses_id":"101"
-                    }
-                },
-                {
-                    "IS": {
-                        "courses_instructor":"*kroeker"
-                    }
-                }
+                {"IS": {"courses_dept":"comm"}},
+                {"IS": {"courses_id":"101"}},
+                {"IS": {"courses_instructor":"*kroeker"}}
             ]
         },
         "OPTIONS": {

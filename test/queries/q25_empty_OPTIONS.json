@@ -1,12 +1,12 @@
 {
-    "title": "SELECT dept, avg WHERE avg > 97",
+    "title": "empty OPTIONS",
     "query": {
         "WHERE": {
             "GT": {
                 "courses_avg":97
             }
         },
-        "OPTIONS": {  
+        "OPTIONS": {
         }
     },
     "response": {

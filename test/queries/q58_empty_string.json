@@ -1,18 +1,10 @@
 {
-    "title": "SELECT dept, id, avg WHERE avg == 95 || avg > 90 && dept == 'adhe' ORDER BY avg",
+    "title": "empty string",
     "query": {
         "WHERE": {
             "AND": [
-                {
-                    "IS": {
-                        "courses_dept": "aanb"
-                    }
-                },
-                {
-                    "IS": {
-                        "courses_instructor": ""
-                    }
-                }
+                {"IS": {"courses_dept": "aanb"}},
+                {"IS": {"courses_instructor": ""}}
             ]
         },
         "OPTIONS": {

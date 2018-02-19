@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, avg WHERE &&",
+    "title": "empty AND",
     "query": {
         "WHERE": {
         	"AND":[

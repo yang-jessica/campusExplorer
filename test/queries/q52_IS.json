@@ -1,10 +1,8 @@
 {
-    "title": "SELECT dept, avg WHERE avg > 97",
+    "title": "IS query",
     "query": {
         "WHERE": {
-            "IS": {
-                "courses_dept":"aanb"
-            }
+            "IS": {"courses_dept":"aanb"}
         },
         "OPTIONS": {
             "COLUMNS": [

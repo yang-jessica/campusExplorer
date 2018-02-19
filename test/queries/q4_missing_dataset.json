@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, id, avg WHERE class_avg > 90",
+    "title": "missing dataset",
     "query": {
         "WHERE": {
             "GT": {

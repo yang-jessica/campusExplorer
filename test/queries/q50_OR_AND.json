@@ -1,34 +1,16 @@
 {
-    "title": "SELECT * WHERE (title = 'busn' && avg = 72.34) || (title = 'busn' && avg = 74.44)",
+    "title": "OR AND",
     "query": {
         "WHERE": {
             "OR": [
-                {
-                    "AND": [
-                        {
-                            "IS": {
-                                "courses_title": "busn fundamental"
-                            }
-                        },
-                        {
-                            "EQ": {
-                                "courses_avg":72.34
-                            }
-                        }
+                {"AND": [
+                        {"IS": {"courses_title": "busn fundamental"}},
+                        {"EQ": {"courses_avg":72.34}}
                     ]
                 },
-                {
-                    "AND": [
-                        {
-                            "IS": {
-                                "courses_title": "busn fundamental"
-                            }
-                        },
-                        {
-                            "EQ": {
-                                "courses_avg":74.44
-                            }
-                        }
+                {"AND": [
+                        {"IS": {"courses_title": "busn fundamental"}},
+                        {"EQ": {"courses_avg":74.44}}
                     ]
                 }
             ]

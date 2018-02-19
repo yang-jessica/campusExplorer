@@ -1,27 +1,14 @@
 {
-    "title": "SELECT dept, id, avg WHERE avg == 95 || avg > 90 && dept == 'adhe' ORDER BY avg",
+    "title": "complex",
     "query": {
         "WHERE": {
             "OR": [
-                {
-                    "AND":[
-                        {
-                            "GT": {
-                                "courses_avg":90
-                            }
-                        },
-                        {
-                            "IS": {
-                                "courses_dept":"adhe"
-                            }
-                        }
+                { "AND":[
+                    {"GT": {"courses_avg":90}},
+                    {"IS": {"courses_dept":"adhe"}}
                     ]
                 },
-                {
-                    "EQ": {
-                        "courses_avg":95
-                    }
-                }
+                {"EQ": {"courses_avg":95}}
             ]
         },
         "OPTIONS": {

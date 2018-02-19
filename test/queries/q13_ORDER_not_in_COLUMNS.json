@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, id WHERE avg > 99 ORDER BY avg",
+    "title": "ORDER not in COLUMNS",
     "query": {
         "WHERE": {
             "GT": {

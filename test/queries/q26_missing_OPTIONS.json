@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, avg WHERE avg > 97",
+    "title": "missing OPTIONS",
     "query": {
         "WHERE": {
             "GT": {

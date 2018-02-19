@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, id, instructor, title, pass, fail, audit, uuid, avg WHERE avg == 98",
+    "title": "all keys",
     "query": {
         "WHERE": {
             "EQ": {

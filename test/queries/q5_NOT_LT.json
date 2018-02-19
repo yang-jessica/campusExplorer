@@ -1,5 +1,5 @@
 {
-    "title": "SELECT * WHERE NOT avg < 99",
+    "title": "NOT LT",
     "query": {
         "WHERE": {
             "NOT": {

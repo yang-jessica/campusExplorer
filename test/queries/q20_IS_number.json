@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, id WHERE id IS 210 AND avg=90 ORDER BY dept",
+    "title": "IS number",
     "query": {
         "WHERE": {
             "IS": {

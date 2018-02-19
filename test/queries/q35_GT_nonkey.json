@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, id, avg WHERE jessica > 90 ORDER BY avg",
+    "title": "GT nonkey",
     "query": {
         "WHERE": {
             "GT": {

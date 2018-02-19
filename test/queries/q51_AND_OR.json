@@ -1,27 +1,13 @@
 {
-    "title": "SELECT * WHERE avg > 74 && instructor = 'cubbon, kroeker'",
+    "title": "AND OR",
     "query": {
         "WHERE": {
             "AND": [
-                {
-                    "OR": [
-                        {
-                            "IS": {
-                                "courses_uuid": "699"
-                            }
-                        },
-                        {
-                            "IS": {
-                                "courses_uuid":"81415"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "IS": {
-                        "courses_dept": "comm"
-                    }
-                }
+                {"OR": [
+                        {"IS": {"courses_uuid": "699"}},
+                        {"IS": {"courses_uuid":"81415"}}
+                    ]},
+                {"IS": {"courses_dept": "comm"}}
             ]
         },
         "OPTIONS": {

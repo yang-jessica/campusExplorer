@@ -1,20 +1,11 @@
 {
-    "title": "SELECT dept, avg WHERE avg > 97",
+    "title": "wildcard instructors",
     "query": {
         "WHERE": {
             "AND": [
-                {
-                    "IS": {
-                        "courses_dept":"apsc"
-                    }
-                },
-                {
-                    "IS": {
-                        "courses_instructor":"*edwin*"
-                    }
-                }
+                {"IS": {"courses_dept":"apsc"}},
+                {"IS": {"courses_instructor":"*edwin*"}}
             ]
-
         },
         "OPTIONS": {
             "COLUMNS": [

@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, id, avg WHERE avg == 95 || avg > 90 && dept == 'adhe' ORDER BY avg",
+    "title": "misspell WHERE",
     "query": {
         "WHEE": {
             "OR": [

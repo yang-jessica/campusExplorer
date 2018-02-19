@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, avg WHERE avg > 99",
+    "title": "OR OR NOT",
     "query": {
         "WHERE": {
             "OR":[

@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, avg WHERE avg > 97",
+    "title": "invalid key ORDER",
     "query": {
         "WHERE": {
             "GT": {

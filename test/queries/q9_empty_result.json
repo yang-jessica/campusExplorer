@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, id, fail WHERE NOT fail < 300",
+    "title": "empty result",
     "query": {
         "WHERE": {
             "NOT": {

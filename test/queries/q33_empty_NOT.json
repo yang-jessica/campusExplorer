@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, id, avg WHERE NOT avg < 99 ORDER BY avg",
+    "title": "empty NOT",
     "query": {
         "WHERE": {
             "NOT": {

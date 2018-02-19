@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, id, jessica WHERE avg == 95 || avg > 90 && dept == 'adhe' ORDER BY jessica",
+    "title": "nonkey COLUMNS",
     "query": {
         "WHERE": {
             "OR": [

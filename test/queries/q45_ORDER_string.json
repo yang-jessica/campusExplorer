@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, id, uuid WHERE fail = 73, ORDER by uuid",
+    "title": "ORDER string",
     "query": {
         "WHERE": {
             "EQ": {

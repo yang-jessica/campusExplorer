@@ -1,10 +1,10 @@
 {
-    "title": "SELECT nothing WHERE fail > 250",
+    "title": "empty COLUMNS",
     "query": {
         "WHERE": {
 
                 "GT": {
-                    "courses_fail": 250  
+                    "courses_fail": 250
             }
         },
         "OPTIONS": {

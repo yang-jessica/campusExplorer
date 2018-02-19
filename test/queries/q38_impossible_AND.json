@@ -1,5 +1,5 @@
 {
-    "title": "SELECT * WHERE dept = 'crwr' AND dept = 'cpsc'",
+    "title": "impossible AND",
     "query": {
         "WHERE": {
             "AND": [
