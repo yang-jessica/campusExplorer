@@ -1,7 +1,7 @@
 import Log from "../Util";
-import {IDataset} from "./IDatasetFacade";
 import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightResponse} from "./IInsightFacade";
 import {PerformQueryHelpers} from "./PerformQueryHelpers";
+import {AddDatasetHelpers} from "./AddDatasetHelpers";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -43,114 +43,25 @@ export default class InsightFacade implements IInsightFacade {
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<InsightResponse> {
         // return the Promise<InsightResponse>
         return new Promise(function (resolve, reject) {
-            // declare a promise that will be returned
-            const answer: InsightResponse = {code: -1, body: null};
             // fs allows use of File System
             const fs = require("fs");
-            new Promise(function (resolved) {
-                fs.readdir("./datasets/", function (err: Error, files: string[]) {
-                    if (!err) {
-                        // check if the id already exists -> throw 400, else continue
-                        if (files.includes(id)) {
-                            answer.code = 400;
-                            answer.body = {error: "a dataset with this id already exists"};
-                            Log.error("400: a dataset with this id already exists");
-                            reject(answer);
-                        }
-                    }
-                    // if there was an error (no 'dataset' directory) || not cached, then continue
-                    resolved();
+            // synchronously check if the id already exists
+            const dirMain = fs.readdirSync("./");
+            if (dirMain.includes("datasets")) {
+                const dirDatasets = fs.readdirSync("./datasets/");
+                if (dirDatasets.includes(id)) {
+                    Log.error("400: a dataset with this id already exists");
+                    return reject({code: 400, body: {error: "a dataset with this id already exists"}});
+                }
+            }
+            const help = new AddDatasetHelpers();
+            help.addCourse(id, content)
+                .then(function (response: InsightResponse) {
+                    resolve(response);
+                })
+                .catch(function (response: InsightResponse) {
+                    reject(response);
                 });
-            }).then(/* new */function () {
-                // JSZip converts base64 string to JSZipObject using loadAsync
-                const JSZip = require("jszip");
-                JSZip.loadAsync(content, {base64: true})
-                    .then(/*loadAsync fulfills here*/function (zip: any) {
-                        // Log.trace("loadAsync THEN");
-                        // for each file in the folder named 'courses', do stuff
-                        const promiseArray: any[] = [];
-                        const course: { [section: string]: any } = [];
-                        zip.folder("courses").forEach(function (relativePath: string, file: any) {
-                            // convert compressed file in 'courses' to text
-                            promiseArray.push(file.async("text").then(function (text: any) {
-                                try {
-                                    // JSON.parse the text returned from file.async
-                                    const original = JSON.parse(text);
-                                    // for each section in the result array, parse into our own JSON
-                                    for (let i = 0; i < original.result.length; i++) {
-                                        try {
-                                            const section: { [key: string]: any } = {
-                                                [id + "_dept"]: original.result[i].Subject,
-                                                [id + "_id"]: original.result[i].Course,
-                                                [id + "_avg"]: original.result[i].Avg,
-                                                [id + "_instructor"]: original.result[i].Professor,
-                                                [id + "_title"]: original.result[i].Title,
-                                                [id + "_pass"]: original.result[i].Pass,
-                                                [id + "_fail"]: original.result[i].Fail,
-                                                [id + "_audit"]: original.result[i].Audit,
-                                                [id + "_uuid"]: original.result[i].id.toString(),
-                                            };
-                                            course.push(section);
-                                            const sec: string = "new section[" + i + "]: " +
-                                                section.courses_dept + ", " + section.courses_id + ", " +
-                                                section.courses_avg + ", " + section.courses_instructor + ", " +
-                                                section.courses_title + ", " + section.courses_pass + ", " +
-                                                section.courses_fail + ", " + section.courses_audit + ", " +
-                                                section.courses_uuid;
-                                            // Log.trace(sec);
-                                            // const fun = "new section to string: " + JSON.stringify(section);
-                                            // Log.trace(fun);
-                                        } catch {
-                                            // const cat: string = "error parsing result[" + i + "]";
-                                            // Log.trace(cat);
-                                        }
-                                    }
-                                } catch {
-                                    // const errorParse: string = "error parsing " + file.name;
-                                    // Log.trace(errorParse);
-                                }
-                            }));
-                            // const msg: string = "loop of " + file.name + " finished";
-                            // Log.trace(msg);
-                        });
-                        Promise.all(promiseArray).then(function () {
-                            const final: IDataset = {
-                                iid: id,
-                                sections: course,
-                                numRows: course.length,
-                                iKind: kind,
-                            };
-                            const courseString = JSON.stringify(final);
-                            // const logCourse = "new course to string: " + courseString;
-                            // Log.trace(logCourse);
-                            if (course.length === 0) {
-                                answer.code = 400;
-                                answer.body = {error: "no valid sections"};
-                                // Log.error("400: no valid sections");
-                                reject(answer);
-                            } else {
-                                fs.mkdir("./datasets", function () {
-                                    // Log.trace("directory 'datasets' created");
-                                    // write the course to a file using a stream
-                                    const logger = fs.createWriteStream("./datasets/" + id);
-                                    logger.write(courseString);
-                                    logger.end();
-                                    // Log.trace("./datasets/" + id + " FILE CREATED");
-                                    answer.code = 204;
-                                    answer.body = {result: "dataset successfully added"};
-                                    resolve(answer);
-                                });
-                            }
-                        }).catch(/* promise.All */);
-                    })
-                    .catch(/*loadAsync rejects here*/function () {
-                        // loadAsync cannot read content the content, so error code 400
-                        answer.code = 400;
-                        answer.body = {error: "Cannot read base64 content"};
-                        // Log.error("loadAsync CATCH: 400: Cannot read base64 content");
-                        reject(answer);
-                    });
-            }).catch(/* new */); // new
         });
     }
 
@@ -220,22 +131,16 @@ export default class InsightFacade implements IInsightFacade {
             const answer: InsightResponse = {code: -1, body: undefined};
             // check if WHERE or OPTIONS are missing
             if (!query["WHERE"] || !query["OPTIONS"]) {
-                // Log.trace("400: missing 'WHERE' or 'OPTIONS'");
                 answer.code = 400;
                 answer.body = {error: "missing 'WHERE' or 'OPTIONS'"};
                 return reject(answer);
             }
             // check if all keys are from the same dataset
             const queryString = JSON.stringify(query);
-            // const typeQ = typeof queryString;
-            // Log.trace(typeQ);
-            // Log.trace(queryString);
             const allKeys: string[] = queryString.match(/[a-z]+(?=_)/g);
             const id: string = allKeys[0];
-            // Log.trace(id);
             for (const key of allKeys) {
                 if (key !== id) {
-                    // Log.trace("400: missing dataset " + "'" + key + "'");
                     answer.code = 400;
                     answer.body = {error: "missing dataset " + "'" + key + "'"};
                     return reject(answer);
@@ -248,32 +153,26 @@ export default class InsightFacade implements IInsightFacade {
                 if (key !== "WHERE" && key !== "OPTIONS") {
                     answer.code = 400;
                     answer.body = {error: "key other than 'WHERE' and 'OPTIONS'"};
-                    // Log.trace("400: key other than 'WHERE' and 'OPTIONS'");
                     return reject(answer);
                 }
             }
-            // objectKeys = objectKeys + "]";
-            // Log.trace(objectKeys);
-            // check if WHERE is empty
+            // check if WHERE or OPTIONS are empty
             const where = query["WHERE"];
             const options = query["OPTIONS"];
             if (Object.keys(where).length === 0 || Object.keys(options).length === 0) {
                 answer.code = 400;
                 answer.body = {error: "empty 'WHERE' or 'OPTIONS'"};
-                // Log.trace("400: empty 'WHERE' or 'OPTIONS'");
                 return reject(answer);
             } else {
+                // if all else is good, call the helpers
                 try {
                     let results = help.performWhere(where, false, id);
                     results = help.performOptions(options, results, id);
                     answer.code = 200;
                     answer.body = {result: results};
-                    // const ans = "Query finished!\nresult: " + JSON.stringify(results);
-                    // Log.trace(ans);
                 } catch {
                     answer.code = 400;
                     answer.body = {error: "ERROR OCCURRED"};
-                    // Log.trace("ERROR OCCURRED");
                     return reject(answer);
                 }
             }

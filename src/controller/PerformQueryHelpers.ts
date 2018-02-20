@@ -16,7 +16,7 @@ export class PerformQueryHelpers {
     }
 
     constructor() {
-        Log.trace("constructor of PerformQueryHelpers");
+        // Log.trace("constructor of PerformQueryHelpers");
     }
 
     // WHERE helper
