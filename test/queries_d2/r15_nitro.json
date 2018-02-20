@@ -1,0 +1,52 @@
+{
+    "title": " Should be able to find all rooms with a certain type of furniture.",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "rooms_furniture": "Classroom-Fixed Tables/Fixed Chairs"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_name"
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_name": "BUCH_A202"
+                },
+                {
+                    "rooms_name": "BUCH_A203"
+                },
+                {
+                    "rooms_name": "CEME_1202"
+                },
+                {
+                    "rooms_name": "LASR_102"
+                },
+                {
+                    "rooms_name": "HEBB_100"
+                },
+                {
+                    "rooms_name": "IBLC_182"
+                },
+                {
+                    "rooms_name": "LSK_200"
+                },
+                {
+                    "rooms_name": "LSK_201"
+                },
+                {
+                    "rooms_name": "MCLD_202"
+                },
+                {
+                    "rooms_name": "MCLD_228"
+                }
+            ]
+        }
+    }
+}

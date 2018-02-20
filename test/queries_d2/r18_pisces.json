@@ -1,0 +1,52 @@
+{
+    "title": "Should be able to sort urls.",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "rooms_shortname": "MATH"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_href"
+            ],
+            "ORDER": {
+                "dir": "UP",
+                "keys": [
+                    "rooms_href"
+                ]
+            }
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/MATH-100"
+                },
+                {
+                    "rooms_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/MATH-102"
+                },
+                {
+                    "rooms_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/MATH-104"
+                },
+                {
+                    "rooms_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/MATH-105"
+                },
+                {
+                    "rooms_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/MATH-202"
+                },
+                {
+                    "rooms_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/MATH-203"
+                },
+                {
+                    "rooms_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/MATH-204"
+                },
+                {
+                    "rooms_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/MATH-225"
+                }
+            ]
+        }
+    }
+}

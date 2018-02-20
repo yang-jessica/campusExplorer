@@ -1,0 +1,44 @@
+{
+    "title": "Find all group type rooms without some furniture.",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "rooms_furniture": "Classroom-Fixed Tables/Movable Chairs"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_type"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_type"
+            ],
+            "APPLY": [
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_type": "Case Style"
+                },
+                {
+                    "rooms_type": "Open Design General Purpose"
+                },
+                {
+                    "rooms_type": "Tiered Large Group"
+                },
+                {
+                    "rooms_type": "Active Learning"
+                },
+                {
+                    "rooms_type": "Small Group"
+                }
+            ]
+        }
+    }
+}

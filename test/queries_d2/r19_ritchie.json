@@ -1,0 +1,52 @@
+{
+    "title": "Should be able to sort in reverse order.",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "rooms_shortname": "MATH"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_name"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": [
+                    "rooms_name"
+                ]
+            }
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_name": "MATH_225"
+                },
+                {
+                    "rooms_name": "MATH_204"
+                },
+                {
+                    "rooms_name": "MATH_203"
+                },
+                {
+                    "rooms_name": "MATH_202"
+                },
+                {
+                    "rooms_name": "MATH_105"
+                },
+                {
+                    "rooms_name": "MATH_104"
+                },
+                {
+                    "rooms_name": "MATH_102"
+                },
+                {
+                    "rooms_name": "MATH_100"
+                }
+            ]
+        }
+    }
+}
