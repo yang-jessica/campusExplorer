@@ -1,0 +1,78 @@
+{
+    "title": "Apply: MIN should be supported.",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "rooms_address": "1984 Mathematics Road"
+                    }
+                },
+                {
+                    "LT": {
+                        "rooms_seats": 100
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_name",
+                "minSeats"
+            ],
+            "ORDER": {
+                "dir": "UP",
+                "keys": [
+                    "minSeats"
+                ]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_name"
+            ],
+            "APPLY": [
+                {
+                    "minSeats": {
+                        "MIN": "rooms_seats"
+                    }
+                }
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_name": "MATH_225",
+                    "minSeats": 25
+                },
+                {
+                    "rooms_name": "MATH_105",
+                    "minSeats": 30
+                },
+                {
+                    "rooms_name": "MATH_202",
+                    "minSeats": 30
+                },
+                {
+                    "rooms_name": "MATH_204",
+                    "minSeats": 30
+                },
+                {
+                    "rooms_name": "MATH_104",
+                    "minSeats": 48
+                },
+                {
+                    "rooms_name": "MATH_203",
+                    "minSeats": 48
+                },
+                {
+                    "rooms_name": "MATH_102",
+                    "minSeats": 60
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,58 @@
+{
+    "title": "Apply: COUNT should be supported.",
+    "query": {
+        "WHERE": {
+            "OR": [
+                {
+                    "IS": {
+                        "rooms_shortname": "MATH"
+                    }
+                },
+                {
+                    "IS": {
+                        "rooms_shortname": "AUDX"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_fullname",
+                "countRooms"
+            ],
+            "ORDER": {
+                "dir": "UP",
+                "keys": [
+                    "countRooms"
+                ]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_fullname"
+            ],
+            "APPLY": [
+                {
+                    "countRooms": {
+                        "COUNT": "rooms_name"
+                    }
+                }
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_fullname": "Auditorium Annex",
+                    "countRooms": 2
+                },
+                {
+                    "rooms_fullname": "Mathematics",
+                    "countRooms": 8
+                }
+            ]
+        }
+    }
+}
