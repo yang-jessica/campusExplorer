@@ -8,6 +8,7 @@ import {AddDatasetHelpers} from "./AddDatasetHelpers";
  */
 export default class InsightFacade implements IInsightFacade {
 
+    // 🍼
     constructor() {
         Log.trace("InsightFacadeImpl::init()");
     }
