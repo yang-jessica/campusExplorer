@@ -1,6 +1,9 @@
 import { expect } from "chai";
 
-import { InsightDatasetKind, InsightResponse, InsightResponseSuccessBody } from "../src/controller/IInsightFacade";
+import {
+    InsightDatasetKind, InsightResponse, InsightResponseErrorBody,
+    InsightResponseSuccessBody,
+} from "../src/controller/IInsightFacade";
 import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
 import TestUtil from "./TestUtil";
@@ -666,7 +669,6 @@ describe("InsightFacade Add/Remove Rooms Dataset", function () {
     // automatically be loaded in the Before All hook.
     const datasetsToLoad: { [id: string]: string } = {
         rooms: "./test/data/rooms.zip",
-        onesection: "./test/data/onesection.zip",
     };
 
     let insightFacade: InsightFacade;
@@ -712,7 +714,7 @@ describe("InsightFacade Add/Remove Rooms Dataset", function () {
 
     // add valid rooms dataset
     it("Should add rooms dataset", async () => {
-        const id: string = "onesection";
+        const id: string = "rooms";
         const expectedCode: number = 204;
         let response: InsightResponse;
 
@@ -774,8 +776,8 @@ describe("InsightFacade PerformQuery", () => {
         // Load the query JSON files under test/queries.
         // Fail if there is a problem reading ANY query.
         try {
-            testQueries = await TestUtil.readTestQueries(); // ALL QUERIES
-            // testQueries = await TestUtil.readTestQueries("test/query"); // ONE QUERY
+            // testQueries = await TestUtil.readTestQueries(); // ALL QUERIES
+            testQueries = await TestUtil.readTestQueries("test/query"); // ONE QUERY
             expect(testQueries).to.have.length.greaterThan(0);
         } catch (err) {
             expect.fail("", "", `Failed to read one or more test queries. ${JSON.stringify(err)}`);
@@ -810,12 +812,12 @@ describe("InsightFacade PerformQuery", () => {
             // This try/catch is a hack to let your dynamic tests execute enough the addDataset method fails.
             // In D1, you should remove this try/catch to ensure your datasets load successfully before trying
             // to run you queries.
-            // try {
-            //     const responses: InsightResponse[] = await Promise.all(responsePromises);
-            //     responses.forEach((response) => expect(response.code).to.equal(204));
-            // } catch (err) {
-            //     Log.warn(`Ignoring addDataset errors. For D1, you should allow errors to fail the Before All hook.`);
-            // }
+            try {
+                 const responses: InsightResponse[] = await Promise.all(responsePromises);
+                 responses.forEach((response) => expect(response.code).to.equal(204));
+            } catch (err) {
+                // Log.warn(`lol`);
+            }
         } catch (err) {
             expect.fail("", "", `Failed to read one or more datasets. ${JSON.stringify(err)}`);
         }
@@ -846,14 +848,17 @@ describe("InsightFacade PerformQuery", () => {
                         response = err;
                     } finally {
                         expect(response.code).to.equal(test.response.code);
-
                         if (test.response.code >= 400) {
                             expect(response.body).to.have.property("error");
+                            // temp: print the error message if 400
+                            Log.trace("\n\n" + response.code +
+                                ": " + (response.body as InsightResponseErrorBody).error);
                         } else {
                             expect(response.body).to.have.property("result");
                             const expectedResult = (test.response.body as InsightResponseSuccessBody).result;
                             const actualResult = (response.body as InsightResponseSuccessBody).result;
                             expect(actualResult).to.deep.equal(expectedResult);
+                            Log.trace("\n\n" + response.code + ": Success!");
                         }
                     }
                 });
