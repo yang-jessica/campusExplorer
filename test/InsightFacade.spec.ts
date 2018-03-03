@@ -738,18 +738,33 @@ describe("InsightFacade Add/Remove Rooms Dataset", function () {
             response = err;
         } finally {
             expect(response.code).to.equal(expectedCode);
-            expect((response.body as InsightResponseSuccessBody).result.length).to.equal(1);
+            expect((response.body as InsightResponseSuccessBody).result.length).to.equal(10);
         }
     });
 
     // remove file added in earlier test, expect success code 204
     it("Should remove rooms dataset", async () => {
-        const id: string = "onesection";
+        const id: string = "rooms";
         const expectedCode: number = 204;
         let response: InsightResponse;
 
         try {
             response = await insightFacade.removeDataset(id);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+        }
+    });
+
+    // add  rooms dataset again
+    it("Should add rooms dataset again", async () => {
+        const id: string = "rooms";
+        const expectedCode: number = 204;
+        let response: InsightResponse;
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
         } catch (err) {
             response = err;
         } finally {
@@ -764,6 +779,7 @@ describe("InsightFacade Add/Remove Rooms Dataset", function () {
 describe("InsightFacade PerformQuery", () => {
     const datasetsToQuery: { [id: string]: string } = {
         courses: "./test/data/courses.zip",
+        rooms: "./test/data/rooms.zip",
     };
     let insightFacade: InsightFacade;
     let testQueries: ITestQuery[] = [];
@@ -776,8 +792,8 @@ describe("InsightFacade PerformQuery", () => {
         // Load the query JSON files under test/queries.
         // Fail if there is a problem reading ANY query.
         try {
-            // testQueries = await TestUtil.readTestQueries(); // ALL QUERIES
-            testQueries = await TestUtil.readTestQueries("test/query"); // ONE QUERY
+            testQueries = await TestUtil.readTestQueries(); // ALL QUERIES
+            // testQueries = await TestUtil.readTestQueries("test/queries_d2"); // ONE QUERY
             expect(testQueries).to.have.length.greaterThan(0);
         } catch (err) {
             expect.fail("", "", `Failed to read one or more test queries. ${JSON.stringify(err)}`);

@@ -1,0 +1,61 @@
+{
+    "title": "Should be able to find all rooms within a certain bounding box.",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "AND": [
+                        {
+                            "GT": {
+                                "rooms_lat": 49.2699
+                            }
+                        },
+                        {
+                            "LT": {
+                                "rooms_lat": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "AND": [
+                        {
+                            "GT": {
+                                "rooms_lon": -150
+                            }
+                        },
+                        {
+                            "LT": {
+                                "rooms_lon": -100
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_name",
+                "rooms_lat",
+                "rooms_lon"
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_name": "IONA_301",
+                    "rooms_lat": 49.27106,
+                    "rooms_lon": -123.25042
+                },
+                {
+                    "rooms_name": "IONA_633",
+                    "rooms_lat": 49.27106,
+                    "rooms_lon": -123.25042
+                }
+            ]
+        }
+    }
+}

@@ -1,5 +1,5 @@
 import Log from "../Util";
-import {CourseKeys, NumericKeys} from "./IDatasetFacade";
+import {CourseKeys, NumericKeys, RoomKeys} from "./IDatasetFacade";
 import {InsightResponse} from "./IInsightFacade";
 import {Aggregation} from "./Aggregation";
 
@@ -8,7 +8,8 @@ export class PerformQueryHelpers {
     // valid key
     private static isValidKey(key: string): boolean {
         const keyToValidate = key.substring(key.indexOf("_") + 1);
-        return Object.values(CourseKeys).includes(keyToValidate);
+        return (Object.values(CourseKeys).includes(keyToValidate) ||
+                Object.values(RoomKeys).includes(keyToValidate));
     }
 
     // numeric key
@@ -78,7 +79,7 @@ export class PerformQueryHelpers {
                 const fs = require("fs");
                 const datasetString = fs.readFileSync("./datasets/" + id);
                 const data = JSON.parse(datasetString);
-                result = data.sections;
+                result = data.rows;
                 break;
             default:
                 throw new Error("damn man there ain't no filter like that in here");
@@ -100,7 +101,7 @@ export class PerformQueryHelpers {
         }
         // filter out the unnecessary keys
         const keysToRemove: string[] = [];
-        for (const key of Object.values(CourseKeys)) {
+        for (const key of Object.values(CourseKeys).concat(Object.values(RoomKeys))) {
             if (!columns.includes(id + "_" + key)) {
                 keysToRemove.push(id + "_" + key);
             }
@@ -154,7 +155,7 @@ export class PerformQueryHelpers {
         }
         // filter out the unnecessary keys
         const keysToRemove: string[] = [];
-        for (const key of Object.values(CourseKeys)) {
+        for (const key of Object.values(CourseKeys).concat(Object.values(RoomKeys))) {
             if (!columns.includes(id + "_" + key)) {
                 keysToRemove.push(id + "_" + key);
             }
@@ -191,10 +192,10 @@ export class PerformQueryHelpers {
             throw new Error("400: group cannot be empty");
         }
         // check if apply is empty
-        if (apply.length === 0) {
-            Log.trace("400: apply cannot be empty");
-            throw new Error("400: apply cannot be empty");
-        }
+        // if (apply.length === 0) {
+        //     Log.trace("400: apply cannot be empty");
+        //     throw new Error("400: apply cannot be empty");
+        // }
         // get all the applyStrings
         const applyStrings = [];
         for (const applyElement of apply) {
@@ -309,7 +310,7 @@ export class PerformQueryHelpers {
         const fs = require("fs");
         const datasetString = fs.readFileSync("./datasets/" + id);
         const data = JSON.parse(datasetString);
-        let andResult: any[] = data.sections;
+        let andResult: any[] = data.rows;
         // handle queries within AND
         for (const logicClause of andQuery["AND"]) {
             switch (Object.keys(logicClause)[0]) {
@@ -457,28 +458,28 @@ export class PerformQueryHelpers {
         const data = JSON.parse(datasetString);
         const answer: any[] = [];
         const invert: any[] = [];
-        const allSections = data.sections;
-        for (const section of allSections) {
+        const rows = data.rows;
+        for (const row of rows) {
             switch (comparator) {
                 case "GT":
-                    if (section[keyToCompare] > logic[keyToCompare]) {
-                        answer.push(section);
+                    if (row[keyToCompare] > logic[keyToCompare]) {
+                        answer.push(row);
                     } else {
-                        invert.push(section);
+                        invert.push(row);
                     }
                     break;
                 case "LT":
-                    if (section[keyToCompare] < logic[keyToCompare]) {
-                        answer.push(section);
+                    if (row[keyToCompare] < logic[keyToCompare]) {
+                        answer.push(row);
                     } else {
-                        invert.push(section);
+                        invert.push(row);
                     }
                     break;
                 case "EQ":
-                    if (section[keyToCompare] === logic[keyToCompare]) {
-                        answer.push(section);
+                    if (row[keyToCompare] === logic[keyToCompare]) {
+                        answer.push(row);
                     } else {
-                        invert.push(section);
+                        invert.push(row);
                     }
                     break;
             }
@@ -519,14 +520,14 @@ export class PerformQueryHelpers {
         // create answer arrays
         const answer: any[] = [];
         const invert: any[] = [];
-        const allSections = data.sections;
+        const rows = data.rows;
         // handle wildcards
         let compare = logic[keyToCompare];
         const sub = compare.substring(1, compare.length - 1);
         // check if the string is "*" or "**" (valid like wtf man)
         if (compare === "*" || compare === "**") {
-            for (const section of allSections) {
-                answer.push(section);
+            for (const row of rows) {
+                answer.push(row);
             }
         } else {
             // if the string has a * somewhere not at the beginning or end it's no good
@@ -535,38 +536,38 @@ export class PerformQueryHelpers {
             }
             // case where compare is 'string'
             if (!compare.includes("*")) {
-                for (const section of allSections) {
-                    if (section[keyToCompare] === compare) {
-                        answer.push(section);
+                for (const row of rows) {
+                    if (row[keyToCompare] === compare) {
+                        answer.push(row);
                     } else {
-                        invert.push(section);
+                        invert.push(row);
                     }
                 }
             } else if (compare.startsWith("*") && compare.endsWith("*")) {
-                for (const section of allSections) {
-                    if (section[keyToCompare].includes(sub)) {
-                        answer.push(section);
+                for (const row of rows) {
+                    if (row[keyToCompare].includes(sub)) {
+                        answer.push(row);
                     } else {
-                        invert.push(section);
+                        invert.push(row);
                     }
                 }
             } else if (compare.startsWith("*")) {
                 compare = compare.substring(1, compare.length);
-                for (const section of allSections) {
-                    const secLength = section[keyToCompare].length;
-                    if (section[keyToCompare].substring(secLength - compare.length, secLength) === compare) {
-                        answer.push(section);
+                for (const row of rows) {
+                    const secLength = row[keyToCompare].length;
+                    if (row[keyToCompare].substring(secLength - compare.length, secLength) === compare) {
+                        answer.push(row);
                     } else {
-                        invert.push(section);
+                        invert.push(row);
                     }
                 }
             } else if (compare.endsWith("*")) {
                 compare = compare.substring(0, compare.length - 1);
-                for (const section of allSections) {
-                    if (section[keyToCompare].substring(0, compare.length) === compare) {
-                        answer.push(section);
+                for (const row of rows) {
+                    if (row[keyToCompare].substring(0, compare.length) === compare) {
+                        answer.push(row);
                     } else {
-                        invert.push(section);
+                        invert.push(row);
                     }
                 }
             }

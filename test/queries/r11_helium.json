@@ -1,0 +1,37 @@
+{
+    "title": "Filter by partial href.",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "rooms_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/DMP*"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_name"
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_name": "DMP_101"
+                },
+                {
+                    "rooms_name": "DMP_110"
+                },
+                {
+                    "rooms_name": "DMP_201"
+                },
+                {
+                    "rooms_name": "DMP_301"
+                },
+                {
+                    "rooms_name": "DMP_310"
+                }
+            ]
+        }
+    }
+}

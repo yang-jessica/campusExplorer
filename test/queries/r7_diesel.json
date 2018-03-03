@@ -1,0 +1,34 @@
+{
+    "title": "Should be able to find address of a building given lat and lon.",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "EQ": {
+                        "rooms_lat": 49.26372
+                    }
+                },
+                {
+                    "EQ": {
+                        "rooms_lon": -123.25099
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_address"
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_address": "2202 Main Mall"
+                }
+            ]
+        }
+    }
+}

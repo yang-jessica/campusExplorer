@@ -1,0 +1,106 @@
+{
+    "title": "Should be able to find rooms in a specific building.",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "rooms_fullname": "Henry Angus"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_name"
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_name": "ANGU_037"
+                },
+                {
+                    "rooms_name": "ANGU_039"
+                },
+                {
+                    "rooms_name": "ANGU_098"
+                },
+                {
+                    "rooms_name": "ANGU_232"
+                },
+                {
+                    "rooms_name": "ANGU_234"
+                },
+                {
+                    "rooms_name": "ANGU_235"
+                },
+                {
+                    "rooms_name": "ANGU_237"
+                },
+                {
+                    "rooms_name": "ANGU_241"
+                },
+                {
+                    "rooms_name": "ANGU_243"
+                },
+                {
+                    "rooms_name": "ANGU_254"
+                },
+                {
+                    "rooms_name": "ANGU_291"
+                },
+                {
+                    "rooms_name": "ANGU_292"
+                },
+                {
+                    "rooms_name": "ANGU_293"
+                },
+                {
+                    "rooms_name": "ANGU_295"
+                },
+                {
+                    "rooms_name": "ANGU_296"
+                },
+                {
+                    "rooms_name": "ANGU_332"
+                },
+                {
+                    "rooms_name": "ANGU_334"
+                },
+                {
+                    "rooms_name": "ANGU_335"
+                },
+                {
+                    "rooms_name": "ANGU_339"
+                },
+                {
+                    "rooms_name": "ANGU_343"
+                },
+                {
+                    "rooms_name": "ANGU_345"
+                },
+                {
+                    "rooms_name": "ANGU_347"
+                },
+                {
+                    "rooms_name": "ANGU_350"
+                },
+                {
+                    "rooms_name": "ANGU_354"
+                },
+                {
+                    "rooms_name": "ANGU_432"
+                },
+                {
+                    "rooms_name": "ANGU_434"
+                },
+                {
+                    "rooms_name": "ANGU_435"
+                },
+                {
+                    "rooms_name": "ANGU_437"
+                }
+            ]
+        }
+    }
+}

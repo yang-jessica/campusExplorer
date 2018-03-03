@@ -13,12 +13,12 @@
                 "theMin"
             ]
         },
-        "TRANSFORMATIONS": {},
-        "response": {
-            "code": 400,
-            "body": {
-                "error": "Transformations needs to contains both GROUP and APPLY"
-            }
+        "TRANSFORMATIONS": {}
+    },
+    "response": {
+        "code": 400,
+        "body": {
+            "error": "Transformations needs to contains both GROUP and APPLY"
         }
     }
 }

@@ -1,0 +1,32 @@
+{
+    "title": "SELECT dept, avg WHERE avg > 97",
+    "query": {
+        "WHERE": {
+            "GT": {"courses_avg": 99}
+        },
+        "OPTIONS": {
+            "COLUMNS": ["courses_title", "overallAvg"]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_title"],
+            "APPLY": [
+                {"overallAvg": {"AVG": "courses_avg"}}
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_title": "career planning",
+                    "overallAvg": 99.19
+                },
+                {
+                    "courses_title": "algb topology i",
+                    "overallAvg": 99.78
+                }
+            ]
+        }
+    }
+}

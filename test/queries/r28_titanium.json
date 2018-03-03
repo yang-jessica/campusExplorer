@@ -1,0 +1,61 @@
+{
+    "title": "Should be able to find and sort by the number of unique offerings for each course.",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "courses_dept": "comm"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_id": "487"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_uuid"
+            ],
+            "ORDER": {
+                "dir": "UP",
+                "keys": [
+                    "courses_uuid"
+                ]
+            }
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_uuid": "39204"
+                },
+                {
+                    "courses_uuid": "39205"
+                },
+                {
+                    "courses_uuid": "44291"
+                },
+                {
+                    "courses_uuid": "44292"
+                },
+                {
+                    "courses_uuid": "81876"
+                },
+                {
+                    "courses_uuid": "81877"
+                },
+                {
+                    "courses_uuid": "84024"
+                },
+                {
+                    "courses_uuid": "84025"
+                }
+            ]
+        }
+    }
+}

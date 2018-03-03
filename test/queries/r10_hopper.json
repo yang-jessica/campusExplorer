@@ -1,16 +1,15 @@
 {
-    "title": "Filter by room fullnames.",
+    "title": "Filter by room names.",
     "query": {
         "WHERE": {
             "IS": {
-                "rooms_shortname": "AERL"
+                "rooms_name": "ANGU_098"
             }
         },
         "OPTIONS": {
             "COLUMNS": [
-                "rooms_name",
                 "rooms_seats",
-                "rooms_address"
+                "rooms_furniture"
             ]
         }
     },
@@ -19,9 +18,8 @@
         "body": {
             "result": [
                 {
-                    "rooms_name": "AERL_120",
-                    "rooms_seats": 144,
-                    "rooms_address": "2202 Main Mall"
+                    "rooms_seats": 260,
+                    "rooms_furniture": "Classroom-Fixed Tables/Movable Chairs"
                 }
             ]
         }

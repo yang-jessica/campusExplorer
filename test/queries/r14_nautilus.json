@@ -1,0 +1,94 @@
+{
+    "title": "Should be able to find all rooms of a certain type.",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "rooms_type": "Case Style"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_name"
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_name": "ALRD_105"
+                },
+                {
+                    "rooms_name": "ALRD_121"
+                },
+                {
+                    "rooms_name": "BUCH_A202"
+                },
+                {
+                    "rooms_name": "BUCH_A203"
+                },
+                {
+                    "rooms_name": "BUCH_B208"
+                },
+                {
+                    "rooms_name": "BUCH_B213"
+                },
+                {
+                    "rooms_name": "BUCH_B215"
+                },
+                {
+                    "rooms_name": "BUCH_D222"
+                },
+                {
+                    "rooms_name": "CEME_1204"
+                },
+                {
+                    "rooms_name": "CEME_1212"
+                },
+                {
+                    "rooms_name": "CEME_1215"
+                },
+                {
+                    "rooms_name": "FSC_1001"
+                },
+                {
+                    "rooms_name": "FSC_1003"
+                },
+                {
+                    "rooms_name": "ANGU_037"
+                },
+                {
+                    "rooms_name": "ANGU_039"
+                },
+                {
+                    "rooms_name": "ANGU_234"
+                },
+                {
+                    "rooms_name": "ANGU_235"
+                },
+                {
+                    "rooms_name": "ANGU_237"
+                },
+                {
+                    "rooms_name": "ANGU_334"
+                },
+                {
+                    "rooms_name": "ANGU_335"
+                },
+                {
+                    "rooms_name": "ANGU_434"
+                },
+                {
+                    "rooms_name": "IONA_301"
+                },
+                {
+                    "rooms_name": "IBLC_155"
+                },
+                {
+                    "rooms_name": "MCML_160"
+                }
+            ]
+        }
+    }
+}

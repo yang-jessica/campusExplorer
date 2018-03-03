@@ -1,0 +1,51 @@
+{
+    "title": "Should be able to find the average of all courses within a department.",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept": "aanb"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_title",
+                "overallAvg"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_dept",
+                "courses_id",
+                "courses_title"
+            ],
+            "APPLY": [
+                {
+                    "overallAvg": {
+                        "AVG": "courses_avg"
+                    }
+                }
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_dept": "aanb",
+                    "courses_id": "504",
+                    "courses_title": "rsrch methdlgy",
+                    "overallAvg": 94.44
+                },
+                {
+                    "courses_dept": "aanb",
+                    "courses_id": "551",
+                    "courses_title": "anml welf rsrch",
+                    "overallAvg": 87.83
+                }
+            ]
+        }
+    }
+}

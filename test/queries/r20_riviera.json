@@ -1,0 +1,63 @@
+{
+    "title": "Should be able to sort on multiple keys.",
+    "query": {
+        "WHERE": {
+            "OR": [
+                {
+                    "IS": {
+                        "rooms_shortname": "AUDX"
+                    }
+                },
+                {
+                    "IS": {
+                        "rooms_shortname": "LSK"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_shortname",
+                "rooms_number"
+            ],
+            "ORDER": {
+                "dir": "UP",
+                "keys": [
+                    "rooms_shortname",
+                    "rooms_number"
+                ]
+            }
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_shortname": "AUDX",
+                    "rooms_number": "142"
+                },
+                {
+                    "rooms_shortname": "AUDX",
+                    "rooms_number": "157"
+                },
+                {
+                    "rooms_shortname": "LSK",
+                    "rooms_number": "200"
+                },
+                {
+                    "rooms_shortname": "LSK",
+                    "rooms_number": "201"
+                },
+                {
+                    "rooms_shortname": "LSK",
+                    "rooms_number": "460"
+                },
+                {
+                    "rooms_shortname": "LSK",
+                    "rooms_number": "462"
+                }
+            ]
+        }
+    }
+}

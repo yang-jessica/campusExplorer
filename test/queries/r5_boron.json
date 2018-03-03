@@ -1,0 +1,34 @@
+{
+    "title": "Should be able to find rooms with plenty of seats in a building.",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "rooms_shortname": "ANGU"
+                    }
+                },
+                {
+                    "GT": {
+                        "rooms_seats": 200
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_name"
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_name": "ANGU_098"
+                }
+            ]
+        }
+    }
+}
