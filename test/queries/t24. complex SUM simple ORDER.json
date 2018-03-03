@@ -1,0 +1,78 @@
+{
+    "title": "Transformation: SUM many",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "courses_dept": "cpsc"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_id": "304"
+                    }
+                },
+                {
+                    "NOT": {
+                        "IS": {
+                            "courses_instructor": ""
+                        }
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_instructor",
+                "overallAvg"
+            ],
+            "ORDER": "overallAvg"
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_dept",
+                "courses_id",
+                "courses_instructor"
+            ],
+            "APPLY": [
+                {
+                    "overallAvg": {
+                        "AVG": "courses_avg"
+                    }
+                }
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_instructor": "ng, raymond tak-yan",
+                    "overallAvg": 72.93
+                },
+                {
+                    "courses_instructor": "pottinger, rachel",
+                    "overallAvg": 73.83
+                },
+                {
+                    "courses_instructor": "khosravi, hassan",
+                    "overallAvg": 76.43
+                },
+                {
+                    "courses_instructor": "knorr, edwin max",
+                    "overallAvg": 76.91
+                },
+                {
+                    "courses_instructor": "tsiknis, georgios",
+                    "overallAvg": 77.87
+                },
+                {
+                    "courses_instructor": "lakshmanan, laks",
+                    "overallAvg": 78.07
+                }
+            ]
+        }
+    }
+}

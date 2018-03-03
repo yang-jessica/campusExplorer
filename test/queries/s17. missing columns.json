@@ -1,0 +1,12 @@
+{
+    "title": "sort: 1 down",
+    "query": {
+        "WHERE": {"IS": {"courses_dept": "aanb"}},
+        "OPTIONS": {
+            "ORDER": {"dir": "DOWN", "keys": ["courses_avg"]}}
+    },
+    "response": {
+        "code": 400,
+        "body": {"error":"IOptions format is wrong"}
+    }
+}

@@ -1,0 +1,28 @@
+{
+    "title": "Transformation: simple MIN",
+    "query": {
+        "WHERE": {
+            "IS": {"courses_dept": "aanb"}
+        },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "theMin"]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept"],
+            "APPLY": [
+                {"theMin": {"MIN": "courses_avg"}}
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_dept": "aanb",
+                    "theMin": 87.83
+                }
+            ]
+        }
+    }
+}

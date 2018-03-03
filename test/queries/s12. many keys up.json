@@ -1,0 +1,351 @@
+{
+    "title": "sort: many keys up",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "courses_dept": "comm"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_id": "101"
+                    }
+                },
+                {
+                    "NOT": {
+                        "IS": {
+                            "courses_instructor": ""
+                        }
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg",
+                "courses_instructor",
+                "courses_title",
+                "courses_uuid",
+                "courses_year"
+            ],
+            "ORDER": {
+                "dir": "UP",
+                "keys": [
+                    "courses_dept",
+                    "courses_id",
+                    "courses_instructor",
+                    "courses_year",
+                    "courses_avg"
+                ]
+            }
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 71.56,
+                    "courses_instructor": "cubbon, paul;jackes, robert;williamson, elaine",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "57713",
+                    "courses_year": 2010
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 72.14,
+                    "courses_instructor": "cubbon, paul;jackes, robert;williamson, elaine",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "57712",
+                    "courses_year": 2010
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 72.13,
+                    "courses_instructor": "cubbon, paul;jackes, robert;williamson, elaine",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "700",
+                    "courses_year": 2011
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 72.34,
+                    "courses_instructor": "cubbon, paul;jackes, robert;williamson, elaine",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "699",
+                    "courses_year": 2011
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 71.6,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "57714",
+                    "courses_year": 2010
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 73.17,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "57715",
+                    "courses_year": 2010
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 70.96,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "703",
+                    "courses_year": 2011
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 72.11,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "702",
+                    "courses_year": 2011
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 72.7,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "701",
+                    "courses_year": 2011
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 70.76,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "43893",
+                    "courses_year": 2012
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 73.37,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "43894",
+                    "courses_year": 2012
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 74.09,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "43895",
+                    "courses_year": 2012
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 73.23,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "83593",
+                    "courses_year": 2013
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 73.83,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "83591",
+                    "courses_year": 2013
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 73.93,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "83592",
+                    "courses_year": 2013
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 69.93,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "81410",
+                    "courses_year": 2014
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 70.91,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "81411",
+                    "courses_year": 2014
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 71.08,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "81416",
+                    "courses_year": 2014
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 71.61,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "81412",
+                    "courses_year": 2014
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 71.11,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "38695",
+                    "courses_year": 2015
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 73.82,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "38696",
+                    "courses_year": 2015
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 74.44,
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "38697",
+                    "courses_year": 2015
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 74.11,
+                    "courses_instructor": "jackes, robert;kroeker, jeff;milne, tamar",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "43896",
+                    "courses_year": 2012
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 74.12,
+                    "courses_instructor": "jackes, robert;kroeker, jeff;milne, tamar",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "43897",
+                    "courses_year": 2012
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 70.43,
+                    "courses_instructor": "jackes, robert;milne, tamar",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "83594",
+                    "courses_year": 2013
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 71.95,
+                    "courses_instructor": "jackes, robert;milne, tamar",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "83595",
+                    "courses_year": 2013
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 70.87,
+                    "courses_instructor": "jackes, robert;milne, tamar",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "81414",
+                    "courses_year": 2014
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 72.33,
+                    "courses_instructor": "jackes, robert;milne, tamar",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "81413",
+                    "courses_year": 2014
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 73.05,
+                    "courses_instructor": "milne, tamar;sinclair, scott",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "83596",
+                    "courses_year": 2013
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 69.32,
+                    "courses_instructor": "milne, tamar;sinclair, scott",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "81415",
+                    "courses_year": 2014
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 70.6,
+                    "courses_instructor": "salzberg, elicia;stone, ann",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "38698",
+                    "courses_year": 2015
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 71.85,
+                    "courses_instructor": "salzberg, elicia;stone, ann",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "38700",
+                    "courses_year": 2015
+                },
+                {
+                    "courses_dept": "comm",
+                    "courses_id": "101",
+                    "courses_avg": 73.22,
+                    "courses_instructor": "salzberg, elicia;stone, ann",
+                    "courses_title": "busn fundamental",
+                    "courses_uuid": "38699",
+                    "courses_year": 2015
+                }
+            ]
+        }
+    }
+}

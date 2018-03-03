@@ -1,0 +1,31 @@
+{
+    "title": "sort: empty keys",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept": "aanb"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg",
+                "courses_title",
+                "courses_uuid",
+                "courses_year"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": [
+                ]
+            }
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+            "error": "Empty keys"
+        }
+    }
+}

@@ -1,0 +1,39 @@
+{
+    "title": "Transformation: underscore in apply",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept": "aanb"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_maxavg"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_dept"
+            ],
+            "APPLY": [
+                {
+                    "courses_maxavg": {
+                        "MAX": "courses_avg"
+                    }
+                },
+                {
+                    "courses_maxavg": {
+                        "MAX": "courses_avg"
+                    }
+                }
+            ]
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+            "error": "Apply keys cannot contain '_'"
+        }
+    }
+}

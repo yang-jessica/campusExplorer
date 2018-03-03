@@ -1,0 +1,21 @@
+{
+    "title": "Transformation: simple MAX",
+    "query": {
+        "WHERE": {
+            "IS": {"courses_dept": "aanb"}
+        },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "theCount"]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept"],
+            "APPLY": [
+                {"theCount": {"COUNT": "courses_ag"}}
+            ]
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {"error":"Apply key courses_ag is not among valid columns"}
+    }
+}

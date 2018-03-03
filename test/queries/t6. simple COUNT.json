@@ -1,0 +1,28 @@
+{
+    "title": "Transformation: simple COUNT",
+    "query": {
+        "WHERE": {
+            "IS": {"courses_dept": "aanb"}
+        },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "theCount"]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept"],
+            "APPLY": [
+                {"theCount": {"COUNT": "courses_avg"}}
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_dept": "aanb",
+                    "theCount": 2
+                }
+            ]
+        }
+    }
+}

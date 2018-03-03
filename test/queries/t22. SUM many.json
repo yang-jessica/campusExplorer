@@ -1,0 +1,39 @@
+{
+    "title": "Transformation: SUM many",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {"IS": {"courses_dept": "comm"}}
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "theSum"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_dept"
+            ],
+            "APPLY": [
+                {
+                    "theSum": {
+                        "SUM": "courses_avg"
+                    }
+                }
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_dept": "comm",
+                    "theSum": 272595.35
+                }
+            ]
+        }
+    }
+}

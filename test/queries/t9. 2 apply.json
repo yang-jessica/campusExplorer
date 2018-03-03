@@ -1,0 +1,38 @@
+{
+    "title": "Transformation: 2 apply",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept": "aanb"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "theMax",
+                "theMin"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_dept"
+            ],
+            "APPLY": [
+                {"theMax": {"MAX": "courses_avg"}},
+                {"theMin": {"MIN": "courses_avg"}}
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_dept": "aanb",
+                    "theMax": 94.44,
+                    "theMin": 87.83
+                }
+            ]
+        }
+    }
+}

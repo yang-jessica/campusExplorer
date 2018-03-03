@@ -1,0 +1,47 @@
+{
+    "title": "Transformation: 2 groups",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept": "aanb"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "theCount"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_dept",
+                "courses_id"
+            ],
+            "APPLY": [
+                {
+                    "theCount": {
+                        "COUNT": "courses_avg"
+                    }
+                }
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_dept": "aanb",
+                    "courses_id": "504",
+                    "theCount": 1
+                },
+                {
+                    "courses_dept": "aanb",
+                    "courses_id": "551",
+                    "theCount": 1
+                }
+            ]
+        }
+    }
+}

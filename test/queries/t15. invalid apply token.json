@@ -1,0 +1,23 @@
+{
+    "title": "Transformation: invalid apply token",
+    "query": {
+        "WHERE": {
+            "IS": {"courses_dept": "aanb"}
+        },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "theMax"]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept"],
+            "APPLY": [
+                {"theMax": {"MAC": "courses_avg"}}
+            ]
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+            "error": "invalid token"
+        }
+    }
+}

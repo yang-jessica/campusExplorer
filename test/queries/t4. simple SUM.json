@@ -1,0 +1,28 @@
+{
+    "title": "Transformation: simple SUM",
+    "query": {
+        "WHERE": {
+            "IS": {"courses_dept": "aanb"}
+        },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "theSum"]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept"],
+            "APPLY": [
+                {"theSum": {"SUM": "courses_avg"}}
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_dept": "aanb",
+                    "theSum": 364.54
+                }
+            ]
+        }
+    }
+}

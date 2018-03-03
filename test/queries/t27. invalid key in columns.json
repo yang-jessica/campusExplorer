@@ -1,0 +1,34 @@
+{
+    "title": "Transformation: SUM many",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {"IS": {"courses_dept": "cpsc"}},
+                {"IS": {"courses_id": "304"}},
+                {"NOT": {"IS": {"courses_instructor": ""}}}]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_instructor",
+                "overallAvg",
+                "overall"
+            ],
+            "ORDER": "overallAvg"
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_dept",
+                "courses_id",
+                "courses_instructor"
+            ],
+            "APPLY": [
+                {"overallAvg": {"AVG": "courses_avg"}},
+                {"uuidCount": {"COUNT": "courses_uuid"}}
+            ]
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {"error":"overall is not a valid key"}
+    }
+}

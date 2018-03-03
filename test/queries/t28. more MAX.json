@@ -1,0 +1,69 @@
+{
+    "title": "Transformation: more MAX",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {"IS": {"courses_dept": "comm"}},
+                {"IS": {"courses_id": "395"}},
+                {"NOT": {"IS": {"courses_instructor": ""}}}]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_instructor",
+                "overallMax"
+            ],
+            "ORDER": {
+                "dir": "DOWN", "keys": ["overallMax"]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_dept",
+                "courses_id",
+                "courses_instructor"
+            ],
+            "APPLY": [
+                {"overallMax": {"MAX": "courses_avg"}}
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_instructor": "bowker, elizabeth",
+                    "overallMax": 81.13
+                },
+                {
+                    "courses_instructor": "fajardo, frederick",
+                    "overallMax": 78.06
+                },
+                {
+                    "courses_instructor": "mollenhauer, douglas",
+                    "overallMax": 77.79
+                },
+                {
+                    "courses_instructor": "miller, david",
+                    "overallMax": 77.26
+                },
+                {
+                    "courses_instructor": "ladha, zahra",
+                    "overallMax": 76.54
+                },
+                {
+                    "courses_instructor": "morrell, cameron",
+                    "overallMax": 76.5
+                },
+                {
+                    "courses_instructor": "silver sweeney, marlisse",
+                    "overallMax": 76.14
+                },
+                {
+                    "courses_instructor": "soliman ibrahim, susan",
+                    "overallMax": 75.84
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "title": "Transformation: missing group",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept": "aanb"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "theMax",
+                "theMin"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "APPLY": [
+                {"theMax": {"MAX": "courses_avg"}},
+                {"theMin": {"MIN": "courses_avg"}}
+            ]
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+            "error": "Transformations needs to contains both GROUP and APPLY"
+        }
+    }
+}

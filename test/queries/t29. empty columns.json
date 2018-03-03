@@ -1,0 +1,31 @@
+{
+    "title": "Transformation: SUM many",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {"IS": {"courses_dept": "comm"}},
+                {"IS": {"courses_id": "395"}},
+                {"NOT": {"IS": {"courses_instructor": ""}}}]
+        },
+        "OPTIONS": {
+            "COLUMNS": [],
+            "ORDER": {
+                "dir": "DOWN", "keys": ["maxavg"]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_dept",
+                "courses_id",
+                "courses_instructor"
+            ],
+            "APPLY": [
+                {"maxavg": {"MAX": "courses_avg"}}
+            ]
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {"error":"Columns cannot be empty"}
+    }
+}

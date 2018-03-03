@@ -1,0 +1,781 @@
+{
+    "title": "SELECT dept, avg WHERE avg > 97",
+    "query": {
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "overallCount"],
+            "ORDER": {
+                "dir": "UP", "keys": ["overallCount"]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept"],
+            "APPLY": [
+                {"overallCount": {"COUNT": "courses_uuid"}}
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_dept": "test",
+                    "overallCount": 1
+                },
+                {
+                    "courses_dept": "iwme",
+                    "overallCount": 2
+                },
+                {
+                    "courses_dept": "info",
+                    "overallCount": 2
+                },
+                {
+                    "courses_dept": "aanb",
+                    "overallCount": 4
+                },
+                {
+                    "courses_dept": "ursy",
+                    "overallCount": 4
+                },
+                {
+                    "courses_dept": "lais",
+                    "overallCount": 4
+                },
+                {
+                    "courses_dept": "fhis",
+                    "overallCount": 4
+                },
+                {
+                    "courses_dept": "gbpr",
+                    "overallCount": 4
+                },
+                {
+                    "courses_dept": "iar",
+                    "overallCount": 5
+                },
+                {
+                    "courses_dept": "cnto",
+                    "overallCount": 5
+                },
+                {
+                    "courses_dept": "ufor",
+                    "overallCount": 6
+                },
+                {
+                    "courses_dept": "appp",
+                    "overallCount": 8
+                },
+                {
+                    "courses_dept": "phrm",
+                    "overallCount": 11
+                },
+                {
+                    "courses_dept": "sts",
+                    "overallCount": 12
+                },
+                {
+                    "courses_dept": "laso",
+                    "overallCount": 14
+                },
+                {
+                    "courses_dept": "clch",
+                    "overallCount": 14
+                },
+                {
+                    "courses_dept": "rgla",
+                    "overallCount": 16
+                },
+                {
+                    "courses_dept": "hinu",
+                    "overallCount": 16
+                },
+                {
+                    "courses_dept": "arbc",
+                    "overallCount": 16
+                },
+                {
+                    "courses_dept": "udes",
+                    "overallCount": 16
+                },
+                {
+                    "courses_dept": "bala",
+                    "overallCount": 17
+                },
+                {
+                    "courses_dept": "coec",
+                    "overallCount": 17
+                },
+                {
+                    "courses_dept": "asic",
+                    "overallCount": 17
+                },
+                {
+                    "courses_dept": "onco",
+                    "overallCount": 18
+                },
+                {
+                    "courses_dept": "fnis",
+                    "overallCount": 18
+                },
+                {
+                    "courses_dept": "baul",
+                    "overallCount": 18
+                },
+                {
+                    "courses_dept": "hebr",
+                    "overallCount": 18
+                },
+                {
+                    "courses_dept": "sans",
+                    "overallCount": 20
+                },
+                {
+                    "courses_dept": "fnel",
+                    "overallCount": 20
+                },
+                {
+                    "courses_dept": "rmst",
+                    "overallCount": 20
+                },
+                {
+                    "courses_dept": "vant",
+                    "overallCount": 20
+                },
+                {
+                    "courses_dept": "mdvl",
+                    "overallCount": 20
+                },
+                {
+                    "courses_dept": "pols",
+                    "overallCount": 22
+                },
+                {
+                    "courses_dept": "biof",
+                    "overallCount": 23
+                },
+                {
+                    "courses_dept": "gpp",
+                    "overallCount": 24
+                },
+                {
+                    "courses_dept": "hunu",
+                    "overallCount": 26
+                },
+                {
+                    "courses_dept": "dani",
+                    "overallCount": 26
+                },
+                {
+                    "courses_dept": "swed",
+                    "overallCount": 27
+                },
+                {
+                    "courses_dept": "chil",
+                    "overallCount": 27
+                },
+                {
+                    "courses_dept": "cics",
+                    "overallCount": 28
+                },
+                {
+                    "courses_dept": "grek",
+                    "overallCount": 28
+                },
+                {
+                    "courses_dept": "gsat",
+                    "overallCount": 28
+                },
+                {
+                    "courses_dept": "anat",
+                    "overallCount": 30
+                },
+                {
+                    "courses_dept": "bota",
+                    "overallCount": 30
+                },
+                {
+                    "courses_dept": "cnrs",
+                    "overallCount": 31
+                },
+                {
+                    "courses_dept": "last",
+                    "overallCount": 32
+                },
+                {
+                    "courses_dept": "urst",
+                    "overallCount": 32
+                },
+                {
+                    "courses_dept": "jrnl",
+                    "overallCount": 35
+                },
+                {
+                    "courses_dept": "zool",
+                    "overallCount": 36
+                },
+                {
+                    "courses_dept": "scan",
+                    "overallCount": 38
+                },
+                {
+                    "courses_dept": "mrne",
+                    "overallCount": 40
+                },
+                {
+                    "courses_dept": "name",
+                    "overallCount": 42
+                },
+                {
+                    "courses_dept": "surg",
+                    "overallCount": 43
+                },
+                {
+                    "courses_dept": "fish",
+                    "overallCount": 44
+                },
+                {
+                    "courses_dept": "cpen",
+                    "overallCount": 44
+                },
+                {
+                    "courses_dept": "arcl",
+                    "overallCount": 47
+                },
+                {
+                    "courses_dept": "latn",
+                    "overallCount": 47
+                },
+                {
+                    "courses_dept": "bapa",
+                    "overallCount": 49
+                },
+                {
+                    "courses_dept": "pers",
+                    "overallCount": 49
+                },
+                {
+                    "courses_dept": "ccst",
+                    "overallCount": 49
+                },
+                {
+                    "courses_dept": "port",
+                    "overallCount": 50
+                },
+                {
+                    "courses_dept": "babs",
+                    "overallCount": 52
+                },
+                {
+                    "courses_dept": "astu",
+                    "overallCount": 52
+                },
+                {
+                    "courses_dept": "ceen",
+                    "overallCount": 54
+                },
+                {
+                    "courses_dept": "enph",
+                    "overallCount": 56
+                },
+                {
+                    "courses_dept": "igen",
+                    "overallCount": 56
+                },
+                {
+                    "courses_dept": "obst",
+                    "overallCount": 63
+                },
+                {
+                    "courses_dept": "soil",
+                    "overallCount": 64
+                },
+                {
+                    "courses_dept": "punj",
+                    "overallCount": 68
+                },
+                {
+                    "courses_dept": "hgse",
+                    "overallCount": 70
+                },
+                {
+                    "courses_dept": "isci",
+                    "overallCount": 71
+                },
+                {
+                    "courses_dept": "nrsc",
+                    "overallCount": 76
+                },
+                {
+                    "courses_dept": "atsc",
+                    "overallCount": 77
+                },
+                {
+                    "courses_dept": "nest",
+                    "overallCount": 82
+                },
+                {
+                    "courses_dept": "envr",
+                    "overallCount": 83
+                },
+                {
+                    "courses_dept": "korn",
+                    "overallCount": 84
+                },
+                {
+                    "courses_dept": "caps",
+                    "overallCount": 86
+                },
+                {
+                    "courses_dept": "cens",
+                    "overallCount": 87
+                },
+                {
+                    "courses_dept": "baen",
+                    "overallCount": 87
+                },
+                {
+                    "courses_dept": "basc",
+                    "overallCount": 89
+                },
+                {
+                    "courses_dept": "bait",
+                    "overallCount": 90
+                },
+                {
+                    "courses_dept": "itst",
+                    "overallCount": 98
+                },
+                {
+                    "courses_dept": "bmeg",
+                    "overallCount": 99
+                },
+                {
+                    "courses_dept": "fopr",
+                    "overallCount": 104
+                },
+                {
+                    "courses_dept": "libe",
+                    "overallCount": 108
+                },
+                {
+                    "courses_dept": "relg",
+                    "overallCount": 108
+                },
+                {
+                    "courses_dept": "russ",
+                    "overallCount": 122
+                },
+                {
+                    "courses_dept": "phth",
+                    "overallCount": 122
+                },
+                {
+                    "courses_dept": "medi",
+                    "overallCount": 126
+                },
+                {
+                    "courses_dept": "elec",
+                    "overallCount": 131
+                },
+                {
+                    "courses_dept": "cogs",
+                    "overallCount": 137
+                },
+                {
+                    "courses_dept": "scie",
+                    "overallCount": 140
+                },
+                {
+                    "courses_dept": "wrds",
+                    "overallCount": 141
+                },
+                {
+                    "courses_dept": "cell",
+                    "overallCount": 144
+                },
+                {
+                    "courses_dept": "lfs",
+                    "overallCount": 145
+                },
+                {
+                    "courses_dept": "ends",
+                    "overallCount": 146
+                },
+                {
+                    "courses_dept": "eced",
+                    "overallCount": 147
+                },
+                {
+                    "courses_dept": "rmes",
+                    "overallCount": 147
+                },
+                {
+                    "courses_dept": "plan",
+                    "overallCount": 149
+                },
+                {
+                    "courses_dept": "ba",
+                    "overallCount": 149
+                },
+                {
+                    "courses_dept": "baac",
+                    "overallCount": 155
+                },
+                {
+                    "courses_dept": "grsj",
+                    "overallCount": 161
+                },
+                {
+                    "courses_dept": "food",
+                    "overallCount": 164
+                },
+                {
+                    "courses_dept": "midw",
+                    "overallCount": 164
+                },
+                {
+                    "courses_dept": "basm",
+                    "overallCount": 165
+                },
+                {
+                    "courses_dept": "rsot",
+                    "overallCount": 165
+                },
+                {
+                    "courses_dept": "bahr",
+                    "overallCount": 175
+                },
+                {
+                    "courses_dept": "fipr",
+                    "overallCount": 175
+                },
+                {
+                    "courses_dept": "cohr",
+                    "overallCount": 176
+                },
+                {
+                    "courses_dept": "educ",
+                    "overallCount": 183
+                },
+                {
+                    "courses_dept": "bama",
+                    "overallCount": 188
+                },
+                {
+                    "courses_dept": "astr",
+                    "overallCount": 189
+                },
+                {
+                    "courses_dept": "pcth",
+                    "overallCount": 189
+                },
+                {
+                    "courses_dept": "bams",
+                    "overallCount": 200
+                },
+                {
+                    "courses_dept": "fist",
+                    "overallCount": 206
+                },
+                {
+                    "courses_dept": "crwr",
+                    "overallCount": 208
+                },
+                {
+                    "courses_dept": "rhsc",
+                    "overallCount": 210
+                },
+                {
+                    "courses_dept": "cons",
+                    "overallCount": 217
+                },
+                {
+                    "courses_dept": "adhe",
+                    "overallCount": 232
+                },
+                {
+                    "courses_dept": "medg",
+                    "overallCount": 248
+                },
+                {
+                    "courses_dept": "arst",
+                    "overallCount": 251
+                },
+                {
+                    "courses_dept": "fre",
+                    "overallCount": 261
+                },
+                {
+                    "courses_dept": "edcp",
+                    "overallCount": 270
+                },
+                {
+                    "courses_dept": "anth",
+                    "overallCount": 279
+                },
+                {
+                    "courses_dept": "fmst",
+                    "overallCount": 288
+                },
+                {
+                    "courses_dept": "bioc",
+                    "overallCount": 296
+                },
+                {
+                    "courses_dept": "larc",
+                    "overallCount": 315
+                },
+                {
+                    "courses_dept": "spha",
+                    "overallCount": 318
+                },
+                {
+                    "courses_dept": "bafi",
+                    "overallCount": 319
+                },
+                {
+                    "courses_dept": "soci",
+                    "overallCount": 322
+                },
+                {
+                    "courses_dept": "ital",
+                    "overallCount": 325
+                },
+                {
+                    "courses_dept": "phil",
+                    "overallCount": 335
+                },
+                {
+                    "courses_dept": "geob",
+                    "overallCount": 338
+                },
+                {
+                    "courses_dept": "clst",
+                    "overallCount": 343
+                },
+                {
+                    "courses_dept": "dhyg",
+                    "overallCount": 346
+                },
+                {
+                    "courses_dept": "wood",
+                    "overallCount": 346
+                },
+                {
+                    "courses_dept": "edst",
+                    "overallCount": 372
+                },
+                {
+                    "courses_dept": "dent",
+                    "overallCount": 377
+                },
+                {
+                    "courses_dept": "stat",
+                    "overallCount": 386
+                },
+                {
+                    "courses_dept": "etec",
+                    "overallCount": 413
+                },
+                {
+                    "courses_dept": "arth",
+                    "overallCount": 423
+                },
+                {
+                    "courses_dept": "path",
+                    "overallCount": 465
+                },
+                {
+                    "courses_dept": "libr",
+                    "overallCount": 476
+                },
+                {
+                    "courses_dept": "micb",
+                    "overallCount": 478
+                },
+                {
+                    "courses_dept": "apbi",
+                    "overallCount": 493
+                },
+                {
+                    "courses_dept": "ling",
+                    "overallCount": 495
+                },
+                {
+                    "courses_dept": "eece",
+                    "overallCount": 501
+                },
+                {
+                    "courses_dept": "poli",
+                    "overallCount": 518
+                },
+                {
+                    "courses_dept": "mine",
+                    "overallCount": 528
+                },
+                {
+                    "courses_dept": "sowk",
+                    "overallCount": 531
+                },
+                {
+                    "courses_dept": "thtr",
+                    "overallCount": 538
+                },
+                {
+                    "courses_dept": "audi",
+                    "overallCount": 565
+                },
+                {
+                    "courses_dept": "visa",
+                    "overallCount": 600
+                },
+                {
+                    "courses_dept": "lled",
+                    "overallCount": 607
+                },
+                {
+                    "courses_dept": "spph",
+                    "overallCount": 618
+                },
+                {
+                    "courses_dept": "asia",
+                    "overallCount": 629
+                },
+                {
+                    "courses_dept": "apsc",
+                    "overallCount": 655
+                },
+                {
+                    "courses_dept": "span",
+                    "overallCount": 656
+                },
+                {
+                    "courses_dept": "arch",
+                    "overallCount": 685
+                },
+                {
+                    "courses_dept": "kin",
+                    "overallCount": 690
+                },
+                {
+                    "courses_dept": "mtrl",
+                    "overallCount": 702
+                },
+                {
+                    "courses_dept": "cnps",
+                    "overallCount": 720
+                },
+                {
+                    "courses_dept": "fnh",
+                    "overallCount": 767
+                },
+                {
+                    "courses_dept": "chbe",
+                    "overallCount": 801
+                },
+                {
+                    "courses_dept": "phar",
+                    "overallCount": 807
+                },
+                {
+                    "courses_dept": "germ",
+                    "overallCount": 832
+                },
+                {
+                    "courses_dept": "musc",
+                    "overallCount": 852
+                },
+                {
+                    "courses_dept": "nurs",
+                    "overallCount": 910
+                },
+                {
+                    "courses_dept": "frst",
+                    "overallCount": 910
+                },
+                {
+                    "courses_dept": "geog",
+                    "overallCount": 919
+                },
+                {
+                    "courses_dept": "japn",
+                    "overallCount": 966
+                },
+                {
+                    "courses_dept": "chin",
+                    "overallCount": 974
+                },
+                {
+                    "courses_dept": "hist",
+                    "overallCount": 1010
+                },
+                {
+                    "courses_dept": "fren",
+                    "overallCount": 1022
+                },
+                {
+                    "courses_dept": "phys",
+                    "overallCount": 1091
+                },
+                {
+                    "courses_dept": "epse",
+                    "overallCount": 1101
+                },
+                {
+                    "courses_dept": "cpsc",
+                    "overallCount": 1111
+                },
+                {
+                    "courses_dept": "law",
+                    "overallCount": 1112
+                },
+                {
+                    "courses_dept": "civl",
+                    "overallCount": 1240
+                },
+                {
+                    "courses_dept": "chem",
+                    "overallCount": 1254
+                },
+                {
+                    "courses_dept": "mech",
+                    "overallCount": 1285
+                },
+                {
+                    "courses_dept": "psyc",
+                    "overallCount": 1400
+                },
+                {
+                    "courses_dept": "eosc",
+                    "overallCount": 1648
+                },
+                {
+                    "courses_dept": "busi",
+                    "overallCount": 1687
+                },
+                {
+                    "courses_dept": "biol",
+                    "overallCount": 2041
+                },
+                {
+                    "courses_dept": "engl",
+                    "overallCount": 2122
+                },
+                {
+                    "courses_dept": "econ",
+                    "overallCount": 2241
+                },
+                {
+                    "courses_dept": "math",
+                    "overallCount": 2772
+                },
+                {
+                    "courses_dept": "comm",
+                    "overallCount": 3570
+                }
+            ]
+        }
+    }
+}

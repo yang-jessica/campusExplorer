@@ -1,0 +1,63 @@
+{
+    "title": "Transformation: SUM many",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {"IS": {"courses_dept": "comm"}},
+                {"IS": {"courses_id": "101"}},
+                {"NOT": {"IS": {"courses_instructor": ""}}}
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_instructor",
+                "overallAvg"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_dept",
+                "courses_id",
+                "courses_instructor"
+            ],
+            "APPLY": [
+                {
+                    "overallAvg": {
+                        "AVG": "courses_avg"
+                    }
+                }
+            ]
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_instructor": "cubbon, paul;jackes, robert;williamson, elaine",
+                    "overallAvg": 72.04
+                },
+                {
+                    "courses_instructor": "cubbon, paul;kroeker, jeff",
+                    "overallAvg": 72.37
+                },
+                {
+                    "courses_instructor": "salzberg, elicia;stone, ann",
+                    "overallAvg": 71.89
+                },
+                {
+                    "courses_instructor": "jackes, robert;kroeker, jeff;milne, tamar",
+                    "overallAvg": 74.11
+                },
+                {
+                    "courses_instructor": "jackes, robert;milne, tamar",
+                    "overallAvg": 71.39
+                },
+                {
+                    "courses_instructor": "milne, tamar;sinclair, scott",
+                    "overallAvg": 71.19
+                }
+            ]
+        }
+    }
+}

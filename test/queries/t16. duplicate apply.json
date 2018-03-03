@@ -1,0 +1,39 @@
+{
+    "title": "Transformation: duplicate apply string",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept": "aanb"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "theMax"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_dept"
+            ],
+            "APPLY": [
+                {
+                    "theMax": {
+                        "MAX": "courses_avg"
+                    }
+                },
+                {
+                    "theMax": {
+                        "MAX": "courses_avg"
+                    }
+                }
+            ]
+        }
+    },
+    "response": {
+        "code": 400,
+        "body": {
+            "error": "Duplicate apply key"
+        }
+    }
+}
