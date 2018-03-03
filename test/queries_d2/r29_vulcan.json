@@ -1,0 +1,112 @@
+{
+    "title": "Should be able to order with multiple keys.",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "rooms_shortname": "ANGU"
+                    }
+                },
+                {
+                    "GT": {
+                        "rooms_seats": 55
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_name",
+                "rooms_number",
+                "rooms_seats",
+                "rooms_type",
+                "rooms_furniture"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": [
+                    "rooms_seats",
+                    "rooms_number"
+                ]
+            }
+        }
+    },
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_name": "ANGU_098",
+                    "rooms_number": "098",
+                    "rooms_seats": 260,
+                    "rooms_type": "Tiered Large Group",
+                    "rooms_furniture": "Classroom-Fixed Tables/Movable Chairs"
+                },
+                {
+                    "rooms_name": "ANGU_254",
+                    "rooms_number": "254",
+                    "rooms_seats": 80,
+                    "rooms_type": "Open Design General Purpose",
+                    "rooms_furniture": "Classroom-Movable Tables & Chairs"
+                },
+                {
+                    "rooms_name": "ANGU_347",
+                    "rooms_number": "347",
+                    "rooms_seats": 70,
+                    "rooms_type": "Tiered Large Group",
+                    "rooms_furniture": "Classroom-Fixed Tables/Movable Chairs"
+                },
+                {
+                    "rooms_name": "ANGU_241",
+                    "rooms_number": "241",
+                    "rooms_seats": 70,
+                    "rooms_type": "Tiered Large Group",
+                    "rooms_furniture": "Classroom-Fixed Tables/Movable Chairs"
+                },
+                {
+                    "rooms_name": "ANGU_345",
+                    "rooms_number": "345",
+                    "rooms_seats": 68,
+                    "rooms_type": "Tiered Large Group",
+                    "rooms_furniture": "Classroom-Fixed Tables/Movable Chairs"
+                },
+                {
+                    "rooms_name": "ANGU_343",
+                    "rooms_number": "343",
+                    "rooms_seats": 68,
+                    "rooms_type": "Tiered Large Group",
+                    "rooms_furniture": "Classroom-Fixed Tables/Movable Chairs"
+                },
+                {
+                    "rooms_name": "ANGU_243",
+                    "rooms_number": "243",
+                    "rooms_seats": 68,
+                    "rooms_type": "Tiered Large Group",
+                    "rooms_furniture": "Classroom-Fixed Tables/Movable Chairs"
+                },
+                {
+                    "rooms_name": "ANGU_334",
+                    "rooms_number": "334",
+                    "rooms_seats": 60,
+                    "rooms_type": "Case Style",
+                    "rooms_furniture": "Classroom-Fixed Tables/Movable Chairs"
+                },
+                {
+                    "rooms_name": "ANGU_234",
+                    "rooms_number": "234",
+                    "rooms_seats": 60,
+                    "rooms_type": "Case Style",
+                    "rooms_furniture": "Classroom-Fixed Tables/Movable Chairs"
+                },
+                {
+                    "rooms_name": "ANGU_350",
+                    "rooms_number": "350",
+                    "rooms_seats": 58,
+                    "rooms_type": "Tiered Large Group",
+                    "rooms_furniture": "Classroom-Fixed Tables/Movable Chairs"
+                }
+            ]
+        }
+    }
+}

@@ -1,13 +1,10 @@
 import Log from "../Util";
 import {IDataset} from "./IDatasetFacade";
 import {InsightDatasetKind, InsightResponse} from "./IInsightFacade";
-import {find} from "tslint/lib/utils";
 
 export class AddDatasetHelpers {
 
-    constructor() {
-        // Log.trace("constructor of AddDatasetHelpers");
-    }
+    constructor() {/* construct */}
 
     public addRooms(id: string, content: string): Promise<InsightResponse> {
         const that = this;
@@ -20,101 +17,150 @@ export class AddDatasetHelpers {
                 zip.file("index.htm").async("text").then(function (text: any) {
                     try {
                         Log.trace("inside the then of file.async");
-                        const results: { [room: string]: any} = [];
+                        const results: { [room: string]: any } = [];
                         const original = parse5.parse(text);
                         Log.trace("calling helper");
                         const tbody = that.findtBody(original.childNodes);
-                        const length = "length of index.htm tBody: " + tbody.length;
-                        Log.trace(length);
                         const objectsBoi = that.getBuildingInfo(tbody);
-                        const length4 = "number of buildings: " + objectsBoi.length;
-                        Log.trace(length4);
                         const promiseArray: any[] = [];
+                        const geoPromiseArray: any[] = [];
                         for (const element of objectsBoi) {
-                            // const pathPieces = element.rlink.split("/");
-                            const realPath = element.rlink.substring(2);
-                            // Log.trace(realPath);
-                            // const shortName = pathPieces[pathPieces.length - 1];
-                            promiseArray.push(zip.file(realPath).async("string").then(function (data: any) {
-                                const rawData = parse5.parse(data);
-                                const tBodyBuilding = that.findtBody(rawData.childNodes);
-                                const length2 = "length of building table: " + tBodyBuilding.length;
-                                Log.trace(length2);
-                                const rooms = that.getRoomsInfo(tBodyBuilding);
-                                const length3 = "number of rooms in " + element.rshortname + ": " + rooms.length;
-                                Log.trace(length3);
-                                for (const key of rooms) {
-                                    const room: { [key: string]: any } = {
-                                        [id + "_fullname"]: element.rfullname,
-                                        [id + "_shortname"]: element.rshortname,
-                                        [id + "_number"]: key.rno,
-                                        [id + "_name"]: element.rshortname + "_" + key.rno,
-                                        [id + "_address"]: element.raddress,
-                                        [id + "_lat"]: -1,
-                                        [id + "_lon"]: -1,
-                                        [id + "_seats"]: parseInt(key.seat, 10),
-                                        [id + "_type"]: key.type,
-                                        [id + "_furniture"]: key.furniture,
-                                        [id + "_href"]: key.href,
-                                    };
-                                    results.push(room);
-                                    const toPrint = room[id + "_fullname"] + ", " +
-                                        room[id + "_shortname"] + ", " +
-                                        room[id + "_number"] + ", " +
-                                        room[id + "_name"] + ", " +
-                                        room[id + "_address"] + ", " +
-                                        room[id + "_lat"] + ", " +
-                                        room[id + "_lon"] + ", " +
-                                        room[id + "_seats"] + ", " +
-                                        room[id + "_type"] + ", " +
-                                        room[id + "_furniture"] + ", " +
-                                        room[id + "_href"];
-                                    // Log.trace("\t\t" + toPrint);
-                                }
-                                // Log.trace(length2);
-                                // Log.trace("Length of building table " + shortName + " " + length2);
-                            }).catch(function () {
-                                Log.trace("could not read html file");
-                            }));
+                            geoPromiseArray.push(that.getGeo(element.raddress)
+                                .then(function (geo) {
+                                    const realPath = element.rlink.substring(2);
+                                    promiseArray.push(zip.file(realPath).async("string")
+                                        .then(function (data: any) {
+                                            const rawData = parse5.parse(data);
+                                            const tBodyBuilding = that.findtBody(rawData.childNodes);
+                                            const rooms = that.getRoomsInfo(tBodyBuilding);
+                                            for (const key of rooms) {
+                                                // Log.trace("lat: " + geo.lat + ", lon: " + geo.lon);
+                                                const room: { [key: string]: any } = {
+                                                    [id + "_fullname"]: element.rfullname,
+                                                    [id + "_shortname"]: element.rshortname,
+                                                    [id + "_number"]: key.rno,
+                                                    [id + "_name"]: element.rshortname + "_" + key.rno,
+                                                    [id + "_address"]: element.raddress,
+                                                    [id + "_lat"]: geo.lat,
+                                                    [id + "_lon"]: geo.lon,
+                                                    [id + "_seats"]: parseInt(key.seat, 10),
+                                                    [id + "_type"]: key.type,
+                                                    [id + "_furniture"]: key.furniture,
+                                                    [id + "_href"]: key.href,
+                                                };
+                                                results.push(room);
+                                                // const toPrint = room[id + "_fullname"] + ", " +
+                                                //     room[id + "_shortname"] + ", " +
+                                                //     room[id + "_number"] + ", " +
+                                                //     room[id + "_name"] + ", " +
+                                                //     room[id + "_address"] + ", " +
+                                                //     room[id + "_lat"] + ", " +
+                                                //     room[id + "_lon"] + ", " +
+                                                //     room[id + "_seats"] + ", " +
+                                                //     room[id + "_type"] + ", " +
+                                                //     room[id + "_furniture"] + ", " +
+                                                //     room[id + "_href"];
+                                                // Log.trace(toPrint);
+                                            }
+                                        })
+                                        .catch(function () {
+                                            // Log.trace("could not read html file");
+                                        }));
+                                    Promise.all(promiseArray)
+                                        .then(function () {
+                                            // Log.trace("all promises done");
+                                            // Log.trace("SIZE OF END RESULT: " + results.length);
+                                            const final: IDataset = {
+                                                iid: id,
+                                                rows: results,
+                                                numRows: results.length,
+                                                iKind: InsightDatasetKind.Rooms,
+                                            };
+                                            const roomString = JSON.stringify(final);
+                                            if (results.length === 0) {
+                                                answer.code = 400;
+                                                answer.body = {error: "no valid rows"};
+                                                Log.error("400: no valid rows");
+                                                reject(answer);
+                                            } else {
+                                                const fs = require("fs");
+                                                fs.mkdir("./datasets", function () {
+                                                    // write the room to a file using a stream
+                                                    const logger = fs.createWriteStream("./datasets/" + id);
+                                                    logger.write(roomString);
+                                                    logger.end();
+                                                    answer.code = 204;
+                                                    answer.body = {result: "dataset successfully added"};
+                                                    resolve(answer);
+                                                });
+                                            }
+                                        })
+                                        .catch();
+                                }) // here
+                                .catch(() => Log.trace("getGeo .catch caught"))); // getGeo
+                            Promise.all(geoPromiseArray)
+                                .then(() => Log.trace("geopromise array all then"))
+                                .catch(() => Log.trace("geopromise array all catch"));
                         }
-                        Promise.all(promiseArray).then(function () {
-                            Log.trace("all promises done");
-                            Log.trace("SIZE OF END RESULT U KNOW WHAT IM SAYIN: " + results.length);
-                            const final: IDataset = {
-                                iid: id,
-                                rows: results,
-                                numRows: results.length,
-                                iKind: InsightDatasetKind.Rooms,
-                            };
-                            const roomString = JSON.stringify(final);
-                            if (results.length === 0) {
-                                answer.code = 400;
-                                answer.body = {error: "no valid sections"};
-                                Log.error("400: no valid sections");
-                                reject(answer);
-                            } else {
-                                const fs = require("fs");
-                                fs.mkdir("./datasets", function () {
-                                    // write the room to a file using a stream
-                                    const logger = fs.createWriteStream("./datasets/" + id);
-                                    logger.write(roomString);
-                                    logger.end();
-                                    answer.code = 204;
-                                    answer.body = {result: "dataset successfully added"};
-                                    resolve(answer);
-                                });
-                            }
-                        }).catch();
                     } catch (error) {
-                        Log.trace("big table error" + JSON.stringify(error));
-                        // answer.code = 400;
-                        // answer.body = {error: "no valid rooms"};
-                        reject(answer);
+                        reject({code: 400, body: {error: "no valid rooms"}});
                     }
                 }).catch(function () {
-                    Log.trace("could not read zip file");
+                    reject({code: 400, body: {error: "file.async error"}});
                 });
+            }).catch(function () {
+                reject({code: 400, body: {error: "could not read zip file"}});
             });
+        });
+    }
+
+    public getGeo(address: string): Promise<any> {
+        return new Promise(function (resolve, reject) {
+            const http = require("http");
+            const link = "http://skaha.cs.ubc.ca:11316/api/v1/team17/" + encodeURIComponent(address);
+            // Log.trace(link);
+            const geo = {lat: -1, lon: -1};
+            try {
+                http.get(link, function (res: any) {
+                    const {statusCode} = res;
+                    const contentType = res.headers["content-type"];
+                    let error;
+                    if (statusCode !== 200) {
+                        error = new Error("request failed");
+                    } else if (!/^application\/json/.test(contentType)) {
+                        error = new Error("application/json problem");
+                    }
+                    if (error) {
+                        Log.trace(error.message);
+                        res.resume();
+                        return;
+                    }
+
+                    res.setEncoding("utf8");
+                    let rawData = "";
+                    res.on("data", (chunk: any) => {
+                        rawData += chunk;
+                    });
+                    res.on("end", () => {
+                        try {
+                            const geoResult = JSON.parse(rawData);
+                            if (geoResult.error) {
+                                Log.trace("400: got an error from the server");
+                                throw new Error("got error from geolocation server");
+                            } else {
+                                // Log.trace(link + ": " + "lat: " + geoResult.lat + ", lon: " + geoResult.lon);
+                                geo.lat = geoResult.lat;
+                                geo.lon = geoResult.lon;
+                            }
+                        } catch (e) {
+                            Log.trace(e.message);
+                        }
+                    });
+                });
+                resolve(geo);
+            } catch {
+                reject();
+            }
         });
     }
 

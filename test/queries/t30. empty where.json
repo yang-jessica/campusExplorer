@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, avg WHERE avg > 97",
+    "title": "Transformation: empty where",
     "query": {
         "WHERE": {},
         "OPTIONS": {

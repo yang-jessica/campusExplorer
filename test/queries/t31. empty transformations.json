@@ -1,5 +1,5 @@
 {
-    "title": "Transformation: missing apply",
+    "title": "Transformation: empty transformations",
     "query": {
         "WHERE": {
             "IS": {

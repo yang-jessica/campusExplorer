@@ -668,6 +668,8 @@ describe("InsightFacade Add/Remove Rooms Dataset", function () {
     // Reference any datasets you've added to test/data here and they will
     // automatically be loaded in the Before All hook.
     const datasetsToLoad: { [id: string]: string } = {
+        norooms: "./test/data/rooms_none.zip",
+        notzip: "./test/data/notzip.jpg",
         rooms: "./test/data/rooms.zip",
     };
 
@@ -710,6 +712,36 @@ describe("InsightFacade Add/Remove Rooms Dataset", function () {
 
     afterEach(function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
+    });
+
+    // shouldn't add rooms dataset with no rooms
+    it("Should not add norooms dataset", async () => {
+        const id: string = "norooms";
+        const expectedCode: number = 400;
+        let response: InsightResponse;
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+        }
+    });
+
+    // shouldn't add a jpg file
+    it("Should not add jpg", async () => {
+        const id: string = "notzip";
+        const expectedCode: number = 400;
+        let response: InsightResponse;
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+        }
     });
 
     // add valid rooms dataset
@@ -793,7 +825,7 @@ describe("InsightFacade PerformQuery", () => {
         // Fail if there is a problem reading ANY query.
         try {
             testQueries = await TestUtil.readTestQueries(); // ALL QUERIES
-            // testQueries = await TestUtil.readTestQueries("test/queries_d2"); // ONE QUERY
+            // testQueries = await TestUtil.readTestQueries("test/query"); // ONE QUERY
             expect(testQueries).to.have.length.greaterThan(0);
         } catch (err) {
             expect.fail("", "", `Failed to read one or more test queries. ${JSON.stringify(err)}`);
@@ -867,14 +899,14 @@ describe("InsightFacade PerformQuery", () => {
                         if (test.response.code >= 400) {
                             expect(response.body).to.have.property("error");
                             // temp: print the error message if 400
-                            Log.trace("\n\n" + response.code +
-                                ": " + (response.body as InsightResponseErrorBody).error);
+                            // Log.trace("\n" + response.code +
+                            //     ": " + (response.body as InsightResponseErrorBody).error);
                         } else {
                             expect(response.body).to.have.property("result");
                             const expectedResult = (test.response.body as InsightResponseSuccessBody).result;
                             const actualResult = (response.body as InsightResponseSuccessBody).result;
                             expect(actualResult).to.deep.equal(expectedResult);
-                            Log.trace("\n\n" + response.code + ": Success!");
+                            // Log.trace("\n" + response.code + ": Success!");
                         }
                     }
                 });

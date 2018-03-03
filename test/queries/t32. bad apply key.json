@@ -1,5 +1,5 @@
 {
-    "title": "Transformation: simple MAX",
+    "title": "Transformation: bad apply key",
     "query": {
         "WHERE": {
             "IS": {"courses_dept": "aanb"}

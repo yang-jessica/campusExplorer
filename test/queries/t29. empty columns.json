@@ -1,5 +1,5 @@
 {
-    "title": "Transformation: SUM many",
+    "title": "Transformation: empty columns",
     "query": {
         "WHERE": {
             "AND": [
