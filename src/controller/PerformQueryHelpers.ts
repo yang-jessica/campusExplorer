@@ -1,5 +1,7 @@
 import Log from "../Util";
 import {CourseKeys, NumericKeys} from "./IDatasetFacade";
+import {InsightResponse} from "./IInsightFacade";
+import {Aggregation} from "./Aggregation";
 
 export class PerformQueryHelpers {
 
@@ -15,9 +17,7 @@ export class PerformQueryHelpers {
         return Object.values(NumericKeys).includes(keyToValidate);
     }
 
-    constructor() {
-        // Log.trace("constructor of PerformQueryHelpers");
-    }
+    constructor() {/* construct */}
 
     // WHERE helper
     public performWhere(where: any, negate: boolean, id: string): any[] {
@@ -26,60 +26,59 @@ export class PerformQueryHelpers {
         const filter = Object.keys(where)[0];
         switch (filter) {
             case "AND":
-                // Log.trace("\t\tfilter is: AND");
                 try {
                     result = this.andFunction(where, negate, id);
+                    break;
                 } catch {
                     throw new Error("AND messed up");
                 }
-                break;
             case "OR":
-                // Log.trace("\t\tfilter is: OR");
                 try {
                     result = this.orFunction(where, negate, id);
+                    break;
                 } catch {
                     throw new Error("OR messed up");
                 }
-                break;
             case "LT":
-                // Log.trace("\t\tfilter is: LT");
                 try {
                     result = this.performMComp(where, negate, id);
+                    break;
                 } catch {
                     throw new Error("LT messed up");
                 }
-                break;
             case "GT":
-                // Log.trace("\t\tfilter is: GT");
                 try {
                     result = this.performMComp(where, negate, id);
+                    break;
                 } catch {
                     throw new Error("GT messed up");
                 }
-                break;
             case "EQ":
-                // Log.trace("\t\tfilter is: EQ");
                 try {
                     result = this.performMComp(where, negate, id);
+                    break;
                 } catch {
                     throw new Error("EQ messed up");
                 }
-                break;
             case "IS":
-                // Log.trace("\t\tfilter is: IS");
                 try {
                     result = this.performSComp(where, negate, id);
+                    break;
                 } catch {
                     throw new Error("IS messed up");
                 }
-                break;
             case "NOT":
-                // Log.trace("\t\tfilter is: NOT");
                 try {
                     result = this.performNeg(where, id);
+                    break;
                 } catch {
                     throw new Error("NOT messed up");
                 }
+            case undefined:
+                const fs = require("fs");
+                const datasetString = fs.readFileSync("./datasets/" + id);
+                const data = JSON.parse(datasetString);
+                result = data.sections;
                 break;
             default:
                 throw new Error("damn man there ain't no filter like that in here");
@@ -88,23 +87,15 @@ export class PerformQueryHelpers {
     }
 
     // OPTIONS helper
-    public performOptions(options: any, results: any[], id: string): any[] {
-        // Log.trace("PERFORM OPTIONS");
-        // HANDLE COLUMNS
-        // Log.trace("\t HANDLING COLUMNS");
+    public performOptions(options: any, results: any[], id: string): InsightResponse {
         const columns = options[Object.keys(options)[0]];
-        // is it empty?
-        // const columnsLength = "\t\tsize of columns: " + Object.keys(columns).length;
-        // Log.trace(columnsLength);
         if (Object.keys(columns).length === 0) {
-            // Log.trace("\t\tCOLUMNS empty\n");
-            throw new Error("COLUMNS empty");
+            return {code: 400, body: {error: "COLUMNS cannot be empty"}};
         }
         // are all the keys in COLUMNS valid?
         for (const column of columns) {
             if (!PerformQueryHelpers.isValidKey(column)) {
-                // Log.trace("\t\tinvalid key in COLUMNS");
-                throw new Error("invalid key in COLUMNS");
+                return {code: 400, body: {error: column + " is not a valid key"}};
             }
         }
         // filter out the unnecessary keys
@@ -114,50 +105,204 @@ export class PerformQueryHelpers {
                 keysToRemove.push(id + "_" + key);
             }
         }
-        // Log.trace("\t\tRemoving non-queried columns");
         for (const result of results) {
             for (const key of keysToRemove) {
                 delete result[key];
             }
         }
         // HANDLING ORDER
-        // Log.trace("\t HANDLING ORDER");
-        const orderBy = options["ORDER"];
-        // check if orderBY is included in COLUMNS
-        if (orderBy && !columns.includes(orderBy)) {
-            // Log.trace("\t\tORDER key is not included in COLUMNS");
-            throw new Error("ORDER key is not included in COLUMNS");
+        const sort = options["ORDER"];
+        // if sort exists, call helper, else return results
+        if (sort && typeof sort === "string") {
+            return this.performSimpleSort(sort, columns, results);
+        } else if (sort) {
+            return this.performComplexSort(sort, columns, results);
+        } else {
+            return {code: 200, body: {result: results}};
         }
-        // check if ORDER exists in query and orderBy is a number
-        if (orderBy && PerformQueryHelpers.isNumericKey(orderBy)) {
-            results.sort(function (a, b) {
-                return a[orderBy] - b[orderBy];
-            });
-            // check if ORDER exists in query orderBy is a string
-        } else if (orderBy && !PerformQueryHelpers.isNumericKey(orderBy)) {
-            results.sort(function (a, b) {
-                const stringA = a[orderBy].toLowerCase();
-                const stringB = b[orderBy].toLowerCase();
-                if (stringA < stringB) {
-                    return -1;
-                }
-                if (stringA > stringB) {
-                    return 1;
-                }
-                return 0;
-            });
+    }
+
+    // OPTIONS helper for when TRANSFORMATION exists
+    public performOptionsTransformed(options: any, results: any[], transform: any, id: string): InsightResponse {
+        const columns = options[Object.keys(options)[0]];
+        if (Object.keys(columns).length === 0) {
+            return {code: 400, body: {error: "COLUMNS cannot be empty"}};
         }
-        return results;
+        // get all the applyStrings
+        const apply = transform["APPLY"];
+        const applyStrings = [];
+        for (const applyElement of apply) {
+            const applyKey = Object.keys(applyElement);
+            const applyString = applyKey[0];
+            applyStrings.push(applyString);
+        }
+        const transformKeys = transform["GROUP"].concat(applyStrings);
+        // are all the keys in COLUMNS valid?
+        for (const column of columns) {
+            // if it has an underscore, check validity
+            if (column.includes("_") && !PerformQueryHelpers.isValidKey(column)) {
+                return {code: 400, body: {error: column + " is not a valid key"}};
+            }
+            // if it doesn't have an underscore, check if in applyStrings array
+            if (!column.includes("_") && !applyStrings.includes(column)) {
+                return {code: 400, body: {error: column + " is not a valid key"}};
+            }
+            // lastly, check if it is in either GROUP or in APPLY
+            if (!transformKeys.includes(column)) {
+                return {code: 400, body: {error: "All column keys need to be in either GROUP or in APPLY"}};
+            }
+        }
+        // filter out the unnecessary keys
+        const keysToRemove: string[] = [];
+        for (const key of Object.values(CourseKeys)) {
+            if (!columns.includes(id + "_" + key)) {
+                keysToRemove.push(id + "_" + key);
+            }
+        }
+        for (const result of results) {
+            for (const key of keysToRemove) {
+                delete result[key];
+            }
+        }
+        // HANDLING ORDER
+        const sort = options["ORDER"];
+        // if sort exists, call helper, else return results
+        if (sort && typeof sort === "string") {
+            return this.performSimpleSort(sort, columns, results);
+        } else if (sort) {
+            return this.performComplexSort(sort, columns, results);
+        } else {
+            return {code: 200, body: {result: results}};
+        }
+    }
+
+    // TRANSFORMATIONS helper
+    public performTransform(transform: any, results: any[]): any[] {
+        const group = transform["GROUP"];
+        const apply = transform["APPLY"];
+        // check if both group and apply exist
+        if (!group || !apply) {
+            Log.trace("400: group or apply missing");
+            throw new Error("400: group or apply missing");
+        }
+        // check if group is empty
+        if (group.length === 0) {
+            Log.trace("400: group cannot be empty");
+            throw new Error("400: group cannot be empty");
+        }
+        // check if apply is empty
+        if (apply.length === 0) {
+            Log.trace("400: apply cannot be empty");
+            throw new Error("400: apply cannot be empty");
+        }
+        // get all the applyStrings
+        const applyStrings = [];
+        for (const applyElement of apply) {
+            const applyKey = Object.keys(applyElement);
+            const applyString = applyKey[0];
+            applyStrings.push(applyString);
+        }
+        const soFar: any[] = [];
+        for (const a of applyStrings) {
+            if (a.includes("_")) {
+                Log.trace("400: apply keys cannot contain underscores");
+                throw new Error("400: apply keys cannot contain underscores");
+            }
+            if (soFar.includes(a)) {
+                Log.trace("400: duplicate apply key");
+                throw new Error("400: duplicate apply key");
+            } else {
+                soFar.push(a);
+            }
+        }
+        // group
+        return this.performGroup(group, apply, results);
+    }
+
+    // GROUP helper
+    private performGroup(group: any[], apply: any, results: any[]): any[] {
+        const groups = new Map();
+        for (const result of results) {
+            let key: string = "";
+            for (const property of group) {
+                key = key + result[property].toString() + "#";
+            }
+            if (groups.has(key)) {
+                groups.set(key, groups.get(key).concat(result));
+            } else {
+                groups.set(key, [result]);
+            }
+        }
+        const keys = groups.keys();
+        const applied: any[] = [];
+        for (const k of keys) {
+            applied.push(this.performApply(apply, groups.get(k)));
+        }
+        return applied;
+    }
+
+    // APPLY helper
+    private performApply(apply: any[], results: any[]): any {
+        const result = results[0];
+        for (const applyKey of apply) {
+            const applyString = Object.keys(applyKey)[0];
+            const aggregation = Object.values(applyKey)[0];
+            const token = Object.keys(aggregation)[0];
+            const field = Object.values(aggregation)[0];
+            let answer: number;
+            switch (token) {
+                case "MAX":
+                    if (PerformQueryHelpers.isNumericKey(field)) {
+                        answer = Aggregation.applyMax(results, field);
+                        break;
+                    } else {
+                        Log.trace("400: MAX key must be numeric");
+                        throw new Error("MAX key must be numeric");
+                    }
+                case "MIN":
+                    if (PerformQueryHelpers.isNumericKey(field)) {
+                        answer = Aggregation.applyMin(results, field);
+                        break;
+                    } else {
+                        Log.trace("400: MIN key must be numeric");
+                        throw new Error("MIN key must be numeric");
+                    }
+                case "AVG":
+                    if (PerformQueryHelpers.isNumericKey(field)) {
+                        answer = Aggregation.applyAvg(results, field);
+                        break;
+                    } else {
+                        Log.trace("400: AVG key must be numeric");
+                        throw new Error("AVG key must be numeric");
+                    }
+                case "SUM":
+                    if (PerformQueryHelpers.isNumericKey(field)) {
+                        answer = Aggregation.applySum(results, field);
+                        break;
+                    } else {
+                        Log.trace("400: SUM key must be numeric");
+                        throw new Error("SUM key must be numeric");
+                    }
+                case "COUNT":
+                    if (PerformQueryHelpers.isValidKey(field)) {
+                        answer = Aggregation.applyCount(results, field);
+                        break;
+                    } else {
+                        Log.trace("400: COUNT key invalid");
+                        throw new Error("COUNT key invalid");
+                    }
+                default:
+                    throw new Error("Apply token invalid");
+            }
+            result[applyString] = answer;
+        }
+        return result;
     }
 
     // AND function
     private andFunction(andQuery: any, negate: boolean, id: string): any[] {
-        // Log.trace("AND FUNCTION");
         // is it empty?
-        // const sizeOfAnd = "\t\tsize of AND: " + andQuery["AND"].length;
-        // Log.trace(sizeOfAnd);
         if (andQuery["AND"].length === 0) {
-            // Log.trace("\t\tAND empty\n");
             throw new Error("AND empty");
         }
         // get the full dataset
@@ -169,35 +314,27 @@ export class PerformQueryHelpers {
         for (const logicClause of andQuery["AND"]) {
             switch (Object.keys(logicClause)[0]) {
                 case "AND":
-                    // Log.trace("\t\tinside AND");
                     andResult = this.andHelper(andResult, this.andFunction(logicClause, negate, id));
                     break;
                 case "OR":
-                    // Log.trace("\t\tinside OR");
                     andResult = this.andHelper(andResult, this.orFunction(logicClause, negate, id));
                     break;
                 case "LT":
-                    // Log.trace("\t\tinside LT");
                     andResult = this.andHelper(andResult, this.performMComp(logicClause, negate, id));
                     break;
                 case "GT":
-                    // Log.trace("\t\tinside GT");
                     andResult = this.andHelper(andResult, this.performMComp(logicClause, negate, id));
                     break;
                 case "EQ":
-                    // Log.trace("\t\tinside EQ");
                     andResult = this.andHelper(andResult, this.performMComp(logicClause, negate, id));
                     break;
                 case "IS":
-                    // Log.trace("\t\tinside IS");
                     andResult = this.andHelper(andResult, this.performSComp(logicClause, negate, id));
                     break;
                 case "NOT":
-                    // Log.trace("\t\tinside NOT");
                     andResult = this.andHelper(andResult, this.performNeg(logicClause, id));
                     break;
                 default:
-                    // Log.trace("\t\tunknown filter encountered");
                     throw new Error("damn man there ain't no filter like that in here");
             }
         }
@@ -206,21 +343,16 @@ export class PerformQueryHelpers {
 
     // AND helper
     private andHelper(array1: any[], array2: any[]): any[] {
-        // Log.trace("AND HELPER");
         const stringifyArray1: any[] = [];
         for (const x of array1) {
             const y = JSON.stringify(x);
-            // Log.trace(y);
             stringifyArray1.push(y);
         }
         const stringifyArray2: any[] = [];
         for (const x2 of array2) {
             const y2 = JSON.stringify(x2);
-            // Log.trace(y2);
             stringifyArray2.push(y2);
         }
-        // Log.trace("\t\tfirst array: " + stringifyArray1);
-        // Log.trace("\t\tsecond array: " + stringifyArray2);
         let filteredStringArray: any[];
         const filteredArray: any[] = [];
         filteredStringArray = stringifyArray2.filter(function (x: any) {
@@ -237,12 +369,8 @@ export class PerformQueryHelpers {
 
     // OR function
     private orFunction(orQuery: any, negate: boolean, id: string): any[] {
-        // Log.trace("OR FUNCTION");
         // is it empty?
-        // const sizeOfOr = "\t\tsize of OR: " + orQuery["OR"].length;
-        // Log.trace(sizeOfOr);
         if (orQuery["OR"].length === 0) {
-            // Log.trace("\t\tOR empty\n");
             throw new Error("OR empty");
         }
         let orResult: any[] = [];
@@ -279,21 +407,16 @@ export class PerformQueryHelpers {
 
     // OR helper
     private orHelper(array1: any[], array2: any[]): any[] {
-        // Log.trace("OR HELPER");
         const stringifyArray1: any[] = [];
         for (const x of array1) {
             const y = JSON.stringify(x);
-            // Log.trace(y);
             stringifyArray1.push(y);
         }
         const stringifyArray2: any[] = [];
         for (const x2 of array2) {
             const y2 = JSON.stringify(x2);
-            // Log.trace(y2);
             stringifyArray2.push(y2);
         }
-        // Log.trace("first array: " + stringifyArray1);
-        // Log.trace("second array: " + stringifyArray2);
         let filteredStringArray: any[];
         const filteredArray: any[] = [];
         filteredStringArray = stringifyArray2.filter(function (x: any) {
@@ -306,43 +429,27 @@ export class PerformQueryHelpers {
         return filteredArray;
     }
 
-    // MATH COMPARISON (GT || LT || EQ) HELPER
+    // MATH COMPARISON (GT || LT || EQ) helper
     private performMComp(filter: any, negate: boolean, id: string): any[] {
-        // Log.trace("PERFORM M COMP");
         // get the comparator
         const logic = filter[Object.keys(filter)[0]];
         const comparator = Object.keys(filter)[0];
-        // const compInfo = "\t\tCOMPARATOR: " + comparator;
-        // Log.trace(compInfo);
         // is it empty? also can check if it's > 1
-        // const sizeOfLogic = "\t\tsize of logic: " + Object.keys(logic).length;
-        // Log.trace(sizeOfLogic);
         if (Object.keys(logic).length === 0) {
-            // Log.trace("\t\tcomparator empty\n");
             throw new Error("comparator empty");
         }
         // the thing to compare
         const keyToCompare = Object.keys(logic)[0];
-        // Log.trace("\t\tkey to compare: " + keyToCompare);
         // is it valid?
-        // const valid = "\t\tis it valid? " + this.isValidKey(keyToCompare);
-        // Log.trace(valid);
         if (!PerformQueryHelpers.isValidKey(keyToCompare)) {
-            // Log.trace("\t\tinvalid key");
             throw new Error("invalid key");
         }
         // is the key to compare on numeric?
-        // const numeric = "\t\tis numeric? " + this.isNumericKey(keyToCompare);
-        // Log.trace(numeric);
         if (!PerformQueryHelpers.isNumericKey(keyToCompare)) {
-            // Log.trace("\t\tcan't compare string keys mathematically");
             throw new Error("can't compare string keys mathematically");
         }
         // is the actual value numeric?
-        // const value = "\t\ttype of value? " + typeof logic[keyToCompare];
-        // Log.trace(value);
         if (typeof logic[keyToCompare] === "string") {
-            // Log.trace("\t\tcan't math compare string values");
             throw new Error("can't math compare string values");
         }
         const fs = require("fs");
@@ -350,15 +457,8 @@ export class PerformQueryHelpers {
         const data = JSON.parse(datasetString);
         const answer: any[] = [];
         const invert: any[] = [];
-        // const dataID = data.iid;
         const allSections = data.sections;
         for (const section of allSections) {
-            // begin logging
-            // const set = "set[" + i + "] " + keyToCompare + ": " + allSections[i][keyToCompare];
-            // const qry = "query[" + i + "] " + keyToCompare + ": " + logic[keyToCompare];
-            // const msg = "\t\t" + set + "\t\t vs \t\t" + qry;
-            // Log.trace(msg);
-            // end logging
             switch (comparator) {
                 case "GT":
                     if (section[keyToCompare] > logic[keyToCompare]) {
@@ -383,7 +483,6 @@ export class PerformQueryHelpers {
                     break;
             }
         }
-        // Log.trace("M COMP DONE");
         if (negate) {
             return invert;
         } else {
@@ -391,46 +490,28 @@ export class PerformQueryHelpers {
         }
     }
 
-    // STRING COMPARISON (IS) HELPER
+    // STRING COMPARISON (IS) helper
     private performSComp(filter: any, negate: boolean, id: string): any[] {
-        // Log.trace("PERFORM S COMP");
         // get the comparator
         const logic = filter[Object.keys(filter)[0]];
-        // const comparatorInfo = "\t\tCOMPARATOR: " + Object.keys(filter)[0];
-        // Log.trace(comparatorInfo);
         // is it empty? also can check if it's > 1
-        // const sizeOfLogic = "\t\tsize of logic: " + Object.keys(logic).length;
-        // Log.trace(sizeOfLogic);
         if (Object.keys(logic).length === 0) {
-            // Log.trace("\t\tIS is empty\n");
             throw new Error("IS is empty");
         }
         // the thing to compare
         const keyToCompare = Object.keys(logic)[0];
-        // Log.trace("\t\tkey to compare: " + keyToCompare);
         // is it valid?
-        // const valid = "\t\tis valid? " + this.isValidKey(keyToCompare);
-        // Log.trace(valid);
         if (!PerformQueryHelpers.isValidKey(keyToCompare)) {
-            // Log.trace("\t\tinvalid key");
             throw new Error("invalid key");
         }
         // is the key to compare on a string?
-        // const numeric = "\t\tis string? " + !this.isNumericKey(keyToCompare);
-        // Log.trace(numeric);
         if (PerformQueryHelpers.isNumericKey(keyToCompare)) {
-            // Log.trace("\t\tcan't compare numerical keys as strings");
             throw new Error("can't compare numerical keys as strings");
         }
         // is the actual value a string?
-        // const value = "\t\ttype of value? " + typeof logic[keyToCompare];
-        // Log.trace(value);
         if (typeof logic[keyToCompare] === "number") {
-            // Log.trace("\t\tcan't string compare numerical values");
             throw new Error("can't string compare numerical values");
         }
-        // what else
-        // const comp = "\t\tCOMPARISON: " + keyToCompare + " " + Object.keys(filter)[0] + " " + logic[keyToCompare];
         // parse shit for real this time
         const fs = require("fs");
         const datasetString = fs.readFileSync("./datasets/" + id);
@@ -438,7 +519,6 @@ export class PerformQueryHelpers {
         // create answer arrays
         const answer: any[] = [];
         const invert: any[] = [];
-        // const dataID = data.iid; // the id of the dataset
         const allSections = data.sections;
         // handle wildcards
         let compare = logic[keyToCompare];
@@ -491,7 +571,6 @@ export class PerformQueryHelpers {
                 }
             }
         }
-        // if there was a wildcard
         if (negate) {
             return invert;
         } else {
@@ -499,30 +578,103 @@ export class PerformQueryHelpers {
         }
     }
 
-    // NEGATION HELPER
+    // NEGATION helper
     private performNeg(logic: any, id: string): any[] {
-        // Log.trace("PERFORM NEGATION");
         let negate: boolean = true;
         let current = logic[Object.keys(logic)[0]];
-        // is it empty? also can check if it's > 1
-        // const sizeOfNot = "\t\tsize of NOT: " + Object.keys(current).length;
-        // Log.trace(sizeOfNot);
+        // is it empty?
         if (Object.keys(current).length === 0) {
-            // Log.trace("\t\tNOT is empty\n");
             throw new Error("NOT is empty");
         }
         // count the # of NOTs
-        // Log.trace("\t\tcount NOTs");
         let notCounter = 1;
         while (Object.keys(current)[0] === "NOT") {
             notCounter++;
-            // const negationText = "\t\tNumber of NOTs: " + notCounter;
-            // Log.trace(negationText);
             current = current[Object.keys(logic)[0]];
         }
         if (!(notCounter % 2)) {
             negate = false;
         }
         return this.performWhere(current, negate, id);
+    }
+
+    // SORTING helper
+    private performSimpleSort(sort: any, columns: any[], results: any[]): InsightResponse {
+        // make sure key is included in columns
+        if (!columns.includes(sort)) {
+            return {code: 400, body: {error: "ORDER key not included in COLUMNS"}};
+        }
+        // check if ORDER exists in query and orderBy is a number
+        results.sort(function (a, b) {
+            if (a[sort] < b[sort]) {
+                return -1;
+            }
+            if (a[sort] > b[sort]) {
+                return 1;
+            }
+            return 0;
+        });
+        return {code: 200, body: {result: results}};
+    }
+
+    // complex sort helper
+    private performComplexSort(sort: any, columns: any[], results: any[]): InsightResponse {
+        const dir = sort["dir"];
+        const keys = sort["keys"];
+        // check if we have dir and keys
+        if (!dir || !keys) {
+            return {code: 400, body: {error: "Options order invalid"}};
+        }
+        // check if direction is valid
+        if (!(dir === "UP" || dir === "DOWN")) {
+            return {code: 400, body: {error: "Order direction invalid"}};
+        }
+        // check if we have keys to sort on
+        if (keys.length === 0) {
+            return {code: 400, body: {error: "No keys to sort on"}};
+        }
+        // make sure all keys are in columns
+        for (const key of keys) {
+            if (!columns.includes(key)) {
+                return {code: 400, body: {error: "Order key needs to be included in columns"}};
+            }
+        }
+        // sort that
+        if (dir === "UP") {
+            results.sort(function (a, b) {
+                let keyIndex = 0;
+                while (a[keys[keyIndex]] === b[keys[keyIndex]]) {
+                    if (keyIndex + 1 < keys.length) {
+                        keyIndex++;
+                    } else {
+                        return 0;
+                    }
+                }
+                if (a[keys[keyIndex]] < b[keys[keyIndex]]) {
+                    return -1;
+                }
+                if (a[keys[keyIndex]] > b[keys[keyIndex]]) {
+                    return 1;
+                }
+            });
+        } else if (dir === "DOWN") {
+            results.sort(function (a, b) {
+                let keyIndex = 0;
+                while (a[keys[keyIndex]] === b[keys[keyIndex]]) {
+                    if (keyIndex + 1 < keys.length) {
+                        keyIndex++;
+                    } else {
+                        return 1;
+                    }
+                }
+                if (a[keys[keyIndex]] > b[keys[keyIndex]]) {
+                    return -1;
+                }
+                if (a[keys[keyIndex]] < b[keys[keyIndex]]) {
+                    return 1;
+                }
+            });
+        }
+        return {code: 200, body: {result: results}};
     }
 }

@@ -55,13 +55,23 @@ export default class InsightFacade implements IInsightFacade {
                 }
             }
             const help = new AddDatasetHelpers();
-            help.addCourse(id, content)
-                .then(function (response: InsightResponse) {
-                    resolve(response);
-                })
-                .catch(function (response: InsightResponse) {
-                    reject(response);
-                });
+            if (kind === "courses") {
+                help.addCourse(id, content)
+                    .then(function (response: InsightResponse) {
+                        resolve(response);
+                    })
+                    .catch(function (response: InsightResponse) {
+                        reject(response);
+                    });
+            } else if (kind === "rooms") {
+                help.addRooms(id, content)
+                    .then(function (response: InsightResponse) {
+                        resolve(response);
+                    })
+                    .catch(function (response: InsightResponse) {
+                        reject(response);
+                    });
+            }
         });
     }
 
@@ -128,12 +138,9 @@ export default class InsightFacade implements IInsightFacade {
     public performQuery(query: any): Promise<InsightResponse> {
         const help = new PerformQueryHelpers();
         return new Promise(function (resolve, reject) {
-            const answer: InsightResponse = {code: -1, body: undefined};
             // check if WHERE or OPTIONS are missing
             if (!query["WHERE"] || !query["OPTIONS"]) {
-                answer.code = 400;
-                answer.body = {error: "missing 'WHERE' or 'OPTIONS'"};
-                return reject(answer);
+                return reject({code: 400, body: {error: "missing 'WHERE' or 'OPTIONS'"}});
             }
             // check if all keys are from the same dataset
             const queryString = JSON.stringify(query);
@@ -141,42 +148,38 @@ export default class InsightFacade implements IInsightFacade {
             const id: string = allKeys[0];
             for (const key of allKeys) {
                 if (key !== id) {
-                    answer.code = 400;
-                    answer.body = {error: "missing dataset " + "'" + key + "'"};
-                    return reject(answer);
+                    return reject({code: 400, body: {error: "missing dataset " + "'" + key + "'"}});
                 }
             }
-            // check if keys are only WHERE and OPTIONS
-            let objectKeys = "[ ";
+            // check if keys are only WHERE and OPTIONS and optionally TRANSFORMATIONS
             for (const key of Object.keys(query)) {
-                objectKeys = objectKeys + key + ", ";
-                if (key !== "WHERE" && key !== "OPTIONS") {
-                    answer.code = 400;
-                    answer.body = {error: "key other than 'WHERE' and 'OPTIONS'"};
-                    return reject(answer);
+                if (key !== "WHERE" && key !== "OPTIONS" &&  key !== "TRANSFORMATIONS") {
+                    return reject({code: 400, body: {error: "key other than 'WHERE', 'OPTIONS', 'TRANSFORMATIONS'"}});
                 }
             }
             // check if WHERE or OPTIONS are empty
             const where = query["WHERE"];
             const options = query["OPTIONS"];
-            if (Object.keys(where).length === 0 || Object.keys(options).length === 0) {
-                answer.code = 400;
-                answer.body = {error: "empty 'WHERE' or 'OPTIONS'"};
-                return reject(answer);
+            if (Object.keys(options).length === 0) {
+                return reject({code: 400, body: {error: "empty 'OPTIONS'"}});
             } else {
                 // if all else is good, call the helpers
                 try {
                     let results = help.performWhere(where, false, id);
-                    results = help.performOptions(options, results, id);
-                    answer.code = 200;
-                    answer.body = {result: results};
+                    let answer: InsightResponse = {code: -1, body: null};
+                    const transform = query["TRANSFORMATIONS"];
+                    if (transform) {
+                        results = help.performTransform(transform, results);
+                        answer = help.performOptionsTransformed(options, results, transform, id);
+                    } else {
+                        answer = help.performOptions(options, results, id);
+                    }
+                    return resolve(answer);
                 } catch {
-                    answer.code = 400;
-                    answer.body = {error: "ERROR OCCURRED"};
-                    return reject(answer);
+                    return reject({code: 400, body: {error: "ERROR OCCURRED"}});
                 }
             }
-            resolve(answer);
+            // resolve(answer);
         });
     }
 
