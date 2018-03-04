@@ -2,6 +2,7 @@ import Log from "../Util";
 import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightResponse} from "./IInsightFacade";
 import {PerformQueryHelpers} from "./PerformQueryHelpers";
 import {AddDatasetHelpers} from "./AddDatasetHelpers";
+import {CourseKeys, RoomKeys} from "./IDatasetFacade";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -42,9 +43,7 @@ export default class InsightFacade implements IInsightFacade {
      * is invalid or if it was added more than once with the same id.
      */
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<InsightResponse> {
-        // return the Promise<InsightResponse>
         return new Promise(function (resolve, reject) {
-            // fs allows use of File System
             const fs = require("fs");
             // synchronously check if the id already exists
             const dirMain = fs.readdirSync("./");
@@ -98,23 +97,14 @@ export default class InsightFacade implements IInsightFacade {
      *
      */
     public removeDataset(id: string): Promise<InsightResponse> {
-        // return the Promise<InsightResponse>
         return new Promise(function (resolve, reject) {
-            // declare a promise that will be returned
-            const answer: InsightResponse = {code: -1, body: null};
             const fs = require("fs");
             // try to remove the given id
             fs.unlink("./datasets/" + id, function (err: Error) {
                 if (err) {
-                    answer.code = 404;
-                    answer.body = {error: "dataset not removed"};
-                    // Log.error("404: dataset not removed");
-                    reject(answer);
+                    reject({code: 404, body: {error: "dataset not removed"}});
                 } else {
-                    answer.code = 204;
-                    answer.body = {result: "dataset removed"};
-                    // Log.error("204: dataset removed");
-                    resolve(answer);
+                    resolve({code: 204, body: {result: "dataset removed"}});
                 }
             });
         });
@@ -143,7 +133,7 @@ export default class InsightFacade implements IInsightFacade {
             if (!query["WHERE"] || !query["OPTIONS"]) {
                 return reject({code: 400, body: {error: "missing 'WHERE' or 'OPTIONS'"}});
             }
-            // check if all keys are from the same dataset
+            // check if all ids are for the same dataset
             const queryString = JSON.stringify(query);
             const allKeys: string[] = queryString.match(/[a-z]+(?=_)/g);
             const id: string = allKeys[0];
@@ -151,6 +141,22 @@ export default class InsightFacade implements IInsightFacade {
                 if (key !== id) {
                     return reject({code: 400, body: {error: "missing dataset " + "'" + key + "'"}});
                 }
+            }
+            // check if all keys are for the same dataset
+            const allAfterUnderscore: string[] = queryString.match(/_[a-z]+/g);
+            let course = true;
+            let room = true;
+            for (const u of allAfterUnderscore) {
+                if (!Object.values(CourseKeys).includes(u.substring(1))) {
+                    course = false;
+                }
+                if (!Object.values(RoomKeys).includes(u.substring(1))) {
+                    room = false;
+                }
+            }
+            // if both flags are false, then there's a conflict
+            if (!course && !room) {
+                return reject({code: 400, body: {error: "query has conflicting key values"}});
             }
             // check if keys are only WHERE and OPTIONS and optionally TRANSFORMATIONS
             for (const key of Object.keys(query)) {
@@ -167,20 +173,19 @@ export default class InsightFacade implements IInsightFacade {
                 // if all else is good, call the helpers
                 try {
                     let results = help.performWhere(where, false, id);
-                    let answer: InsightResponse = {code: -1, body: null};
                     const transform = query["TRANSFORMATIONS"];
+                    // if transform exists, use transform route, else go on as usual
                     if (transform) {
                         results = help.performTransform(transform, results);
-                        answer = help.performOptionsTransformed(options, results, transform, id);
+                        results = help.performOptionsTransformed(options, results, transform, id);
                     } else {
-                        answer = help.performOptions(options, results, id);
+                        results = help.performOptions(options, results, id);
                     }
-                    return resolve(answer);
-                } catch {
-                    return reject({code: 400, body: {error: "ERROR OCCURRED"}});
+                    return resolve({code: 200, body: {result: results}});
+                } catch (e) {
+                    return reject({code: 400, body: {error: e.message}});
                 }
             }
-            // resolve(answer);
         });
     }
 
@@ -196,7 +201,6 @@ export default class InsightFacade implements IInsightFacade {
      */
     public listDatasets(): Promise<InsightResponse> {
         return new Promise(function (resolve) {
-            const answer: InsightResponse = {code: -1, body: undefined};
             const answerList: InsightDataset[] = [];
             const fs = require("fs");
             const promiseArray: any[] = [];
@@ -204,7 +208,6 @@ export default class InsightFacade implements IInsightFacade {
             fs.readdir("./datasets/", function (err: Error, files: string[]) {
                 if (!err) {
                     for (const file of files) {
-                        Log.trace("added dataset: " + file);
                         promiseArray.push(new Promise(function (resolved) {
                             fs.readFile("./datasets/" + file, function (er: Error, data: string) {
                                 if (!er) {
@@ -214,16 +217,6 @@ export default class InsightFacade implements IInsightFacade {
                                         kind: dataset.iKind,
                                         numRows: dataset.numRows,
                                     };
-                                    const jsonInfo = file.toUpperCase() + " FROM JSON: " +
-                                        "\niid: " + dataset.iid +
-                                        "\nnumRows: " + dataset.numRows +
-                                        "\niKind: " + dataset.iKind;
-                                    Log.trace(jsonInfo);
-                                    const parsedInfo = info.id.toUpperCase() + " IN RESULT: " +
-                                        "\nid: " + info.id +
-                                        "\nkind: " + info.kind +
-                                        "\nnumRows: " + info.numRows;
-                                    Log.trace(parsedInfo);
                                     answerList.push(info);
                                     resolved(true);
                                 }
@@ -232,11 +225,7 @@ export default class InsightFacade implements IInsightFacade {
                     }
                 }
                 Promise.all(promiseArray).then(function () {
-                    answer.code = 200;
-                    answer.body = {result: answerList};
-                    const resLength: string = "length of result: " + answer.body.result.length;
-                    Log.trace(resLength);
-                    resolve(answer);
+                    resolve({code: 200, body: {result: answerList}});
                 });
             });
         });

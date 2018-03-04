@@ -1,6 +1,4 @@
-import Log from "../Util";
 import {CourseKeys, NumericKeys, RoomKeys} from "./IDatasetFacade";
-import {InsightResponse} from "./IInsightFacade";
 import {Aggregation} from "./Aggregation";
 
 export class PerformQueryHelpers {
@@ -8,8 +6,7 @@ export class PerformQueryHelpers {
     // valid key
     private static isValidKey(key: string): boolean {
         const keyToValidate = key.substring(key.indexOf("_") + 1);
-        return (Object.values(CourseKeys).includes(keyToValidate) ||
-                Object.values(RoomKeys).includes(keyToValidate));
+        return (Object.values(CourseKeys).includes(keyToValidate) || Object.values(RoomKeys).includes(keyToValidate));
     }
 
     // numeric key
@@ -22,59 +19,30 @@ export class PerformQueryHelpers {
 
     // WHERE helper
     public performWhere(where: any, negate: boolean, id: string): any[] {
-        // Log.trace("PERFORM WHERE");
         let result: any[] = [];
         const filter = Object.keys(where)[0];
         switch (filter) {
             case "AND":
-                try {
-                    result = this.andFunction(where, negate, id);
-                    break;
-                } catch {
-                    throw new Error("AND messed up");
-                }
+                result = this.andFunction(where, negate, id);
+                break;
             case "OR":
-                try {
-                    result = this.orFunction(where, negate, id);
-                    break;
-                } catch {
-                    throw new Error("OR messed up");
-                }
+                result = this.orFunction(where, negate, id);
+                break;
             case "LT":
-                try {
-                    result = this.performMComp(where, negate, id);
-                    break;
-                } catch {
-                    throw new Error("LT messed up");
-                }
+                result = this.performMComp(where, negate, id);
+                break;
             case "GT":
-                try {
-                    result = this.performMComp(where, negate, id);
-                    break;
-                } catch {
-                    throw new Error("GT messed up");
-                }
+                result = this.performMComp(where, negate, id);
+                break;
             case "EQ":
-                try {
-                    result = this.performMComp(where, negate, id);
-                    break;
-                } catch {
-                    throw new Error("EQ messed up");
-                }
+                result = this.performMComp(where, negate, id);
+                break;
             case "IS":
-                try {
-                    result = this.performSComp(where, negate, id);
-                    break;
-                } catch {
-                    throw new Error("IS messed up");
-                }
+                result = this.performSComp(where, negate, id);
+                break;
             case "NOT":
-                try {
-                    result = this.performNeg(where, id);
-                    break;
-                } catch {
-                    throw new Error("NOT messed up");
-                }
+                result = this.performNeg(where, id);
+                break;
             case undefined:
                 const fs = require("fs");
                 const datasetString = fs.readFileSync("./datasets/" + id);
@@ -82,21 +50,21 @@ export class PerformQueryHelpers {
                 result = data.rows;
                 break;
             default:
-                throw new Error("damn man there ain't no filter like that in here");
+                throw new Error("invalid filter");
         }
         return result;
     }
 
     // OPTIONS helper
-    public performOptions(options: any, results: any[], id: string): InsightResponse {
+    public performOptions(options: any, results: any[], id: string): any[] {
         const columns = options[Object.keys(options)[0]];
         if (Object.keys(columns).length === 0) {
-            return {code: 400, body: {error: "COLUMNS cannot be empty"}};
+            throw new Error("COLUMNS cannot be empty");
         }
         // are all the keys in COLUMNS valid?
         for (const column of columns) {
             if (!PerformQueryHelpers.isValidKey(column)) {
-                return {code: 400, body: {error: column + " is not a valid key"}};
+                throw new Error(column + " is not a valid key");
             }
         }
         // filter out the unnecessary keys
@@ -119,15 +87,15 @@ export class PerformQueryHelpers {
         } else if (sort) {
             return this.performComplexSort(sort, columns, results);
         } else {
-            return {code: 200, body: {result: results}};
+            return results;
         }
     }
 
     // OPTIONS helper for when TRANSFORMATION exists
-    public performOptionsTransformed(options: any, results: any[], transform: any, id: string): InsightResponse {
+    public performOptionsTransformed(options: any, results: any[], transform: any, id: string): any[] {
         const columns = options[Object.keys(options)[0]];
         if (Object.keys(columns).length === 0) {
-            return {code: 400, body: {error: "COLUMNS cannot be empty"}};
+            throw new Error("COLUMNS cannot be empty");
         }
         // get all the applyStrings
         const apply = transform["APPLY"];
@@ -142,15 +110,15 @@ export class PerformQueryHelpers {
         for (const column of columns) {
             // if it has an underscore, check validity
             if (column.includes("_") && !PerformQueryHelpers.isValidKey(column)) {
-                return {code: 400, body: {error: column + " is not a valid key"}};
+                throw new Error(column + " is not a valid key");
             }
             // if it doesn't have an underscore, check if in applyStrings array
             if (!column.includes("_") && !applyStrings.includes(column)) {
-                return {code: 400, body: {error: column + " is not a valid key"}};
+                throw new Error(column + " is not a valid key");
             }
             // lastly, check if it is in either GROUP or in APPLY
             if (!transformKeys.includes(column)) {
-                return {code: 400, body: {error: "All column keys need to be in either GROUP or in APPLY"}};
+                throw new Error("All column keys need to be in either GROUP or in APPLY");
             }
         }
         // filter out the unnecessary keys
@@ -173,7 +141,7 @@ export class PerformQueryHelpers {
         } else if (sort) {
             return this.performComplexSort(sort, columns, results);
         } else {
-            return {code: 200, body: {result: results}};
+            return results;
         }
     }
 
@@ -183,20 +151,13 @@ export class PerformQueryHelpers {
         const apply = transform["APPLY"];
         // check if both group and apply exist
         if (!group || !apply) {
-            Log.trace("400: group or apply missing");
-            throw new Error("400: group or apply missing");
+            throw new Error("group or apply missing");
         }
-        // check if group is empty
+        // check if group is empty, apply can be empty
         if (group.length === 0) {
-            Log.trace("400: group cannot be empty");
-            throw new Error("400: group cannot be empty");
+            throw new Error("group cannot be empty");
         }
-        // check if apply is empty
-        // if (apply.length === 0) {
-        //     Log.trace("400: apply cannot be empty");
-        //     throw new Error("400: apply cannot be empty");
-        // }
-        // get all the applyStrings
+        // get all the apply strings
         const applyStrings = [];
         for (const applyElement of apply) {
             const applyKey = Object.keys(applyElement);
@@ -205,13 +166,13 @@ export class PerformQueryHelpers {
         }
         const soFar: any[] = [];
         for (const a of applyStrings) {
+            // check if apply strings contain underscores
             if (a.includes("_")) {
-                Log.trace("400: apply keys cannot contain underscores");
-                throw new Error("400: apply keys cannot contain underscores");
+                throw new Error("apply keys cannot contain underscores");
             }
+            // check if any duplicates exist
             if (soFar.includes(a)) {
-                Log.trace("400: duplicate apply key");
-                throw new Error("400: duplicate apply key");
+                throw new Error("duplicate apply key");
             } else {
                 soFar.push(a);
             }
@@ -257,7 +218,6 @@ export class PerformQueryHelpers {
                         answer = Aggregation.applyMax(results, field);
                         break;
                     } else {
-                        Log.trace("400: MAX key must be numeric");
                         throw new Error("MAX key must be numeric");
                     }
                 case "MIN":
@@ -265,7 +225,6 @@ export class PerformQueryHelpers {
                         answer = Aggregation.applyMin(results, field);
                         break;
                     } else {
-                        Log.trace("400: MIN key must be numeric");
                         throw new Error("MIN key must be numeric");
                     }
                 case "AVG":
@@ -273,7 +232,6 @@ export class PerformQueryHelpers {
                         answer = Aggregation.applyAvg(results, field);
                         break;
                     } else {
-                        Log.trace("400: AVG key must be numeric");
                         throw new Error("AVG key must be numeric");
                     }
                 case "SUM":
@@ -281,7 +239,6 @@ export class PerformQueryHelpers {
                         answer = Aggregation.applySum(results, field);
                         break;
                     } else {
-                        Log.trace("400: SUM key must be numeric");
                         throw new Error("SUM key must be numeric");
                     }
                 case "COUNT":
@@ -289,7 +246,6 @@ export class PerformQueryHelpers {
                         answer = Aggregation.applyCount(results, field);
                         break;
                     } else {
-                        Log.trace("400: COUNT key invalid");
                         throw new Error("COUNT key invalid");
                     }
                 default:
@@ -336,7 +292,7 @@ export class PerformQueryHelpers {
                     andResult = this.andHelper(andResult, this.performNeg(logicClause, id));
                     break;
                 default:
-                    throw new Error("damn man there ain't no filter like that in here");
+                    throw new Error("Invalid filter encountered in AND");
             }
         }
         return andResult;
@@ -400,7 +356,7 @@ export class PerformQueryHelpers {
                     orResult = orResult.concat(this.orHelper(orResult, this.performNeg(logicClause, id)));
                     break;
                 default:
-                    throw new Error("damn man there ain't no filter like that in here");
+                    throw new Error("Invalid filter encountered in OR");
             }
         }
         return orResult;
@@ -503,7 +459,7 @@ export class PerformQueryHelpers {
         const keyToCompare = Object.keys(logic)[0];
         // is it valid?
         if (!PerformQueryHelpers.isValidKey(keyToCompare)) {
-            throw new Error("invalid key");
+            throw new Error("invalid key in IS");
         }
         // is the key to compare on a string?
         if (PerformQueryHelpers.isNumericKey(keyToCompare)) {
@@ -600,10 +556,10 @@ export class PerformQueryHelpers {
     }
 
     // SORTING helper
-    private performSimpleSort(sort: any, columns: any[], results: any[]): InsightResponse {
+    private performSimpleSort(sort: any, columns: any[], results: any[]): any[] {
         // make sure key is included in columns
         if (!columns.includes(sort)) {
-            return {code: 400, body: {error: "ORDER key not included in COLUMNS"}};
+            throw new Error("ORDER key not included in COLUMNS");
         }
         // check if ORDER exists in query and orderBy is a number
         results.sort(function (a, b) {
@@ -615,29 +571,29 @@ export class PerformQueryHelpers {
             }
             return 0;
         });
-        return {code: 200, body: {result: results}};
+        return results;
     }
 
     // complex sort helper
-    private performComplexSort(sort: any, columns: any[], results: any[]): InsightResponse {
+    private performComplexSort(sort: any, columns: any[], results: any[]): any[] {
         const dir = sort["dir"];
         const keys = sort["keys"];
         // check if we have dir and keys
         if (!dir || !keys) {
-            return {code: 400, body: {error: "Options order invalid"}};
+            throw new Error("Options order invalid");
         }
         // check if direction is valid
         if (!(dir === "UP" || dir === "DOWN")) {
-            return {code: 400, body: {error: "Order direction invalid"}};
+            throw new Error("Order direction invalid");
         }
         // check if we have keys to sort on
         if (keys.length === 0) {
-            return {code: 400, body: {error: "No keys to sort on"}};
+            throw new Error("No keys to sort on");
         }
         // make sure all keys are in columns
         for (const key of keys) {
             if (!columns.includes(key)) {
-                return {code: 400, body: {error: "Order key needs to be included in columns"}};
+                throw new Error("Order key needs to be included in columns");
             }
         }
         // sort that
@@ -676,6 +632,6 @@ export class PerformQueryHelpers {
                 }
             });
         }
-        return {code: 200, body: {result: results}};
+        return results;
     }
 }
