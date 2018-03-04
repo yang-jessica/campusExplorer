@@ -9,7 +9,8 @@
         "OPTIONS": {
             "COLUMNS": [
                 "rooms_name"
-            ]
+            ],
+            "ORDER": "rooms_name"
         }
     },
     "response": {
@@ -21,6 +22,30 @@
                 },
                 {
                     "rooms_name": "ALRD_121"
+                },
+                {
+                    "rooms_name": "ANGU_037"
+                },
+                {
+                    "rooms_name": "ANGU_039"
+                },
+                {
+                    "rooms_name": "ANGU_234"
+                },
+                {
+                    "rooms_name": "ANGU_235"
+                },
+                {
+                    "rooms_name": "ANGU_237"
+                },
+                {
+                    "rooms_name": "ANGU_334"
+                },
+                {
+                    "rooms_name": "ANGU_335"
+                },
+                {
+                    "rooms_name": "ANGU_434"
                 },
                 {
                     "rooms_name": "BUCH_A202"
@@ -56,34 +81,10 @@
                     "rooms_name": "FSC_1003"
                 },
                 {
-                    "rooms_name": "ANGU_037"
-                },
-                {
-                    "rooms_name": "ANGU_039"
-                },
-                {
-                    "rooms_name": "ANGU_234"
-                },
-                {
-                    "rooms_name": "ANGU_235"
-                },
-                {
-                    "rooms_name": "ANGU_237"
-                },
-                {
-                    "rooms_name": "ANGU_334"
-                },
-                {
-                    "rooms_name": "ANGU_335"
-                },
-                {
-                    "rooms_name": "ANGU_434"
+                    "rooms_name": "IBLC_155"
                 },
                 {
                     "rooms_name": "IONA_301"
-                },
-                {
-                    "rooms_name": "IBLC_155"
                 },
                 {
                     "rooms_name": "MCML_160"

@@ -9,7 +9,8 @@
         "OPTIONS": {
             "COLUMNS": [
                 "rooms_name"
-            ]
+            ],
+            "ORDER": "rooms_name"
         }
     },
     "response": {
@@ -26,13 +27,13 @@
                     "rooms_name": "CEME_1202"
                 },
                 {
-                    "rooms_name": "LASR_102"
-                },
-                {
                     "rooms_name": "HEBB_100"
                 },
                 {
                     "rooms_name": "IBLC_182"
+                },
+                {
+                    "rooms_name": "LASR_102"
                 },
                 {
                     "rooms_name": "LSK_200"

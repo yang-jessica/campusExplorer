@@ -142,22 +142,6 @@ export default class InsightFacade implements IInsightFacade {
                     return reject({code: 400, body: {error: "missing dataset " + "'" + key + "'"}});
                 }
             }
-            // check if all keys are for the same dataset
-            const allAfterUnderscore: string[] = queryString.match(/_[a-z]+/g);
-            let course = true;
-            let room = true;
-            for (const u of allAfterUnderscore) {
-                if (!Object.values(CourseKeys).includes(u.substring(1))) {
-                    course = false;
-                }
-                if (!Object.values(RoomKeys).includes(u.substring(1))) {
-                    room = false;
-                }
-            }
-            // if both flags are false, then there's a conflict
-            if (!course && !room) {
-                return reject({code: 400, body: {error: "query has conflicting key values"}});
-            }
             // check if keys are only WHERE and OPTIONS and optionally TRANSFORMATIONS
             for (const key of Object.keys(query)) {
                 if (key !== "WHERE" && key !== "OPTIONS" &&  key !== "TRANSFORMATIONS") {

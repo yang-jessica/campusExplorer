@@ -64,18 +64,18 @@ export class AddDatasetHelpers {
                                                 iKind: InsightDatasetKind.Rooms,
                                             };
                                             const roomString = JSON.stringify(final);
-                                            if (results.length === 0) {
-                                                reject({code: 400, body: {error: "no valid rows"}});
-                                            } else {
-                                                const fs = require("fs");
-                                                fs.mkdir("./datasets", function () {
-                                                    // write the room to a file using a stream
-                                                    const logger = fs.createWriteStream("./datasets/" + id);
-                                                    logger.write(roomString);
-                                                    logger.end();
-                                                    resolve({code: 204, body: {result: "dataset successfully added"}});
-                                                });
-                                            }
+                                            // if (results.length === 0) {
+                                            //     reject({code: 400, body: {error: "no valid rows"}});
+                                            // } else {
+                                            const fs = require("fs");
+                                            fs.mkdir("./datasets", function () {
+                                                // write the room to a file using a stream
+                                                const logger = fs.createWriteStream("./datasets/" + id);
+                                                logger.write(roomString);
+                                                logger.end();
+                                                resolve({code: 204, body: {result: "dataset successfully added"}});
+                                            });
+                                            // }
                                         })
                                         .catch();
                                 }) // here
@@ -128,13 +128,13 @@ export class AddDatasetHelpers {
                                 // extract lat/lon
                                 geo.lat = geoResult.lat;
                                 geo.lon = geoResult.lon;
+                                resolve(geo);
                             }
                         } catch (e) {
                             Log.trace(e.message);
                         }
                     });
                 });
-                resolve(geo);
             } catch {reject(); }
         });
     }
