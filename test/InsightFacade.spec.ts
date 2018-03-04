@@ -1,7 +1,7 @@
 import { expect } from "chai";
 
 import {
-    InsightDatasetKind, InsightResponse, InsightResponseErrorBody,
+    InsightDatasetKind, InsightResponse,
     InsightResponseSuccessBody,
 } from "../src/controller/IInsightFacade";
 import InsightFacade from "../src/controller/InsightFacade";

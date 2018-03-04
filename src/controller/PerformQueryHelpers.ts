@@ -128,6 +128,12 @@ export class PerformQueryHelpers {
                 keysToRemove.push(id + "_" + key);
             }
         }
+        // filter out unnecessary apply strings
+        for (const applyString of applyStrings) {
+            if (!columns.includes(applyString)) {
+                keysToRemove.push(applyString);
+            }
+        }
         for (const result of results) {
             for (const key of keysToRemove) {
                 delete result[key];
@@ -406,8 +412,8 @@ export class PerformQueryHelpers {
             throw new Error("can't compare string keys mathematically");
         }
         // is the actual value numeric?
-        if (typeof logic[keyToCompare] === "string") {
-            throw new Error("can't math compare string values");
+        if (typeof logic[keyToCompare] !== "number") {
+            throw new Error("can't math compare non-numeric values");
         }
         const fs = require("fs");
         const datasetString = fs.readFileSync("./datasets/" + id);
