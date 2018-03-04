@@ -17,56 +17,49 @@ export class AddDatasetHelpers {
                     try {
                         const results: { [room: string]: any } = [];
                         const original = parse5.parse(text);
+                        const promiseArray: any[] = [];
                         // find the tBody object
                         const tbody = that.findtBody(original.childNodes);
                         // find the building info
-                        const objectsBoi = that.getBuildingInfo(tbody);
-                        const promiseArray: any[] = [];
-                        const geoPromiseArray: any[] = [];
-                        // for each building
-                        for (const element of objectsBoi) {
-                            // get the geo location
-                            geoPromiseArray.push(that.getGeo(element.raddress)
-                                .then(function (geo) {
-                                    const realPath = element.rlink.substring(2);
-                                    promiseArray.push(zip.file(realPath).async("string")
-                                        .then(function (data: any) {
-                                            const rawData = parse5.parse(data);
-                                            const tBodyBuilding = that.findtBody(rawData.childNodes);
-                                            // get the individual rooms
-                                            const rooms = that.getRoomsInfo(tBodyBuilding);
-                                            for (const key of rooms) {
-                                                const room: { [key: string]: any } = {
-                                                    [id + "_fullname"]: element.rfullname,
-                                                    [id + "_shortname"]: element.rshortname,
-                                                    [id + "_number"]: key.rno,
-                                                    [id + "_name"]: element.rshortname + "_" + key.rno,
-                                                    [id + "_address"]: element.raddress,
-                                                    [id + "_lat"]: geo.lat,
-                                                    [id + "_lon"]: geo.lon,
-                                                    [id + "_seats"]: parseInt(key.seat, 10),
-                                                    [id + "_type"]: key.type,
-                                                    [id + "_furniture"]: key.furniture,
-                                                    [id + "_href"]: key.href,
-                                                };
-                                                results.push(room);
-                                            }
-                                        })
-                                        .catch(function () {
-                                            // Log.trace("could not read html file");
-                                        }));
-                                    Promise.all(promiseArray)
-                                        .then(function () {
-                                            const final: IDataset = {
-                                                iid: id,
-                                                rows: results,
-                                                numRows: results.length,
-                                                iKind: InsightDatasetKind.Rooms,
-                                            };
-                                            const roomString = JSON.stringify(final);
-                                            // if (results.length === 0) {
-                                            //     reject({code: 400, body: {error: "no valid rows"}});
-                                            // } else {
+                        that.getBuildingInfo(tbody).then(function (objectsBoi) {
+                            // for each building
+                            for (const element of objectsBoi) {
+                                const realPath = element.link.substring(2);
+                                promiseArray.push(zip.file(realPath).async("string").then(function (data: any) {
+                                    const rawData = parse5.parse(data);
+                                    const tBodyBuilding = that.findtBody(rawData.childNodes);
+                                    // get the individual rooms
+                                    const rooms = that.getRoomsInfo(tBodyBuilding);
+                                    for (const key of rooms) {
+                                        const room: { [key: string]: any } = {
+                                            [id + "_fullname"]: element.fullname,
+                                            [id + "_shortname"]: element.shortname,
+                                            [id + "_number"]: key.rno,
+                                            [id + "_name"]: element.shortname + "_" + key.rno,
+                                            [id + "_address"]: element.address,
+                                            [id + "_lat"]: element.lat,
+                                            [id + "_lon"]: element.lon,
+                                            [id + "_seats"]: parseInt(key.seat, 10),
+                                            [id + "_type"]: key.type,
+                                            [id + "_furniture"]: key.furniture,
+                                            [id + "_href"]: key.href,
+                                        };
+                                        results.push(room);
+                                    }
+                                }).catch(function () {/* something */}));
+                                Promise.all(promiseArray)
+                                    .then(function () {
+                                        const final: IDataset = {
+                                            iid: id,
+                                            rows: results,
+                                            numRows: results.length,
+                                            iKind: InsightDatasetKind.Rooms,
+                                        };
+                                        const roomString = JSON.stringify(final);
+                                        if (results.length === 0) {
+                                            Log.error("no valid rows");
+                                            reject({code: 400, body: {error: "no valid rows"}});
+                                        } else {
                                             const fs = require("fs");
                                             fs.mkdir("./datasets", function () {
                                                 // write the room to a file using a stream
@@ -75,15 +68,11 @@ export class AddDatasetHelpers {
                                                 logger.end();
                                                 resolve({code: 204, body: {result: "dataset successfully added"}});
                                             });
-                                            // }
-                                        })
-                                        .catch();
-                                }) // here
-                                .catch(/* getGeo catch */));
-                            Promise.all(geoPromiseArray)
-                                .then(/* geoPromise array all then */)
-                                .catch(/* geoPromise array all catch */);
-                        }
+                                        }
+                                    })
+                                    .catch();
+                            }
+                        }).catch();
                     } catch (error) {
                         reject({code: 400, body: {error: "no valid rooms"}});
                     }
@@ -122,7 +111,7 @@ export class AddDatasetHelpers {
                         try {
                             const geoResult = JSON.parse(rawData);
                             if (geoResult.error) {
-                                Log.trace("400: got an error from the server");
+                                Log.error("400: got an error from the server");
                                 throw new Error("got error from geolocation server");
                             } else {
                                 // extract lat/lon
@@ -206,42 +195,52 @@ export class AddDatasetHelpers {
         return tBodyObject;
     }
 
-    public getBuildingInfo(tBodyObject: any[]): any[] {
-        let shortName;
-        let fullName;
-        let address;
-        let link;
-        const buildingObjects: any[] = [];
-        for (const trElement of tBodyObject) {
-            if (trElement.nodeName === "tr") {
-                for (const tdElement of trElement.childNodes) {
-                    if (tdElement.nodeName === "td" && tdElement.attrs[0].name === "class") {
-                        if (tdElement.attrs[0].value === "views-field views-field-title") {
-                            if (tdElement.childNodes[1].attrs[0].name === "href") {
-                                link = tdElement.childNodes[1].attrs[0].value;
+    public getBuildingInfo(tBodyObject: any[]): Promise<any[]> {
+        const that = this;
+        return new Promise(function (resolve, reject) {
+            const promiseArray: any[] = [];
+            const buildingObjects: any[] = [];
+            for (const trElement of tBodyObject) {
+                if (trElement.nodeName === "tr") {
+                    let bShortName: string;
+                    let bFullName: string;
+                    let bAddress: string;
+                    let bLink: string;
+                    for (const tdElement of trElement.childNodes) {
+                        if (tdElement.nodeName === "td" && tdElement.attrs[0].name === "class") {
+                            if (tdElement.attrs[0].value === "views-field views-field-title") {
+                                if (tdElement.childNodes[1].attrs[0].name === "href") {
+                                    bLink = tdElement.childNodes[1].attrs[0].value;
+                                }
+                            }
+                            if (tdElement.attrs[0].value === "views-field views-field-field-building-code") {
+                                bShortName = tdElement.childNodes[0].value.trim();
+                            }
+                            if (tdElement.attrs[0].value === "views-field views-field-field-building-address") {
+                                bAddress = tdElement.childNodes[0].value.trim();
+                            }
+                            if (tdElement.attrs[0].value === "views-field views-field-title") {
+                                bFullName = tdElement.childNodes[1].childNodes[0].value;
                             }
                         }
-                        if (tdElement.attrs[0].value === "views-field views-field-field-building-code") {
-                            shortName = tdElement.childNodes[0].value.trim();
-                        }
-                        if (tdElement.attrs[0].value === "views-field views-field-field-building-address") {
-                            address = tdElement.childNodes[0].value.trim();
-                        }
-                        if (tdElement.attrs[0].value === "views-field views-field-title") {
-                            fullName = tdElement.childNodes[1].childNodes[0].value;
-                        }
                     }
+                    promiseArray.push(that.getGeo(bAddress).then(function (geo) {
+                        const answer: { [key: string]: any } = {
+                            shortname: bShortName,
+                            fullname: bFullName,
+                            address: bAddress,
+                            link: bLink,
+                            lat: geo.lat,
+                            lon: geo.lon,
+                        };
+                        buildingObjects.push(answer);
+                    }).catch());
                 }
-                const answer: { [key: string]: any } = {
-                    rshortname: shortName,
-                    rfullname: fullName,
-                    raddress: address,
-                    rlink: link,
-                };
-                buildingObjects.push(answer);
             }
-        }
-        return buildingObjects;
+            Promise.all(promiseArray).then(function () {
+                resolve(buildingObjects);
+            });
+        });
     }
 
     // helper for adding course dataset

@@ -759,6 +759,21 @@ describe("InsightFacade Add/Remove Rooms Dataset", function () {
         }
     });
 
+    // list the rooms dataset, expect 204
+    it("Should list the rooms dataset", async () => {
+        // const id: string = "rooms";
+        const expectedCode: number = 200;
+        let response: InsightResponse;
+        try {
+            response = await insightFacade.listDatasets();
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect((response.body as InsightResponseSuccessBody).result.length).to.equal(10);
+        }
+    });
+
     // remove file added in earlier test, expect success code 204
     it("Should remove rooms dataset", async () => {
         const id: string = "rooms";
@@ -786,21 +801,6 @@ describe("InsightFacade Add/Remove Rooms Dataset", function () {
             response = err;
         } finally {
             expect(response.code).to.equal(expectedCode);
-        }
-    });
-
-    // list the rooms dataset, expect 204
-    it("Should list the rooms dataset", async () => {
-        // const id: string = "rooms";
-        const expectedCode: number = 200;
-        let response: InsightResponse;
-        try {
-            response = await insightFacade.listDatasets();
-        } catch (err) {
-            response = err;
-        } finally {
-            expect(response.code).to.equal(expectedCode);
-            expect((response.body as InsightResponseSuccessBody).result.length).to.equal(10);
         }
     });
 
