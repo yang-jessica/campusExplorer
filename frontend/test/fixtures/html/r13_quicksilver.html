@@ -1,0 +1,161 @@
+
+                        <form data-type="rooms">
+                            <div class="form-group conditions">
+                                <legend>Conditions</legend>
+                                <div class="control-group condition-type">
+                                    <div class="control conditions-all-radio">
+                                        <input id="rooms-conditiontype-all" name="conditionType" value="all" type="radio" checked="checked">
+                                        <label for="rooms-conditiontype-all">All of the following</label>
+                                    </div>
+                                    <div class="control conditions-any-radio">
+                                        <input id="rooms-conditiontype-any" name="conditionType" value="any" type="radio">
+                                        <label for="rooms-conditiontype-any">Any of the following</label>
+                                    </div>
+                                    <div class="control conditions-none-radio">
+                                        <input id="rooms-conditiontype-none" name="conditionType" value="none" type="radio">
+                                        <label for="rooms-conditiontype-none">None of the following</label>
+                                    </div>
+                                </div>
+                                <div class="conditions-container"></div>
+                                <div class="icon-container"><a class="icon icon-plus" href="#"></a></div>
+                            </div>
+                            <div class="form-group columns">
+                                <legend>Columns</legend>
+                                <div class="control-group">
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-columns-field-address" data-key="address" value="address" checked="checked">
+                                            <label for="rooms-columns-field-address">Address</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-columns-field-fullname" data-key="fullname" value="fullname" checked="checked">
+                                            <label for="rooms-columns-field-fullname">Full Name</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-columns-field-furniture" data-key="furniture" value="furniture" checked="checked">
+                                            <label for="rooms-columns-field-furniture">Furniture</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-columns-field-href" data-key="href" value="href" checked="checked">
+                                            <label for="rooms-columns-field-href">Link</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-columns-field-lat" data-key="lat" value="lat" checked="checked">
+                                            <label for="rooms-columns-field-lat">Latitude</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-columns-field-lon" data-key="lon" value="lon" checked="checked">
+                                            <label for="rooms-columns-field-lon">Longitude</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-columns-field-name" data-key="name" value="name" checked="checked">
+                                            <label for="rooms-columns-field-name">Name</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-columns-field-number" data-key="number" value="number" checked="checked">
+                                            <label for="rooms-columns-field-number">Number</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-columns-field-seats" data-key="seats" value="seats" checked="checked">
+                                            <label for="rooms-columns-field-seats">Seats</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-columns-field-shortname" data-key="shortname" value="shortname" checked="checked">
+                                            <label for="rooms-columns-field-shortname">Short Name</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-columns-field-type" data-key="type" value="type" checked="checked">
+                                            <label for="rooms-columns-field-type">Type</label>
+                                        </div>
+                                </div>
+                            </div>
+                            <div class="form-group order">
+                                <legend>Order</legend>
+                                <div class="control-group">
+                                    <div class="control order fields">
+                                        <select multiple="">
+                                                    <option value="address">
+                                                        Address
+                                                    </option>                <option value="fullname">
+                                                        Full Name
+                                                    </option>                <option value="furniture">
+                                                        Furniture
+                                                    </option>                <option value="href">
+                                                        Link
+                                                    </option>                <option value="lat">
+                                                        Latitude
+                                                    </option>                <option value="lon">
+                                                        Longitude
+                                                    </option>                <option value="name">
+                                                        Name
+                                                    </option>                <option value="number">
+                                                        Number
+                                                    </option>                <option value="seats">
+                                                        Seats
+                                                    </option>                <option value="shortname">
+                                                        Short Name
+                                                    </option>                <option value="type">
+                                                        Type
+                                                    </option>    </select>
+                                    </div>
+                                    <div class="control descending">
+                                        <input type="checkbox" id="rooms-order">
+                                        <label for="rooms-order">Descending</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group groups">
+                                <legend>Groups</legend>
+                                <div class="control-group">
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-groups-field-address" data-key="address" value="address">
+                                            <label for="rooms-groups-field-address">Address</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-groups-field-fullname" data-key="fullname" value="fullname">
+                                            <label for="rooms-groups-field-fullname">Full Name</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-groups-field-furniture" data-key="furniture" value="furniture">
+                                            <label for="rooms-groups-field-furniture">Furniture</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-groups-field-href" data-key="href" value="href">
+                                            <label for="rooms-groups-field-href">Link</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-groups-field-lat" data-key="lat" value="lat">
+                                            <label for="rooms-groups-field-lat">Latitude</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-groups-field-lon" data-key="lon" value="lon">
+                                            <label for="rooms-groups-field-lon">Longitude</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-groups-field-name" data-key="name" value="name">
+                                            <label for="rooms-groups-field-name">Name</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-groups-field-number" data-key="number" value="number">
+                                            <label for="rooms-groups-field-number">Number</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-groups-field-seats" data-key="seats" value="seats">
+                                            <label for="rooms-groups-field-seats">Seats</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-groups-field-shortname" data-key="shortname" value="shortname">
+                                            <label for="rooms-groups-field-shortname">Short Name</label>
+                                        </div>
+                                        <div class="control field">
+                                            <input type="checkbox" id="rooms-groups-field-type" data-key="type" value="type">
+                                            <label for="rooms-groups-field-type">Type</label>
+                                        </div>
+                                </div>
+                            </div>
+                            <div class="form-group transformations">
+                                <legend>Transformations</legend>
+                                <div class="transformations-container"></div>
+                                <div class="icon-container"><a class="icon icon-plus" href="#"></a></div>
+                            </div>
+                        </form>
+                    
