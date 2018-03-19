@@ -1,5 +1,5 @@
 {
-    "query1": "simple query IS comparison for department with two columns and old order syntax",
+    "query1": "simple query IS comparison for department with two columns and d2 order syntax",
     "c1_colusa": "COURSES: Should be able to build a simple query with MComparison and a single order key",
     "c2_camelot": "COURSES: Should be able to build a query with AND with an order key",
     "c3_firefly": "COURSES: Should be able to build a query with AND without order keys",
