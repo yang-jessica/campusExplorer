@@ -6,6 +6,7 @@ import fs = require("fs");
 import restify = require("restify");
 import Log from "../Util";
 import {InsightResponse} from "../controller/IInsightFacade";
+import InsightFacade from "../controller/InsightFacade";
 
 /**
  * This configures the REST endpoints for the server.
@@ -45,6 +46,7 @@ export default class Server {
      */
     public start(): Promise<boolean> {
         const that = this;
+        let iFacade = new InsightFacade();
         return new Promise(function (fulfill, reject) {
             try {
                 Log.info("Server::start() - start");
@@ -62,11 +64,76 @@ export default class Server {
 
                 // This is an example endpoint that you can invoke by accessing this URL in your browser:
                 // http://localhost:4321/echo/hello
+                that.rest.use(restify.bodyParser({limit: "10mb", mapFiles: true}));
                 that.rest.get("/echo/:msg", Server.echo);
 
                 // NOTE: your endpoints should go here
-
+                that.rest.put("/dataset/:id/:kind",
+                    function (req: restify.Request, res: restify.Response, next: restify.Next) {
+                        Log.trace("inside put");
+                        // res.json(200, {hello: "msg"});
+                        let dataStr = new Buffer(req.params.body).toString("base64");
+                        let datasetId = req.params.id;
+                        let datasetKind = req.params.kind;
+                        iFacade.addDataset(datasetId, dataStr, datasetKind).then(
+                            function (result: InsightResponse) {
+                                res.status(result.code);
+                                res.json(result.body);
+                                Log.trace("addDataset done");
+                                return next();
+                            }).catch(function (err: InsightResponse) {
+                            Log.trace("put error occurred");
+                            res.status(err.code);
+                            res.json(err.body);
+                            return next();
+                        });
+                    });
+                that.rest.del("/dataset/:id/",
+                    function (req: restify.Request, res: restify.Response, next: restify.Next) {
+                        Log.trace("inside del");
+                        let datasetId = req.params.id;
+                        iFacade.removeDataset(datasetId).then(function (result: InsightResponse) {
+                            res.json(result.code, result.body);
+                            Log.trace("removeDataset done");
+                            return next();
+                        }).catch(function (err: InsightResponse) {
+                            Log.trace("del error occurred");
+                            res.json(err.code, err.body);
+                            return next();
+                        });
+                    });
+                that.rest.post("/query",
+                    function (req: restify.Request, res: restify.Response, next: restify.Next) {
+                        Log.trace("inside post");
+                        let query = req.body;
+                        // let queryParsed = JSON.parse(query);
+                        Log.trace(JSON.stringify(req.body));
+                        iFacade.performQuery(req.body).then(function (result: InsightResponse) {
+                            res.json(result.code, result.body);
+                            let body = JSON.stringify(result.body);
+                            Log.trace(body);
+                            Log.trace("performQuery done");
+                            return next();
+                        }).catch(function (err: InsightResponse) {
+                            Log.trace("post error occurred");
+                            res.json(err.code, err.body);
+                            return next();
+                        });
+                    });
                 // This must be the last endpoint!
+                that.rest.get("/datasets",
+                    function (req: restify.Request, res: restify.Response, next: restify.Next) {
+                        Log.trace("inside get");
+                        iFacade.listDatasets().then(function (result: InsightResponse) {
+                                res.json(result.code, result.body);
+                                Log.trace("listDataset done");
+                                return next();
+                            }).catch(function (err: InsightResponse) {
+                            Log.trace("get error occurred");
+                            res.json(err.code, err.body);
+                            return next();
+                        });
+                    });
                 that.rest.get("/.*", Server.getStatic);
 
                 that.rest.listen(that.port, function () {
