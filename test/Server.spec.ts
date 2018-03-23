@@ -270,25 +270,25 @@ describe("Facade D3", function () {
             expect.fail();
         }
     });
-    // it("GET test for Server.echo", function () {
-    //     try {
-    //         return chai.request("http://localhost:4321")
-    //             .get("/echo/hello")
-    //             .then(function (res: Response) {
-    //                 // some logging here please!
-    //                 expect(res.status).to.be.equal(200);
-    //             })
-    //             .catch(function (err: Response) {
-    //                 // some logging here please!
-    //                 Log.trace("The error: " + err);
-    //                 expect.fail();
-    //             });
-    //     } catch (err) {
-    //         // and some more logging here!
-    //         Log.trace("The error2: " + err);
-    //         expect.fail();
-    //     }
-    // });
+    it("GET test for Server.echo", function () {
+        try {
+            return chai.request("http://localhost:4321")
+                .get("/echo/hello")
+                .then(function (res: Response) {
+                    // some logging here please!
+                    expect(res.status).to.be.equal(200);
+                })
+                .catch(function (err: Response) {
+                    // some logging here please!
+                    Log.trace("The error: " + err);
+                    expect.fail();
+                });
+        } catch (err) {
+            // and some more logging here!
+            Log.trace("The error2: " + err);
+            expect.fail();
+        }
+    });
     it("GET test for Server.getStatic", function () {
         try {
             return chai.request("http://localhost:4321")
