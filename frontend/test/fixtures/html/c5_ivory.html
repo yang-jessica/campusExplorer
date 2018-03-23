@@ -4,11 +4,11 @@
                                 <legend>Conditions</legend>
                                 <div class="control-group condition-type">
                                     <div class="control conditions-all-radio">
-                                        <input checked="" id="courses-conditiontype-all" name="conditionType" value="all" type="radio">
+                                        <input id="courses-conditiontype-all" name="conditionType" value="all" type="radio">
                                         <label for="courses-conditiontype-all">All of the following</label>
                                     </div>
                                     <div class="control conditions-any-radio">
-                                        <input id="courses-conditiontype-any" name="conditionType" value="any" type="radio">
+                                        <input id="courses-conditiontype-any" name="conditionType" value="any" type="radio" checked="checked">
                                         <label for="courses-conditiontype-any">Any of the following</label>
                                     </div>
                                     <div class="control conditions-none-radio">
@@ -60,6 +60,50 @@
     <div class="control term">
         <input type="text" value="98.58">
     </div>    <a class="icon icon-minus" href="#"></a>
+</div><div class="control-group condition">
+    <div class="control not">
+        <input type="checkbox">
+        <label>Not</label>
+    </div>
+    <div class="control fields">
+        <select>
+                    <option value="audit">
+                        Audit
+                    </option>                <option value="avg" selected="selected">
+                        Average
+                    </option>                <option value="dept">
+                        Department
+                    </option>                <option value="fail">
+                        Fail
+                    </option>                <option value="id">
+                        ID
+                    </option>                <option value="instructor">
+                        Instructor
+                    </option>                <option value="pass">
+                        Pass
+                    </option>                <option value="title">
+                        Title
+                    </option>                <option value="uuid">
+                        UUID
+                    </option>                <option value="year">
+                        Year
+                    </option>    </select>
+    </div>
+    <div class="control operators">
+        <select>
+                    <option value="EQ" selected="selected">
+                        EQ
+                    </option>                <option value="GT">
+                        GT
+                    </option>                <option value="IS">
+                        IS
+                    </option>                <option value="LT">
+                        LT
+                    </option>    </select>
+    </div>
+    <div class="control term">
+        <input type="text" value="98">
+    </div>    <a class="icon icon-minus" href="#"></a>
 </div></div>
                                 <div class="icon-container"><a class="icon icon-plus" href="#"></a></div>
                             </div>
@@ -71,7 +115,7 @@
                                             <label for="courses-columns-field-audit">Audit</label>
                                         </div>
                                         <div class="control field">
-                                            <input type="checkbox" id="courses-columns-field-avg" data-key="avg" value="avg">
+                                            <input type="checkbox" id="courses-columns-field-avg" data-key="avg" value="avg" checked="checked">
                                             <label for="courses-columns-field-avg">Average</label>
                                         </div>
                                         <div class="control field">
