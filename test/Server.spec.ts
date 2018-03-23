@@ -6,7 +6,8 @@ import {expect} from "chai";
 import Response = ChaiHttp.Response;
 
 import chaiHttp = require("chai-http");
-import {InsightDataset} from "../src/controller/IInsightFacade";
+import {InsightDataset, InsightDatasetKind} from "../src/controller/IInsightFacade";
+import TestUtil from "./TestUtil";
 
 describe("Facade D3", function () {
 
@@ -25,11 +26,37 @@ describe("Facade D3", function () {
         }
     });
 
+    const datasetsToLoad: { [id: string]: string } = {
+        courses: "./test/data/courses.zip",
+        rooms: "./test/data/rooms.zip",
+    };
+
+    let insightFacade: InsightFacade;
+    let datasets: { [id: string]: string };
+
     after(async function () {
-        // TODO: stop server here once!
         let result = await server.stop();
         if (result === true) {
             Log.trace("server stop");
+        }
+        try {
+            const loadDatasetPromises: Array<Promise<Buffer>> = [];
+            for (const [id, path] of Object.entries(datasetsToLoad)) {
+                loadDatasetPromises.push(TestUtil.readFileAsync(path));
+            }
+            const loadedDatasets = (await Promise.all(loadDatasetPromises)).map((buf, i) => {
+                return {[Object.keys(datasetsToLoad)[i]]: buf.toString("base64")};
+            });
+            datasets = Object.assign({}, ...loadedDatasets);
+            expect(Object.keys(datasets)).to.have.length.greaterThan(0);
+            insightFacade = new InsightFacade();
+
+            const courses: string = "courses";
+            const rooms: string = "rooms";
+            // await insightFacade.addDataset(courses, datasets[courses], InsightDatasetKind.Courses);
+            await insightFacade.addDataset(rooms, datasets[rooms], InsightDatasetKind.Rooms);
+        } catch (err) {
+            expect.fail("", "", `Failed to read one or more datasets. ${JSON.stringify(err)}`);
         }
     });
 
@@ -45,6 +72,26 @@ describe("Facade D3", function () {
 
     // Hint on how to test PUT requests
     let fs = require("fs");
+    it("DEL test for courses dataset", function () {
+        try {
+            return chai.request("http://localhost:4321")
+                .del("/dataset/courses").then(function (res: Response) {
+                    // some logging here please!
+                    Log.trace("res: " + JSON.stringify(res));
+                    Log.trace("res body: " + JSON.stringify(res.body));
+                    Log.trace("res status: " + res.status);
+                    expect(res.status).to.be.equal(204);
+                }).catch(function (err: any) {
+                    // some logging here please!
+                    Log.trace("The error: " + err);
+                    expect.fail();
+                });
+        } catch (err) {
+            // and some more logging here!
+            Log.trace("The error2: " + err);
+            expect.fail();
+        }
+    });
     it("PUT test for courses dataset", function () {
         try {
             let data = fs.readFileSync("./test/data/courses.zip");
@@ -54,7 +101,7 @@ describe("Facade D3", function () {
                 .then(function (res: Response) {
                     // some logging here please!
                     Log.trace("res: " + JSON.stringify(res));
-                    Log.trace("res body" + JSON.stringify(res.body));
+                    Log.trace("res body: " + JSON.stringify(res.body));
                     Log.trace("res status: " + res.status);
                     expect(res.status).to.be.equal(204);
                 }).catch(function (err: Response) {
@@ -77,7 +124,7 @@ describe("Facade D3", function () {
                 .then(function (res: Response) {
                     // some logging here please!
                     Log.trace("res: " + JSON.stringify(res));
-                    Log.trace("res body" + JSON.stringify(res.body));
+                    Log.trace("res body: " + JSON.stringify(res.body));
                     Log.trace("res status: " + res.status);
                     expect.fail();
                 }).catch(function (res: Response) {
@@ -100,7 +147,7 @@ describe("Facade D3", function () {
                 .then(function (res: Response) {
                     // some logging here please!
                     Log.trace("res: " + JSON.stringify(res));
-                    Log.trace("res body" + JSON.stringify(res.body));
+                    Log.trace("res body: " + JSON.stringify(res.body));
                     Log.trace("res status: " + res.status);
                     expect(res.status).to.be.equal(204);
                 }).catch(function (err: Response) {
@@ -118,20 +165,6 @@ describe("Facade D3", function () {
         try {
             let query = {WHERE: {EQ: {courses_avg: 99.19}},
                 OPTIONS: {COLUMNS: ["courses_dept", "courses_avg"], ORDER: "courses_avg"}};
-            // let query: any = {
-            //     "WHERE": {
-            //         "GT": {
-            //             "courses_avg": 99
-            //         }
-            //     },
-            //     "OPTIONS": {
-            //         "COLUMNS": [
-            //             "courses_dept",
-            //             "courses_avg"
-            //         ],
-            //         "ORDER": "courses_avg"
-            //     }
-            // };
             let result = {result: [{courses_dept: "cnps", courses_avg: 99.19}]};
             // let result = {"result":[{"courses_dept":"cnps","courses_avg":99.19}]};
             return chai.request("http://localhost:4321")
@@ -184,30 +217,10 @@ describe("Facade D3", function () {
                 .get("/datasets").then(function (res: Response) {
                     // some logging here please!
                     Log.trace("res: " + JSON.stringify(res));
-                    Log.trace("res body" + JSON.stringify(res.body));
+                    Log.trace("res body: " + JSON.stringify(res.body));
                     Log.trace("res status: " + res.status);
                     expect(res.status).to.be.equal(200);
                 }).catch(function (err: Response) {
-                    // some logging here please!
-                    Log.trace("The error: " + err);
-                    expect.fail();
-                });
-        } catch (err) {
-            // and some more logging here!
-            Log.trace("The error2: " + err);
-            expect.fail();
-        }
-    });
-    it("DEL test for courses dataset", function () {
-        try {
-            return chai.request("http://localhost:4321")
-                .del("/dataset/courses").then(function (res: Response) {
-                    // some logging here please!
-                    Log.trace("res: " + JSON.stringify(res));
-                    Log.trace("res body" + JSON.stringify(res.body));
-                    Log.trace("res status: " + res.status);
-                    expect(res.status).to.be.equal(204);
-                }).catch(function (err: any) {
                     // some logging here please!
                     Log.trace("The error: " + err);
                     expect.fail();
@@ -224,7 +237,7 @@ describe("Facade D3", function () {
                 .del("/dataset/rooms").then(function (res: Response) {
                     // some logging here please!
                     Log.trace("res: " + JSON.stringify(res));
-                    Log.trace("res body" + JSON.stringify(res.body));
+                    Log.trace("res body: " + JSON.stringify(res.body));
                     Log.trace("res status: " + res.status);
                     expect(res.status).to.be.equal(204);
                 }).catch(function (err: Response) {
@@ -244,7 +257,7 @@ describe("Facade D3", function () {
                 .del("/dataset/rooms").then(function (res: Response) {
                     // some logging here please!
                     Log.trace("res: " + JSON.stringify(res));
-                    Log.trace("res body" + JSON.stringify(res.body));
+                    Log.trace("res body: " + JSON.stringify(res.body));
                     Log.trace("res status: " + res.status);
                     expect.fail();
                 }).catch(function (res: Response) {
@@ -257,10 +270,29 @@ describe("Facade D3", function () {
             expect.fail();
         }
     });
-    it("GET test for courses dataset", function () {
+    // it("GET test for Server.echo", function () {
+    //     try {
+    //         return chai.request("http://localhost:4321")
+    //             .get("/echo/hello")
+    //             .then(function (res: Response) {
+    //                 // some logging here please!
+    //                 expect(res.status).to.be.equal(200);
+    //             })
+    //             .catch(function (err: Response) {
+    //                 // some logging here please!
+    //                 Log.trace("The error: " + err);
+    //                 expect.fail();
+    //             });
+    //     } catch (err) {
+    //         // and some more logging here!
+    //         Log.trace("The error2: " + err);
+    //         expect.fail();
+    //     }
+    // });
+    it("GET test for Server.getStatic", function () {
         try {
             return chai.request("http://localhost:4321")
-                .get("/echo/hello")
+                .get("/index.html")
                 .then(function (res: Response) {
                     // some logging here please!
                     expect(res.status).to.be.equal(200);
@@ -276,6 +308,25 @@ describe("Facade D3", function () {
             expect.fail();
         }
     });
+    // it("GET test for bad Server.getStatic", function () {
+    //     try {
+    //         return chai.request("http://localhost:4321")
+    //             .get("/index.html")
+    //             .then(function (res: Response) {
+    //                 // some logging here please!
+    //                 expect(res.status).to.be.equal(400);
+    //             })
+    //             .catch(function (err: Response) {
+    //                 // some logging here please!
+    //                 Log.trace("The error: " + err);
+    //                 expect.fail();
+    //             });
+    //     } catch (err) {
+    //         // and some more logging here!
+    //         Log.trace("The error2: " + err);
+    //         expect.fail();
+    //     }
+    // });
 
     // The other endpoints work similarly. You should be able to find all instructions at the chai-http documentation
 });

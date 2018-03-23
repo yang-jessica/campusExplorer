@@ -106,7 +106,6 @@ export default class Server {
                     function (req: restify.Request, res: restify.Response, next: restify.Next) {
                         Log.trace("inside post");
                         let query = req.body;
-                        // let queryParsed = JSON.parse(query);
                         Log.trace(JSON.stringify(req.body));
                         iFacade.performQuery(req.body).then(function (result: InsightResponse) {
                             res.json(result.code, result.body);
@@ -128,10 +127,10 @@ export default class Server {
                                 res.json(result.code, result.body);
                                 Log.trace("listDataset done");
                                 return next();
-                            }).catch(function (err: InsightResponse) {
-                            Log.trace("get error occurred");
-                            res.json(err.code, err.body);
-                            return next();
+                            // }).catch(function (err: InsightResponse) {
+                            // Log.trace("get error occurred");
+                            // res.json(err.code, err.body);
+                            // return next();
                         });
                     });
                 that.rest.get("/.*", Server.getStatic);
@@ -162,10 +161,10 @@ export default class Server {
         Log.trace("Server::echo(..) - params: " + JSON.stringify(req.params));
         try {
             const result = Server.performEcho(req.params.msg);
-            Log.info("Server::echo(..) - responding " + result.code);
+            // Log.info("Server::echo(..) - responding " + result.code);
             res.json(result.code, result.body);
         } catch (err) {
-            Log.error("Server::echo(..) - responding 400");
+            // Log.error("Server::echo(..) - responding 400");
             res.json(400, {error: err.message});
         }
         return next();

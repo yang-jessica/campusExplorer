@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import {expect} from "chai";
 
 import {
     InsightDatasetKind, InsightResponse,
@@ -21,26 +21,26 @@ describe("InsightFacade Add/Remove Dataset", function () {
     // Reference any datasets you've added to test/data here and they will
     // automatically be loaded in the Before All hook.
     const datasetsToLoad: { [id: string]: string } = {
-        badcourses:   "./test/data/badcourses.zip",
-        badfolder:    "./test/data/badfolder.zip",
-        badformat:    "./test/data/badformat.zip",
-        barejson:     "./test/data/barejson.zip",
-        commerce:     "./test/data/commerce.zip",
-        courses:      "./test/data/courses.zip",
-        emptyresult:  "./test/data/emptyresult.zip",
-        emptyzip:     "./test/data/emptyzip.zip",
-        jsonbracket:  "./test/data/jsonbracket.zip",
+        badcourses: "./test/data/badcourses.zip",
+        badfolder: "./test/data/badfolder.zip",
+        badformat: "./test/data/badformat.zip",
+        barejson: "./test/data/barejson.zip",
+        commerce: "./test/data/commerce.zip",
+        courses: "./test/data/courses.zip",
+        emptyresult: "./test/data/emptyresult.zip",
+        emptyzip: "./test/data/emptyzip.zip",
+        jsonbracket: "./test/data/jsonbracket.zip",
         jsonspelling: "./test/data/jsonspelling.zip",
-        jsontype:     "./test/data/jsontype.zip",
-        jsonwithnot:  "./test/data/jsonwithnot.zip",
-        notjson:      "./test/data/notjson.zip",
-        notzip:       "./test/data/notzip.jpg",
-        onecourse:    "./test/data/onecourse.zip",
-        onegoodcrs:   "./test/data/onegoodcrs.zip",
-        onegoodsec:   "./test/data/onegoodsec.zip",
-        onesection:   "./test/data/onesection.zip",
-        twocourse:    "./test/data/twocourse.zip",
-        twosection:   "./test/data/twosection.zip",
+        jsontype: "./test/data/jsontype.zip",
+        jsonwithnot: "./test/data/jsonwithnot.zip",
+        notjson: "./test/data/notjson.zip",
+        notzip: "./test/data/notzip.jpg",
+        onecourse: "./test/data/onecourse.zip",
+        onegoodcrs: "./test/data/onegoodcrs.zip",
+        onegoodsec: "./test/data/onegoodsec.zip",
+        onesection: "./test/data/onesection.zip",
+        twocourse: "./test/data/twocourse.zip",
+        twosection: "./test/data/twosection.zip",
     };
 
     let insightFacade: InsightFacade;
@@ -55,7 +55,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
                 loadDatasetPromises.push(TestUtil.readFileAsync(path));
             }
             const loadedDatasets = (await Promise.all(loadDatasetPromises)).map((buf, i) => {
-                return { [Object.keys(datasetsToLoad)[i]]: buf.toString("base64") };
+                return {[Object.keys(datasetsToLoad)[i]]: buf.toString("base64")};
             });
             datasets = Object.assign({}, ...loadedDatasets);
             expect(Object.keys(datasets)).to.have.length.greaterThan(0);
@@ -400,20 +400,20 @@ describe("InsightFacade Add/Remove Dataset", function () {
     // add JSON with wrong types, expect failure code 400
     // ie. expect type string but got number
     // TODO not sure if this test is any good
-/*    it("Should not add JSON with wrong types", async () => {
-        const id: string = "jsontype";
-        const expectedCode: number = 400;
-        let response: InsightResponse;
+    /*    it("Should not add JSON with wrong types", async () => {
+            const id: string = "jsontype";
+            const expectedCode: number = 400;
+            let response: InsightResponse;
 
-        try {
-            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
-        } catch (err) {
-            response = err;
-        } finally {
-            expect(response.code).to.equal(expectedCode);
-            expect(response.body).to.have.property("error");
-        }
-    });*/
+            try {
+                response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+            } catch (err) {
+                response = err;
+            } finally {
+                expect(response.code).to.equal(expectedCode);
+                expect(response.body).to.have.property("error");
+            }
+        });*/
 
     // add JSON with poor spelling, expect failure code 400
     it("Should not add misspelled JSON", async () => {
@@ -464,8 +464,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
     });
 
     // remove a file added in an earlier test, expect success code 204
-    it("Should remove the onecourse dataset", async () => {
-        const id: string = "onecourse";
+    it("Should remove the course dataset", async () => {
+        const id: string = "courses";
         const expectedCode: number = 204;
         let response: InsightResponse;
 
@@ -510,8 +510,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
     });
 
     // remove a file that hasn't been added, expect failure code 404
-    it("Shouldn't remove the onecourse dataset since it has not been added", async () => {
-        const id: string = "onecourse";
+    it("Shouldn't remove the courses dataset since it has not been added", async () => {
+        const id: string = "courses";
         const expectedCode: number = 404;
         let response: InsightResponse;
 
@@ -544,6 +544,7 @@ describe("InsightFacade List Dataset", function () {
     // Reference any datasets you've added to test/data here and they will
     // automatically be loaded in the Before All hook.
     const datasetsToLoad: { [id: string]: string } = {
+        commerce: "./test/data/commerce.zip",
         onecourse: "./test/data/onecourse.zip",
         onesection: "./test/data/onesection.zip",
         twocourse: "./test/data/twocourse.zip",
@@ -607,19 +608,19 @@ describe("InsightFacade List Dataset", function () {
 
     // list one dataset
     it("Should list the dataset", async () => {
-        const id: string = "onecourse";
+        // const id: string = "commerce";
         const expectedCode: number = 204;
         const expectedCode2: number = 200;
         let response: InsightResponse;
         let response2: InsightResponse;
         try {
-            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+            // response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
             response2 = await insightFacade.listDatasets();
         } catch (err) {
             response = err;
             response2 = err;
         } finally {
-            expect(response.code).to.equal(expectedCode);
+            // expect(response.code).to.equal(expectedCode);
             expect(response2.code).to.equal(expectedCode2);
         }
     });
@@ -634,7 +635,7 @@ describe("InsightFacade List Dataset", function () {
             response = err;
         } finally {
             expect(response.code).to.equal(expectedCode);
-            expect((response.body as InsightResponseSuccessBody).result.length).to.equal(9);
+            expect((response.body as InsightResponseSuccessBody).result.length).to.equal(8);
         }
     });
 
@@ -685,7 +686,7 @@ describe("InsightFacade Add/Remove Rooms Dataset", function () {
                 loadDatasetPromises.push(TestUtil.readFileAsync(path));
             }
             const loadedDatasets = (await Promise.all(loadDatasetPromises)).map((buf, i) => {
-                return { [Object.keys(datasetsToLoad)[i]]: buf.toString("base64") };
+                return {[Object.keys(datasetsToLoad)[i]]: buf.toString("base64")};
             });
             datasets = Object.assign({}, ...loadedDatasets);
             expect(Object.keys(datasets)).to.have.length.greaterThan(0);
@@ -770,7 +771,7 @@ describe("InsightFacade Add/Remove Rooms Dataset", function () {
             response = err;
         } finally {
             expect(response.code).to.equal(expectedCode);
-            expect((response.body as InsightResponseSuccessBody).result.length).to.equal(10);
+            expect((response.body as InsightResponseSuccessBody).result.length).to.equal(9);
         }
     });
 
@@ -790,20 +791,19 @@ describe("InsightFacade Add/Remove Rooms Dataset", function () {
     });
 
     // add  rooms dataset again
-    it("Should add rooms dataset again", async () => {
-        const id: string = "rooms";
-        const expectedCode: number = 204;
-        let response: InsightResponse;
-
-        try {
-            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
-        } catch (err) {
-            response = err;
-        } finally {
-            expect(response.code).to.equal(expectedCode);
-        }
-    });
-
+    // it("Should add rooms dataset again", async () => {
+    //     const id: string = "rooms";
+    //     const expectedCode: number = 204;
+    //     let response: InsightResponse;
+    //
+    //     try {
+    //         response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
+    //     } catch (err) {
+    //         response = err;
+    //     } finally {
+    //         expect(response.code).to.equal(expectedCode);
+    //     }
+    // });
 });
 
 // This test suite dynamically generates tests from the JSON files in test/queries.
@@ -847,7 +847,7 @@ describe("InsightFacade PerformQuery", () => {
                 loadDatasetPromises.push(TestUtil.readFileAsync(path));
             }
             const loadedDatasets = (await Promise.all(loadDatasetPromises)).map((buf, i) => {
-                return { [Object.keys(datasetsToQuery)[i]]: buf.toString("base64") };
+                return {[Object.keys(datasetsToQuery)[i]]: buf.toString("base64")};
             });
             expect(loadedDatasets).to.have.length.greaterThan(0);
 
@@ -861,8 +861,8 @@ describe("InsightFacade PerformQuery", () => {
             // In D1, you should remove this try/catch to ensure your datasets load successfully before trying
             // to run you queries.
             try {
-                 const responses: InsightResponse[] = await Promise.all(responsePromises);
-                 responses.forEach((response) => expect(response.code).to.equal(204));
+                const responses: InsightResponse[] = await Promise.all(responsePromises);
+                responses.forEach((response) => expect(response.code).to.equal(204));
             } catch (err) {
                 // Log.warn(`lol`);
             }
@@ -882,14 +882,12 @@ describe("InsightFacade PerformQuery", () => {
     afterEach(function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
-
     // Dynamically create and run a test for each query in testQueries
     it("Should run test queries", () => {
         describe("Dynamic InsightFacade PerformQuery tests", () => {
             for (const test of testQueries) {
                 it(`[${test.filename}] ${test.title}`, async () => {
                     let response: InsightResponse;
-
                     try {
                         response = await insightFacade.performQuery(test.query);
                     } catch (err) {
