@@ -39,6 +39,5 @@
     "r17_sagittarius": "query with another transformation [ROOMS]",
     "r18_steamedham": "query with complex transformation [ROOMS]",
     "r19_vanadium": "query with super complex transformation [ROOMS]",
-    "r20_xenon": "simple query with another transformation [ROOMS]",
-    "r21_what": "not"
+    "r20_xenon": "simple query with another transformation [ROOMS]"
 }

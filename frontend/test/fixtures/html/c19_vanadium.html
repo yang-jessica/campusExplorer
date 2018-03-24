@@ -25,9 +25,9 @@
         <select>
                     <option value="audit">
                         Audit
-                    </option>                <option value="avg">
+                    </option>                <option value="avg" selected="selected">
                         Average
-                    </option>                <option value="dept" selected="selected">
+                    </option>                <option value="dept">
                         Department
                     </option>                <option value="fail">
                         Fail
@@ -43,22 +43,22 @@
                         UUID
                     </option>                <option value="year">
                         Year
-                    </option>    <option class="transformation" value="maxAvg">maxAvg</option><option class="transformation" value="minAvg">minAvg</option><option class="transformation" value="overallCount">overallCount</option><option class="transformation" value="avgAvg">avgAvg</option><option class="transformation" value="sumFail">sumFail</option></select>
+                    </option>    <option class="transformation" value="allen">allen</option></select>
     </div>
     <div class="control operators">
         <select>
-                    <option value="EQ">
+                    <option value="EQ" selected="selected">
                         EQ
                     </option>                <option value="GT">
                         GT
-                    </option>                <option value="IS" selected="selected">
+                    </option>                <option value="IS">
                         IS
                     </option>                <option value="LT">
                         LT
                     </option>    </select>
     </div>
     <div class="control term">
-        <input type="text" value="comm">
+        <input type="text" value="98.58">
     </div>    <a class="icon icon-minus" href="#"></a>
 </div></div>
                                 <div class="icon-container"><a class="icon icon-plus" href="#"></a></div>
@@ -87,7 +87,7 @@
                                             <label for="courses-columns-field-id">ID</label>
                                         </div>
                                         <div class="control field">
-                                            <input type="checkbox" id="courses-columns-field-instructor" data-key="instructor" value="instructor" checked="checked">
+                                            <input type="checkbox" id="courses-columns-field-instructor" data-key="instructor" value="instructor">
                                             <label for="courses-columns-field-instructor">Instructor</label>
                                         </div>
                                         <div class="control field">
@@ -107,26 +107,8 @@
                                             <label for="courses-columns-field-year">Year</label>
                                         </div>
                                 <div class="control transformation">
-    <input type="checkbox" data-key="maxAvg" value="maxAvg" checked="checked">
-    <label>maxAvg</label>
-</div>
-
-<div class="control transformation">
-    <input type="checkbox" data-key="minAvg" value="minAvg" checked="checked">
-    <label>minAvg</label>
-</div>
-
-<div class="control transformation">
-    <input type="checkbox" data-key="overallCount" value="overallCount" checked="checked">
-    <label>overallCount</label>
-</div>
-<div class="control transformation">
-    <input type="checkbox" data-key="avgAvg" value="avgAvg" checked="checked">
-    <label>avgAvg</label>
-</div>
-<div class="control transformation">
-    <input type="checkbox" data-key="sumFail" value="sumFail" checked="checked">
-    <label>sumFail</label>
+    <input type="checkbox" data-key="allen" value="allen" checked="checked">
+    <label>allen</label>
 </div>
 </div>
                             </div>
@@ -155,7 +137,7 @@
                                                         UUID
                                                     </option>                <option value="year">
                                                         Year
-                                                    </option>    <option class="transformation" value="maxAvg">maxAvg</option><option class="transformation" value="minAvg">minAvg</option><option class="transformation" value="overallCount">overallCount</option><option class="transformation" value="avgAvg">avgAvg</option><option class="transformation" value="sumFail">sumFail</option></select>
+                                                    </option>    <option class="transformation" value="allen" selected="selected">allen</option></select>
                                     </div>
                                     <div class="control descending">
                                         <input type="checkbox" id="courses-order">
@@ -187,7 +169,7 @@
                                             <label for="courses-groups-field-id">ID</label>
                                         </div>
                                         <div class="control field">
-                                            <input type="checkbox" id="courses-groups-field-instructor" data-key="instructor" value="instructor" checked="checked">
+                                            <input type="checkbox" id="courses-groups-field-instructor" data-key="instructor" value="instructor">
                                             <label for="courses-groups-field-instructor">Instructor</label>
                                         </div>
                                         <div class="control field">
@@ -212,143 +194,7 @@
                                 <legend>Transformations</legend>
                                 <div class="transformations-container"><div class="control-group transformation">
     <div class="control term">
-        <input type="text" value="maxAvg">
-    </div>    <div class="control operators">
-        <select>
-                    <option value="COUNT">
-                        COUNT
-                    </option>                <option value="AVG">
-                        AVG
-                    </option>                <option value="MAX" selected="selected">
-                        MAX
-                    </option>                <option value="MIN">
-                        MIN
-                    </option>                <option value="SUM">
-                        SUM
-                    </option>    </select>
-    </div>
-    <div class="control fields">
-        <select>
-                    <option value="audit">
-                        Audit
-                    </option>                <option value="avg" selected="selected">
-                        Average
-                    </option>                <option value="dept">
-                        Department
-                    </option>                <option value="fail">
-                        Fail
-                    </option>                <option value="id">
-                        ID
-                    </option>                <option value="instructor">
-                        Instructor
-                    </option>                <option value="pass">
-                        Pass
-                    </option>                <option value="title">
-                        Title
-                    </option>                <option value="uuid">
-                        UUID
-                    </option>                <option value="year">
-                        Year
-                    </option>    </select>
-    </div>
-    <a class="icon icon-minus" href="#"></a>
-</div><div class="control-group transformation">
-    <div class="control term">
-        <input type="text" value="minAvg">
-    </div>    <div class="control operators">
-        <select>
-                    <option value="COUNT">
-                        COUNT
-                    </option>                <option value="AVG">
-                        AVG
-                    </option>                <option value="MAX">
-                        MAX
-                    </option>                <option value="MIN" selected="selected">
-                        MIN
-                    </option>                <option value="SUM">
-                        SUM
-                    </option>    </select>
-    </div>
-    <div class="control fields">
-        <select>
-                    <option value="audit">
-                        Audit
-                    </option>                <option value="avg" selected="selected">
-                        Average
-                    </option>                <option value="dept">
-                        Department
-                    </option>                <option value="fail">
-                        Fail
-                    </option>                <option value="id">
-                        ID
-                    </option>                <option value="instructor">
-                        Instructor
-                    </option>                <option value="pass">
-                        Pass
-                    </option>                <option value="title">
-                        Title
-                    </option>                <option value="uuid">
-                        UUID
-                    </option>                <option value="year">
-                        Year
-                    </option>                <option value="maxAvg">
-                        maxAvg
-                    </option>                <option value="overallCount">
-                        overallCount
-                    </option>    </select>
-    </div>
-    <a class="icon icon-minus" href="#"></a>
-</div><div class="control-group transformation">
-    <div class="control term">
-        <input type="text" value="overallCount">
-    </div>    <div class="control operators">
-        <select>
-                    <option value="COUNT" selected="selected">
-                        COUNT
-                    </option>                <option value="AVG">
-                        AVG
-                    </option>                <option value="MAX">
-                        MAX
-                    </option>                <option value="MIN">
-                        MIN
-                    </option>                <option value="SUM">
-                        SUM
-                    </option>    </select>
-    </div>
-    <div class="control fields">
-        <select>
-                    <option value="audit">
-                        Audit
-                    </option>                <option value="avg">
-                        Average
-                    </option>                <option value="dept">
-                        Department
-                    </option>                <option value="fail">
-                        Fail
-                    </option>                <option value="id">
-                        ID
-                    </option>                <option value="instructor">
-                        Instructor
-                    </option>                <option value="pass">
-                        Pass
-                    </option>                <option value="title">
-                        Title
-                    </option>                <option value="uuid" selected="selected">
-                        UUID
-                    </option>                <option value="year">
-                        Year
-                    </option>                <option value="maxAvg">
-                        maxAvg
-                    </option>                <option value="overallCount">
-                        overallCount
-                    </option>                <option value="minAvg">
-                        minAvg
-                    </option>    </select>
-    </div>
-    <a class="icon icon-minus" href="#"></a>
-</div><div class="control-group transformation">
-    <div class="control term">
-        <input type="text" value="avgAvg">
+        <input type="text" value="allen">
     </div>    <div class="control operators">
         <select>
                     <option value="COUNT">
@@ -385,62 +231,6 @@
                         UUID
                     </option>                <option value="year">
                         Year
-                    </option>                <option value="maxAvg">
-                        maxAvg
-                    </option>                <option value="minAvg">
-                        minAvg
-                    </option>                <option value="overallCount">
-                        overallCount
-                    </option>    </select>
-    </div>
-    <a class="icon icon-minus" href="#"></a>
-</div><div class="control-group transformation">
-    <div class="control term">
-        <input type="text" value="sumFail">
-    </div>    <div class="control operators">
-        <select>
-                    <option value="COUNT">
-                        COUNT
-                    </option>                <option value="AVG">
-                        AVG
-                    </option>                <option value="MAX">
-                        MAX
-                    </option>                <option value="MIN">
-                        MIN
-                    </option>                <option value="SUM" selected="selected">
-                        SUM
-                    </option>    </select>
-    </div>
-    <div class="control fields">
-        <select>
-                    <option value="audit">
-                        Audit
-                    </option>                <option value="avg">
-                        Average
-                    </option>                <option value="dept">
-                        Department
-                    </option>                <option value="fail" selected="selected">
-                        Fail
-                    </option>                <option value="id">
-                        ID
-                    </option>                <option value="instructor">
-                        Instructor
-                    </option>                <option value="pass">
-                        Pass
-                    </option>                <option value="title">
-                        Title
-                    </option>                <option value="uuid">
-                        UUID
-                    </option>                <option value="year">
-                        Year
-                    </option>                <option value="maxAvg">
-                        maxAvg
-                    </option>                <option value="minAvg">
-                        minAvg
-                    </option>                <option value="overallCount">
-                        overallCount
-                    </option>                <option value="avgAvg">
-                        avgAvg
                     </option>    </select>
     </div>
     <a class="icon icon-minus" href="#"></a>

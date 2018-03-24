@@ -7,9 +7,7 @@
  */
 CampusExplorer.buildQuery = function() {
     let query = {};
-    // TODO: trying my best to implement!
-    // active tab (courses or rooms)
-    let active = document.getElementsByClassName("tab-panel active")[0];
+    let active = document.getElementsByClassName("tab-panel active")[0]; // active tab (courses or rooms)
 
     // HANDLE CONDITIONS
     let condType = getConditionType(); // condition type
@@ -49,8 +47,8 @@ CampusExplorer.buildQuery = function() {
     // HANDLE GROUP
     let groups = active.getElementsByClassName("form-group groups")[0].getElementsByClassName("control-group")[0];
     transformations["GROUP"] = getGroups(groups);
+
     // HANDLE TRANSFORMATIONS
-    // conditions in query
     let transformationsArray = active.getElementsByClassName("control-group transformation");
     let applyArray = [];
     for (let transformation of transformationsArray) { // get each condition
@@ -60,14 +58,6 @@ CampusExplorer.buildQuery = function() {
     if (applyArray.length !== 0) {
         query["TRANSFORMATIONS"] = transformations;
     }
-
-    console.log("WHERE WHERE WHERE WHERE WHERE WHERE WHERE WHERE WHERE WHERE WHERE WHERE WHERE WHERE WHERE WHERE WHERE WHERE WHERE WHERE WHERE");
-    console.log(JSON.stringify(query["WHERE"]));
-    console.log("OPTIONS OPTIONS OPTIONS OPTIONS OPTIONS OPTIONS OPTIONS OPTIONS OPTIONS OPTIONS OPTIONS OPTIONS OPTIONS OPTIONS OPTIONS OPTIONS");
-    console.log(JSON.stringify(query["OPTIONS"]));
-    console.log("TRANSFORMATIONS TRANSFORMATIONS TRANSFORMATIONS TRANSFORMATIONS TRANSFORMATIONS TRANSFORMATIONS TRANSFORMATIONS TRANSFORMATIONS");
-    console.log(JSON.stringify(transformations));
-    console.log("QUERY QUERY QUERY QUERY QUERY QUERY QUERY QUERY QUERY QUERY QUERY QUERY QUERY QUERY QUERY QUERY QUERY QUERY QUERY QUERY QUERY");
     console.log(JSON.stringify(query));
     return query;
 };
@@ -125,8 +115,6 @@ getSingleCondition = function(condition) {
     } else { // else just return object
         conditionObject = compareObject;
     }
-
-    console.log(JSON.stringify(conditionObject));
     return conditionObject;
 };
 
@@ -148,22 +136,21 @@ getColumns = function(columns) {
             answer.push(transformation.querySelector("div input").value);
         }
     }
-    console.log("COLUMNS: " + answer);
     return answer;
 };
 
 // get the keys to order by
 getOrder = function(order) {
     let id = document.getElementsByClassName("tab-panel active")[0].getAttribute("data-type");
-    // handle selector
     let answer = [];
     let fields = order.getElementsByClassName("control order fields")[0].querySelectorAll("div select option");
     for (let field of fields) {
-        if (field.selected) {
+        if (field.selected && field.className !== "transformation") {
             answer.push(id + "_" + field.value);
+        } else if (field.selected && field.className === "transformation") {
+            answer.push(field.value);
         }
     }
-    console.log("ORDER keys: " + answer);
     return answer;
 };
 
@@ -178,10 +165,10 @@ getGroups = function(groups) {
             answer.push(id + "_" + key.querySelector("div input").value);
         }
     }
-    console.log("GROUP keys: " + answer);
     return answer;
 };
 
+// get individual apply object
 getSingleApply = function(transformation) {
     let id = document.getElementsByClassName("tab-panel active")[0].getAttribute("data-type");
 
@@ -195,6 +182,5 @@ getSingleApply = function(transformation) {
 
     // TERM
     let applyString = transformation.getElementsByClassName("control term")[0].querySelector("div input").value;
-    console.log(JSON.stringify({[applyString]: {[operator]: field}}));
     return {[applyString]: {[operator]: field}};
 };
