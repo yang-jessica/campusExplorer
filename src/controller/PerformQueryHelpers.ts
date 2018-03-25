@@ -15,6 +15,28 @@ export class PerformQueryHelpers {
         return Object.values(NumericKeys).includes(keyToValidate);
     }
 
+    // give the inverse
+    private static getInverse(result: any[], id: string): any[] {
+        const fs = require("fs");
+        const datasetString = fs.readFileSync("./datasets/" + id);
+        const data = JSON.parse(datasetString).rows;
+        const stringifyResult: any[] = [];
+        for (const x of result) {
+            stringifyResult.push(JSON.stringify(x));
+        }
+        const stringifyData: any[] = [];
+        for (const x2 of data) {
+            stringifyData.push(JSON.stringify(x2));
+        }
+        const answer: any[] = [];
+        for (const d of stringifyData) {
+            if (!stringifyResult.includes(d)) {
+                answer.push(JSON.parse(d));
+            }
+        }
+        return answer;
+    }
+
     constructor() {/* construct */}
 
     // WHERE helper
@@ -545,6 +567,10 @@ export class PerformQueryHelpers {
     private performNeg(logic: any, id: string): any[] {
         let negate: boolean = true;
         let current = logic[Object.keys(logic)[0]];
+        // is it OR/AND?
+        if (Object.keys(current)[0] === "AND" || Object.keys(current)[0] === "OR") {
+            return PerformQueryHelpers.getInverse(this.performWhere(current, false, id), id);
+        }
         // is it empty?
         if (Object.keys(current).length === 0) {
             throw new Error("NOT is empty");
