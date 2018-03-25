@@ -13,7 +13,7 @@ CampusExplorer.sendQuery = function(query) {
             http.setRequestHeader("Content-Type", "application/json");
             http.onload = function () {
                 console.log(http.responseText);
-                fulfill();
+                fulfill(http.response);
             };
             http.send(JSON.stringify(query));
         } catch (err) {
