@@ -140,11 +140,7 @@ export class AddDatasetHelpers {
                 for (const tdElement of trElement.childNodes) {
                     if (tdElement.nodeName === "td" && tdElement.attrs[0].name === "class") {
                         if (tdElement.attrs[0].value === "views-field views-field-field-room-number") {
-                            for (const baby of tdElement.childNodes) {
-                                if (baby.nodeName === "a") {
-                                    rnumber = baby.childNodes[0].value.trim();
-                                }
-                            }
+                            rnumber = tdElement.childNodes[1].childNodes[0].value.trim();
                         }
                         if (tdElement.attrs[0].value === "views-field views-field-field-room-capacity") {
                             rseat = tdElement.childNodes[0].value.trim();
