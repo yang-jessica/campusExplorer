@@ -28,11 +28,15 @@ export class PerformQueryHelpers {
         for (const x2 of data) {
             stringifyData.push(JSON.stringify(x2));
         }
-        const answer: any[] = [];
+        const stringifyAnswer: any[] = [];
         for (const d of stringifyData) {
             if (!stringifyResult.includes(d)) {
-                answer.push(JSON.parse(d));
+                stringifyAnswer.push(d);
             }
+        }
+        const answer: any[] = [];
+        for (const s of stringifyAnswer) {
+            answer.push(JSON.parse(s));
         }
         return answer;
     }
